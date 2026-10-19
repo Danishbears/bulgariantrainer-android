@@ -57,6 +57,7 @@ jobs:
           assert totals['failures'] == totals['errors'] == 0, 'Storage tests failed'
           PY
       - name: Verify exported Room schema contract
+        if: always()
         run: |
           python3 - <<'PY'
           import base64

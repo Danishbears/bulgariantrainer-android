@@ -59,8 +59,12 @@ class FlashcardRepository internal constructor(
             }
             // Bounded random selection of distinct active word rows; EXISTS avoids translation join duplicates.
             // No fabricated DUE/NEW/mastery categorization is applied before a scheduler exists.
-            val selected = dao.candidates(settings.size)
-            if (selected.isEmpty()) fail(FlashcardError.EMPTY_DICTIONARY)
+            val ids = dao.candidateIds(settings.size)
+            if (ids.isEmpty()) fail(FlashcardError.EMPTY_DICTIONARY)
+            // Room relation mapping may reset/re-execute its parent statement. Never put RANDOM()
+            // in that relation query: the second pass could produce different IDs without child maps.
+            val records = dao.candidatesByIds(ids).associateBy { it.word.id }
+            val selected = ids.map { records.getValue(it) }
             val id = dao.insertSession(FlashcardSessionEntity(requestId = request, requestedSize = settings.size,
                 direction = settings.direction.name, total = selected.size, startedAt = clock.millis()))
             val firstBulgarian = random.nextBoolean()

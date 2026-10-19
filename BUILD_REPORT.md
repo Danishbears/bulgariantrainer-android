@@ -19,7 +19,7 @@ other training mode, account/server, generated vocabulary or release signing add
 
 Local checks executed: `git diff --check`, staged whitespace checks, `sh -n gradlew`,
 XML/string-reference verification (191 Kotlin resource references), and static
-count of 95 test methods (not itself a test pass). `java -version` reports runtime
+count of 96 test methods (not itself a test pass). `java -version` reports runtime
 21.0.12.1; `shutil.which` finds no javac/gradle/sdkmanager/adb. No local JVM/Android
 build is claimed and no previously blocked shell download was retried. GitHub
 integration access was confirmed for both repositories and used for hosted builds.
@@ -44,6 +44,25 @@ fixed to treat the missing array as empty. The actual populated-v1→latest test
 20 repository parity/durability tests and six flashcard ViewModel tests passed.
 APK assembly and lint were skipped, so this first run produced **no APK**.
 The run's test-report artifact is `12195737851`. No success is claimed for it.
+
+### Second hosted run and partial-pool selection fix
+
+Code `937b011e6dc85d0fb8463d15c367b8203f398fb3`,
+[run 39272656784](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39272656784),
+job `118128744949`: 95 tests executed, 93 passed, two failed; BUILD FAILED in
+2m 49s. The populated-v2 migration and all six ViewModel cases passed. Two
+partial-pool tests failed with IllegalStateException in generated FlashcardDao
+relation mapping (the initial run happened to pass them). Assembly/lint skipped.
+
+The relation query previously combined SELECT * / RANDOM() / LIMIT. Room may reset
+and re-execute the parent statement when building relation maps, allowing a
+changed random subset on the second pass. Selection now fixes random IDs in a
+scalar query and fetches word/translation relations in a separate deterministic
+query inside the same transaction, preserving the sampled order. A new regression
+repeats 3-of-12 selection twelve times and checks complete snapshots/relations.
+Test logging now includes full exception traces, and schema verification also
+runs after failures so compiler exports remain available for diagnosis; it still
+fails on missing/mismatched committed schemas. Workflow permissions are unchanged.
 
 Later executed schema/build verification is recorded below when available.
 Real device/emulator checks remain unperformed; FLASHCARDS.md lists process-kill,

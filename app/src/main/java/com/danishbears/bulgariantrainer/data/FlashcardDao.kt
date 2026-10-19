@@ -12,9 +12,11 @@ import kotlinx.coroutines.flow.Flow
 internal interface FlashcardDao {
     @Query("SELECT COUNT(*) FROM words w WHERE w.archived = 0 AND EXISTS(SELECT 1 FROM translations t WHERE t.word_id = w.id)")
     fun observeAvailable(): Flow<Long>
+    @Query("SELECT id FROM words w WHERE w.archived = 0 AND EXISTS(SELECT 1 FROM translations t WHERE t.word_id = w.id) ORDER BY RANDOM() LIMIT :size")
+    suspend fun candidateIds(size: Int): List<Long>
     @Transaction
-    @Query("SELECT * FROM words w WHERE w.archived = 0 AND EXISTS(SELECT 1 FROM translations t WHERE t.word_id = w.id) ORDER BY RANDOM() LIMIT :size")
-    suspend fun candidates(size: Int): List<WordWithTranslations>
+    @Query("SELECT * FROM words WHERE id IN (:ids) ORDER BY id")
+    suspend fun candidatesByIds(ids: List<Long>): List<WordWithTranslations>
     @Query("SELECT * FROM flashcard_sessions WHERE request_id = :requestId")
     suspend fun forRequest(requestId: String): FlashcardSessionEntity?
     @Query("SELECT id FROM flashcard_sessions ORDER BY CASE WHEN status = 'IN_PROGRESS' THEN 0 ELSE 1 END, id DESC LIMIT 1")

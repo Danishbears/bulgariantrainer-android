@@ -122,6 +122,23 @@ class FlashcardRepositoryTest {
         assertEquals(0, count("flashcard_sessions"))
         assertEquals(noTranslation, words.get(noTranslation).id)
     }
+    @Test fun partialDictionarySelectionAlwaysKeepsRelationsForTheSameSampledIds() = runBlocking<Unit> {
+        val dictionary = seed(12).associateBy { it.id }
+        repeat(12) {
+            val state = start(3, FlashcardDirection.MIXED)
+            val graph = db.flashcardDao().graph(state.id)!!
+            assertEquals(3, graph.cards.size)
+            assertEquals(3, graph.cards.map { it.card.wordId }.toSet().size)
+            graph.cards.forEach { row ->
+                val original = dictionary.getValue(row.card.wordId)
+                assertEquals(original.bulgarianText, row.card.bulgarian)
+                assertEquals(2, kotlinx.serialization.json.Json.parseToJsonElement(row.card.russianJson).let {
+                    (it as kotlinx.serialization.json.JsonArray).size
+                })
+            }
+            assertEquals(state, repository.get(state.id))
+        }
+    }
     @Test fun hiddenFutureForeignRatingsAndEarlyResultsAreRejected() = runBlocking<Unit> {
         seed(2)
         val first = start(2)

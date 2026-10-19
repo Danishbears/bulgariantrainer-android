@@ -79,6 +79,10 @@ Words may occur again in later sessions. The reference's no-repeat rule applies
 within each session, not across all sessions. Candidate SQL uses one word row
 with EXISTS translations, avoiding join duplication; it samples at most 100
 eligible words without loading an entire dictionary into application memory.
+Sampling first fixes a list of random IDs, then a deterministic Room relation query
+loads words/translations by those IDs. Room can re-execute a parent query while
+mapping relations; combining RANDOM() with that relation query can change the
+sample between passes. A repeated partial-pool regression test protects this split.
 No translation is generated, split on commas/slashes, or silently reversed.
 
 ## Scheduling boundary and deliberate differences
