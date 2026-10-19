@@ -307,4 +307,25 @@
     <string name="statistics_self">Самооценка</string>
     <string name="statistics_auto">Автоматическая проверка</string>
     <string name="statistics_in_progress">В процессе</string>
+    <string name="pronunciation_settings">Произношение</string>
+    <string name="pronunciation_listen">Прослушать</string>
+    <string name="pronunciation_slow">Медленно</string>
+    <string name="pronunciation_stop">Остановить</string>
+    <string name="pronunciation_listen_label">Прослушать: %1$s</string>
+    <string name="pronunciation_slow_label">Медленно прослушать: %1$s</string>
+    <string name="pronunciation_initializing">Подключаем систему озвучивания…</string>
+    <string name="pronunciation_ready">Доступен установленный локальный болгарский голос.</string>
+    <string name="pronunciation_speaking">Воспроизводим озвучку…</string>
+    <string name="pronunciation_missing">Не найдены установленные данные локального болгарского голоса. Откройте «Произношение», чтобы настроить голос.</string>
+    <string name="pronunciation_unsupported">Выбранная система озвучивания не поддерживает болгарский язык. Выберите другую систему в настройках Android.</string>
+    <string name="pronunciation_network_only">Найден только сетевой болгарский голос. Для этого приложения нужен установленный голос без требования сети.</string>
+    <string name="pronunciation_error">Система озвучивания не ответила или произошла ошибка. Откройте «Произношение» и повторите проверку.</string>
+    <string name="pronunciation_closed">Озвучивание отключено.</string>
+    <string name="pronunciation_voice">Выбранный локальный голос: %1$s</string>
+    <string name="pronunciation_setup_hint">В настройках Android найдите «Синтез речи» или «Преобразование текста в речь». Выберите систему с поддержкой Bulgarian / Български (bg-BG), затем установите её болгарские голосовые данные. Названия меню зависят от устройства. Для установки может понадобиться интернет; приложение не загружает голоса самостоятельно. После установки вернитесь и повторите проверку.</string>
+    <string name="pronunciation_optional">Все задания доступны без звука. Другие языки и сетевые голоса не используются. Работа установленного голоса без сети зависит от системы озвучивания — проверьте её в авиарежиме.</string>
+    <string name="pronunciation_open_settings">Открыть настройки речи</string>
+    <string name="pronunciation_install">Установка голосовых данных</string>
+    <string name="pronunciation_retry">Проверить голос снова</string>
+    <string name="pronunciation_settings_unavailable">Откройте настройки Android вручную и найдите «Синтез речи».</string>
 </resources>

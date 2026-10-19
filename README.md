@@ -1,3 +1,10 @@
+> Bulgarian pronunciation is available in the dictionary and current training
+> questions, with normal/slow/stop controls and hidden-answer visibility rules.
+> An installed local Bulgarian Android TTS voice is required; all training works
+> without audio. See [PRONUNCIATION.md](PRONUNCIATION.md) for setup and the physical
+> airplane-mode checklist. Offline voice availability/quality is not established
+> by mocked tests.
+
 > **Главная → Статистика и повторения** shows actual learning categories, due
 > queues, finalized results by mode/grading source, UTC activity and difficult
 > words. All training setups now offer NEW/DUE/MIXED with the pinned web scheduler.
@@ -26,7 +33,7 @@ flashcards support both languages/mixed direction, hidden answers, self-ratings,
 durable recovery and saved summaries. Bidirectional typing adds balanced unique
 queues, exact grading, accepted-answer feedback and saved mistake review. Sentence management and Russian→Bulgarian practice add optional metadata,
 approved alternatives, multiline answers and explicitly labelled self-assessment
-for non-matching variants. Review scheduling and real-record statistics are implemented; pronunciation remains a future stage; no learning
+for non-matching variants. Review scheduling and real-record statistics are implemented; optional local Bulgarian pronunciation is implemented; no learning
 statistics or sample records are fabricated.
 
 The initial repository at `d18ad8814b391c60b0e1ec2099a5c2251978b2c6` contained

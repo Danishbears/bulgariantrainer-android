@@ -1,3 +1,8 @@
+> **Pronunciation increment:** Android TextToSpeech now follows the pinned web
+> visibility helpers, with local Bulgarian-only discovery, optional audio,
+> lifecycle cancellation and fake-adapter tests. See PRONUNCIATION.md and
+> BUILD_REPORT.md for platform differences and actual verification.
+
 # Web reference audit and Android plan
 
 ## Current Android review scheduling and statistics increment
@@ -436,7 +441,8 @@ of 5 finalized =60.0%; a pending answer excluded),
   not guaranteed by the reference. Android must check Bulgarian `TextToSpeech`
   voice availability and `isNetworkConnectionRequired == false`; show a missing
   local voice state if unavailable. Do not silently add cloud speech or a fallback
-  language. This Android functionality is a future stage, not present now.
+  language. This Android functionality is implemented; see PRONUNCIATION.md for engine checks,
+  differences and remaining physical-device validation.
 
 Existing `src/test/js/pronunciation.test.mjs`: nine tests cover saved Bulgarian
 voice selection, delayed discovery/retry, missing/unsupported states, empty text,
@@ -536,11 +542,12 @@ not added or executed. Preserve intended behavior; do not silently replicate the
    then derived dashboard using exact interval/category/UTC/rounding rules. Validate
    clock boundaries, due/mastered transition, direction isolation, replay safety,
    7/30-day series, null accuracy and archive behavior with deterministic fixtures.
-7. **Offline pronunciation and device acceptance.** Local Bulgarian TTS only,
+7. **Offline pronunciation implemented; device acceptance remains.** Local Bulgarian TTS only,
    normal/slow/stop, voice discovery/errors and visibility rules. Verify airplane
    mode, missing-voice behavior, real device audio, Cyrillic input, TalkBack,
    font scaling, dark mode, narrow screens and process recovery. Build/install a
-   debug APK before describing these features as available.
+   debug APK; actual CI evidence is in BUILD_REPORT.md. Offline voice availability
+   and quality still require the physical checks in PRONUNCIATION.md.
 
 ## Verification status
 

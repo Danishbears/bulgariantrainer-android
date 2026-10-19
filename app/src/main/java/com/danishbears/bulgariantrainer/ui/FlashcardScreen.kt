@@ -37,6 +37,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.danishbears.bulgariantrainer.R
+import com.danishbears.bulgariantrainer.pronunciation.PronunciationPolicy
 import com.danishbears.bulgariantrainer.flashcards.*
 
 @Composable
@@ -49,6 +50,7 @@ fun FlashcardScreen(model: FlashcardViewModel, onDictionary: () -> Unit) {
     val direction by model.direction.collectAsStateWithLifecycle()
     var endConfirmation by rememberSaveable { mutableStateOf(false) }
     val session = state.session
+    PronunciationBoundary("FlashcardScreen.kt:${session?.id}:${session?.question?.id}")
     val scroll = rememberLazyListState()
     LaunchedEffect(session?.id, session?.question?.id, session?.status) { scroll.scrollToItem(0) }
     val enabled = !state.busy && !state.loading && state.pending == null
@@ -66,6 +68,7 @@ fun FlashcardScreen(model: FlashcardViewModel, onDictionary: () -> Unit) {
             item(key = "title") {
                 Text(stringResource(R.string.flashcards), style = MaterialTheme.typography.headlineMedium)
                 Text(stringResource(R.string.flash_description), modifier = Modifier.padding(top = 8.dp))
+                PronunciationSettings()
             }
             state.error?.let { error -> item(key = "error") { FailureMessage(flashcardErrorLabel(error), model::retry) } }
             if (state.pending != null && !state.busy) item(key = "pending") {
@@ -120,6 +123,7 @@ fun FlashcardScreen(model: FlashcardViewModel, onDictionary: () -> Unit) {
                                     Text(flashcardDirectionLabel(if (question.direction == CardDirection.BG_TO_RU) FlashcardDirection.BG_TO_RU else FlashcardDirection.RU_TO_BG),
                                         style = MaterialTheme.typography.labelLarge)
                                     question.prompt.forEach { Text(it, style = MaterialTheme.typography.headlineSmall) }
+                                    PronunciationPlayback(PronunciationPolicy.flashcard(session.id, question))
                                     if (question.revealed) {
                                         Text(stringResource(R.string.flash_answer), style = MaterialTheme.typography.labelLarge,
                                             color = MaterialTheme.colorScheme.primary)

@@ -1,3 +1,37 @@
+# Bulgarian pronunciation increment — 2026-10-19
+
+Target `codex/android-foundation-parity` started clean at
+`a9a197278b92f24378ae3a729cb9cd2ec498fece`. Existing Android work, Room v6 schemas,
+applicationId and toolchain preserved. Read-only web checkout remains `master` at
+`de0a3e883d51561123ca54b7d5dd2e53757baf0a`; actual pronunciation.js, its four
+screen call sites and JS tests inspected. Both repositories are accessible through
+the GitHub integration. Existing checkouts reused; no web files modified.
+No Android/ancestor AGENTS.md exists; reference AGENTS.md read.
+
+Added asynchronous Activity-owned Bulgarian-only TTS, installed/local voice
+checks, normal/slow/stop, explicit setup/error/retry, protected visibility and
+callback/lifecycle ownership. No changes to learning writes, schema, networking
+permissions, dependencies, signing or build versions. PRONUNCIATION.md records
+source mapping, platform differences and physical-device airplane-mode tests.
+
+Local executed checks: `git diff --check`, Python XML/duplicate-string/resource
+checks (327 resolved references). Static @Test count 223 is not a test pass.
+Read-only web `node src/test/js/pronunciation.test.mjs` on Node v24.19.0 executed
+**nine named tests, all passed**. `node --test src/test/js/pronunciation.test.mjs`
+also exited 0 but reported one file-level test; it is not counted as nine named
+cases. A combined inspection command tried reading WEB_PARITY.md relative to the
+web checkout (file absent there); the actual Android file was inspected separately.
+Local paths: java available; no javac executable, gradle, sdkmanager or adb.
+The Java compiler module remains available for the existing parity harness.
+No local Android build claimed, and previously socket-denied shell networking
+was not retried. Cloud HTTP policy is enforced/unrestricted without configured
+credentials; this is distinct from Android SDK/TCP access. Hosted CI remains the
+Android build environment (JDK17/SDK35).
+
+Hosted results will be recorded after actual execution. Faked-engine tests cannot
+verify installed offline voice availability, audio output or pronunciation quality.
+No physical device/emulator, airplane-mode or OEM settings check has been executed.
+
 # Review scheduling and statistics increment — 2026-10-19
 
 Target branch `codex/android-foundation-parity` started clean at

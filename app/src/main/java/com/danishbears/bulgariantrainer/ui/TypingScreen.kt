@@ -24,6 +24,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.danishbears.bulgariantrainer.R
+import com.danishbears.bulgariantrainer.pronunciation.PronunciationPolicy
 import com.danishbears.bulgariantrainer.typing.*
 
 @Composable
@@ -34,6 +35,7 @@ fun TypingScreen(model: TypingViewModel, onDictionary: () -> Unit) {
     val available by model.availability.collectAsStateWithLifecycle()
     val input by model.input.collectAsStateWithLifecycle()
     val session = state.session
+    PronunciationBoundary("TypingScreen.kt:${session?.id}:${session?.question?.id}")
     val enabled = !state.busy && !state.loading && state.pending == null
     var confirmEnd by rememberSaveable { mutableStateOf(false) }
     val scroll = rememberLazyListState()
@@ -49,6 +51,7 @@ fun TypingScreen(model: TypingViewModel, onDictionary: () -> Unit) {
             item(key = "title") {
                 Text(stringResource(R.string.typing), style = MaterialTheme.typography.headlineMedium)
                 Text(stringResource(R.string.typing_description), Modifier.padding(top = 8.dp))
+                PronunciationSettings()
             }
             state.error?.let { error -> item(key = "error") { FailureMessage(typingErrorLabel(error), model::retry) } }
             if (state.pending != null && !state.busy) item(key = "pending") {
@@ -99,6 +102,7 @@ fun TypingScreen(model: TypingViewModel, onDictionary: () -> Unit) {
                             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                                 Text(typingDirectionLabel(question.direction), style = MaterialTheme.typography.labelLarge)
                                 question.prompt.forEach { Text(it, style = MaterialTheme.typography.headlineSmall) }
+                                PronunciationPlayback(PronunciationPolicy.typing(session.id, question))
                                 if (feedback == null) {
                                     val valid = input.length <= 4000 && input.isNotBlank()
                                     OutlinedTextField(value = input, onValueChange = model::setInput, enabled = enabled, singleLine = true,

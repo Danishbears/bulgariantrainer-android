@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import com.danishbears.bulgariantrainer.ui.TrainerApp
+import com.danishbears.bulgariantrainer.ui.PronunciationHost
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,12 +20,14 @@ class MainActivity : ComponentActivity() {
             MaterialTheme(
                 colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme(),
             ) {
-                TrainerApp(repository, (application as BulgarianTrainerApplication).transfer,
-                    (application as BulgarianTrainerApplication).flashcards,
-                    (application as BulgarianTrainerApplication).typing,
-                    (application as BulgarianTrainerApplication).sentences,
-                    (application as BulgarianTrainerApplication).sentencePractice,
-                    (application as BulgarianTrainerApplication).statistics)
+                PronunciationHost {
+                    TrainerApp(repository, (application as BulgarianTrainerApplication).transfer,
+                        (application as BulgarianTrainerApplication).flashcards,
+                        (application as BulgarianTrainerApplication).typing,
+                        (application as BulgarianTrainerApplication).sentences,
+                        (application as BulgarianTrainerApplication).sentencePractice,
+                        (application as BulgarianTrainerApplication).statistics)
+                }
             }
         }
     }

@@ -52,6 +52,7 @@ fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferReposi
     })
     val current by controller.currentBackStackEntryAsState()
     val route = current?.destination?.route ?: "home"
+    PronunciationBoundary(route)
     val snackbar = remember { SnackbarHostState() }
     val notice by model.notice.collectAsStateWithLifecycle()
     val message = notice?.let { stringResource(when (it.kind) {

@@ -41,11 +41,13 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.danishbears.bulgariantrainer.R
+import com.danishbears.bulgariantrainer.pronunciation.PronunciationPolicy
 import com.danishbears.bulgariantrainer.data.VocabularyWord
 
 @Composable
 fun VocabularyScreen(model: VocabularyViewModel, onAdd: () -> Unit, onEdit: (Long) -> Unit) {
     val controls by model.controls.collectAsStateWithLifecycle()
+    PronunciationBoundary("vocabulary:${controls.query}:${controls.archived}")
     val busy by model.busy.collectAsStateWithLifecycle()
     val owner = LocalLifecycleOwner.current
     val lifecyclePages = remember(model, owner) { model.words.flowWithLifecycle(owner.lifecycle) }
@@ -54,6 +56,7 @@ fun VocabularyScreen(model: VocabularyViewModel, onAdd: () -> Unit, onEdit: (Lon
     LaunchedEffect(controls.query, controls.archived) { scroll.scrollToItem(0) }
 
     Column(Modifier.fillMaxSize()) {
+        PronunciationSettings()
         Column(Modifier.padding(horizontal = 20.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween) {
@@ -130,6 +133,7 @@ private fun WordCard(word: VocabularyWord, busy: Boolean, onEdit: () -> Unit, on
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(word.bulgarianText, style = MaterialTheme.typography.titleLarge, maxLines = 3, overflow = TextOverflow.Ellipsis)
+            PronunciationPlayback(PronunciationPolicy.vocabulary(word.id, word.bulgarianText))
             val metadata = listOfNotNull(word.partOfSpeech, word.grammaticalGender).joinToString(" · ")
             if (metadata.isNotEmpty()) Text(metadata, style = MaterialTheme.typography.labelLarge,
                 maxLines = 2, overflow = TextOverflow.Ellipsis, color = MaterialTheme.colorScheme.onSurfaceVariant)

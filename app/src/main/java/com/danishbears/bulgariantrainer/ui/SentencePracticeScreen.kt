@@ -18,6 +18,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.danishbears.bulgariantrainer.R
+import com.danishbears.bulgariantrainer.pronunciation.PronunciationPolicy
 import com.danishbears.bulgariantrainer.sentences.*
 
 @Composable
@@ -29,6 +30,7 @@ fun SentencePracticeScreen(model: SentencePracticeViewModel, onCollection: () ->
     val input by model.input.collectAsStateWithLifecycle()
     val size by model.size.collectAsStateWithLifecycle()
     val session = state.session
+    PronunciationBoundary("sentence:${session?.id}:${session?.question?.id}")
     val enabled = !state.busy && !state.loading && state.pending == null
     var end by rememberSaveable { mutableStateOf(false) }
     val scroll = rememberLazyListState()
@@ -43,6 +45,7 @@ fun SentencePracticeScreen(model: SentencePracticeViewModel, onCollection: () ->
             item(key = "title") {
                 Text(stringResource(R.string.sentence_practice), style = MaterialTheme.typography.headlineMedium)
                 Text(stringResource(R.string.sentence_practice_hint), Modifier.padding(top = 8.dp))
+                PronunciationSettings()
                 TextButton(onClick = onCollection, enabled = !state.busy) { Text(stringResource(R.string.sentences)) }
             }
             state.error?.let { item(key = "error") { FailureMessage(sentenceErrorLabel(it), model::retry) } }
@@ -97,7 +100,10 @@ fun SentencePracticeScreen(model: SentencePracticeViewModel, onCollection: () ->
                                         Text(sentenceFeedbackLabel(feedback), style = MaterialTheme.typography.titleLarge)
                                         Text(stringResource(R.string.typing_submitted, feedback.submitted))
                                         Text(stringResource(R.string.sentence_approved), style = MaterialTheme.typography.titleMedium)
-                                        feedback.accepted.forEach { Text(it) }
+                                        PronunciationPolicy.sentence(session.id, question).forEach { target ->
+                                            Text(target.text)
+                                            PronunciationPlayback(target)
+                                        }
                                         feedback.explanation?.let { Text(stringResource(R.string.sentence_explanation_text, it)) }
                                     }
                                     if (feedback.needsSelfAssessment) {
