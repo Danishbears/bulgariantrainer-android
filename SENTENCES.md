@@ -159,7 +159,13 @@ replays, stale/closed actions, early ending, reopened database and fresh-ViewMod
 recovery, lost final responses, rollback, constraints, and isolation from word modes.
 Populated exported-v4 and empty-with-deleted-ID migration fixtures check data and
 sequence preservation. Existing v1/v2/v3 migrations now upgrade through v5.
-Actual executed commands, schema identity and APK links are in BUILD_REPORT.md.
+[Hosted run 39302954478](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39302954478)
+at `f61ad8c6a17450ba9e76320f895e78ed2b98ae7c` passed **165 tests**,
+`assembleDebug`, `lintDebug` and committed Room schemas **1–5**.
+[Download the APK ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39302954478/artifacts/12212419200)
+and extract `app-debug.apk`. ANDROID_BUILDS.md explains installation and debug-key
+upgrade limitations. Detailed commands, schema identity and artifact metadata are
+in BUILD_REPORT.md.
 Static checks or configured workflows are not claims of passing builds.
 
 Device/emulator checks remain: install/upgrade with a compatible debug key, airplane

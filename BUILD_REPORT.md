@@ -56,10 +56,62 @@ failure with WRITE_FAILED, hiding the new missing-difficulty explanation. The
 follow-up preserves that specific error and adds a SAF/ViewModel regression;
 other write failures retain existing handling. A normalization fixture now includes
 Bulgarian й so NFD submissions actually exercise canonical equivalence. Static test
-count becomes **165**; actual follow-up results will be recorded when executed.
+count becomes **165**; executed follow-up results are recorded below.
 
-Device installation, real OS process-kill/recovery, keyboard/IME and accessibility
-checks remain unperformed. Earlier milestone evidence follows.
+### Final hosted verification: successful
+
+Tested code: **`f61ad8c6a17450ba9e76320f895e78ed2b98ae7c`**, branch
+`codex/android-foundation-parity`.
+[Run 39302954478](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39302954478),
+job `118232618011`, completed **successfully** on 2026-10-19. Hosted runner used
+Temurin JDK 17.0.20+1, committed Gradle 8.11.1, AGP 8.9.2, Android platform 35
+and Build Tools 35.0.0. Separate commands/checks actually executed:
+
+| Command/check | Actual result |
+| --- | --- |
+| `./gradlew --no-daemon --stacktrace --console=plain testDebugUnitTest` | BUILD SUCCESSFUL in 3m 5s; **165 tests**, zero failures/errors/skipped |
+| `./gradlew --no-daemon --stacktrace --console=plain assembleDebug` | BUILD SUCCESSFUL in 1m 4s; debug APK packaged/uploaded |
+| `./gradlew --no-daemon --stacktrace --console=plain lintDebug` | BUILD SUCCESSFUL in 1m 9s; report uploaded |
+| Committed Room schema contracts | Versions **1, 2, 3, 4 and 5 verified** against compiler exports |
+
+All 128 previous tests passed. The 37 new cases comprise 24 sentence repository
+checks, ten sentence management/practice ViewModel checks, two real exported-v4
+migration checks and one SAF/ViewModel export-message regression. Recovery tests
+close file databases and create fresh ViewModels with empty SavedStateHandle;
+they do not claim physical Android OS process termination. The subsequent commit
+only records documentation and does not change the tested application/workflow
+or represent another application build.
+
+Artifacts from the successful run (GitHub login/access may be required):
+
+- [bulgariantrainer-debug ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39302954478/artifacts/12212419200):
+  10,715,264 bytes; extract `app-debug.apk` before installation.
+- [android-storage-test-reports ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39302954478/artifacts/12210704611):
+  106,430 bytes; JUnit XML/HTML, lint reports and schema contracts.
+
+Both expire 2026-11-02 under the existing 14-day policy. GitHub-reported SHA-256
+of uploaded **ZIPs** (not the extracted APK):
+
+```text
+APK ZIP:     5312a962eee2d144978edfba424e927cb0aeb693937f9e9c62edbb0c222a996f
+Reports ZIP: 05357e2245c3a090dff5dba0cf69ac6576236b1faa82664e14fcd6bd8cb0f4e4
+```
+
+GitHub integration access and local checkouts work for both repositories. The
+web checkout remains clean at the pinned reference. Shell networking was previously
+blocked and not retried; missing local compiler/SDK tools remain independent of
+GitHub authorization. All successful Android commands above ran on hosted Actions.
+No local SDK paths, credentials, APK/build/private database outputs are committed;
+Linux wrapper mode stays 100755. Existing import/export/flashcard/typing work and
+application identity are preserved. Scheduling and word associations remain deferred;
+sentence practice never awards vocabulary mastery. No AI or generation is added.
+
+Remaining device/emulator checks: install/upgrade with a compatible debug key,
+airplane-mode practice, real OS process-kill/recovery around submit/self-rating/next,
+multiline keyboard/IME resizing, rotation/navigation, rapid touch, large text and
+TalkBack. See ANDROID_BUILDS.md for installation and cloud debug-key differences;
+new builds are not guaranteed to update older debug APKs in place. No release
+signing is configured. Earlier milestone evidence follows.
 
 # Offline typing increment — 2026-10-19
 
