@@ -187,6 +187,12 @@ the existing exported-v1 test now validates the full 1→2→3 upgrade chain.
 
 Actual command results, tested commit, schema hashes and APK links are recorded
 in BUILD_REPORT.md. Configuration/static source inspection is not a build pass.
+The final [hosted run](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39274478038)
+at `7e0172d12ff1b95b05b174d19bd11bdd7a685249` passed all 96 JVM tests,
+`assembleDebug`, `lintDebug` and committed Room schema checks for versions 1–3.
+Its [APK artifact](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39274478038/artifacts/12198030314)
+is a ZIP containing `app-debug.apk`; installation instructions and debug-key
+upgrade limitations are in ANDROID_BUILDS.md.
 
 Still requires a device/emulator: install/upgrade with a compatible debug key,
 airplane-mode training, real process termination/relaunch while hidden/revealed/

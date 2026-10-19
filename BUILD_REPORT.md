@@ -84,7 +84,47 @@ comparison confirms all five v2 table definitions remain exactly unchanged; only
 four learning tables are added. The guard remains strict and a follow-up run
 checks generated v1/v2/v3 exports against the committed contracts.
 
-Later executed schema/build verification is recorded below when available.
+### Final hosted verification: successful
+
+Tested code: `7e0172d12ff1b95b05b174d19bd11bdd7a685249`.
+[Run 39274478038](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39274478038),
+job `118135077732`, completed **successfully** on 2026-10-19. The runner used
+Temurin JDK 17.0.20+1, the existing Gradle 8.11.1 wrapper, Android platform 35 and
+build-tools 35.0.0. The following commands/checks actually executed:
+
+| Actual separate command/check | Result |
+| --- | --- |
+| `./gradlew --no-daemon --stacktrace --console=plain testDebugUnitTest` | BUILD SUCCESSFUL in 2m 58s; **96 tests**, zero failures/errors/skipped |
+| `./gradlew --no-daemon --stacktrace --console=plain assembleDebug` | BUILD SUCCESSFUL in 1m 9s; debug APK packaged and uploaded |
+| `./gradlew --no-daemon --stacktrace --console=plain lintDebug` | BUILD SUCCESSFUL in 1m; report uploaded |
+| Exported Room schema contract | Versions **1, 2 and 3 verified** against committed JSON |
+
+The 96 tests include 28 new flashcard cases: 21 repository parity/persistence
+tests, six ViewModel tests and one populated-v2 migration test. All 68 existing
+vocabulary/import/export/editor tests also passed, including the updated
+populated-v1→latest migration test. The subsequent documentation-only commit
+records these results; it does not represent another application build.
+
+Artifacts from that successful run (GitHub login/access may be required):
+
+- [bulgariantrainer-debug ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39274478038/artifacts/12198030314):
+  10,486,221 bytes; extract `app-debug.apk` before installation.
+- [android-storage-test-reports ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39274478038/artifacts/12197616131):
+  78,002 bytes; JUnit XML/HTML, lint reports and schema contracts.
+
+Both artifacts expire on 2026-11-02 under the existing 14-day policy.
+GitHub-reported SHA-256 digests of the uploaded **ZIPs** (not extracted APKs):
+
+```text
+APK ZIP:     f258ff2eb6651e20be10cab706fc896436ddfc70eb9000733a3d18cf7b95f2ef
+Reports ZIP: 7aadad5574c153acb7204aec5bc0cf894d27da80785a7cd136c9702192c77a3d
+```
+
+No APK/build output or private database was committed. Local Android build
+capability remains unavailable in this workspace; the successful execution above
+was on GitHub Actions. The read-only web checkout remains unchanged at its pinned
+reference commit. Scheduling is intentionally deferred, not a build blocker.
+
 Real device/emulator checks remain unperformed; FLASHCARDS.md lists process-kill,
 airplane mode, reveal visibility/accessibility, rapid taps, rotation and install/
 upgrade acceptance. File reopen/fresh-ViewModel tests are real persistence evidence
