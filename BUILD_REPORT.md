@@ -36,7 +36,49 @@ session-status cancellation and moves dictionary voice settings into a lazy-list
 header so expanded system guidance can scroll on a small screen. Its own full
 CI execution is required before final build claims.
 
-Final hosted results will be recorded after actual execution. Faked-engine tests cannot
+The initial run was subsequently **cancelled** by workflow concurrency after the
+follow-up commit. Its logs show 223 tests with zero failures/errors/skipped and
+`assembleDebug` success in 39s. Lint printed BUILD SUCCESSFUL but the step/run was
+marked cancelled; the initial run is not reported as an overall successful run.
+
+### Final successful hosted execution
+
+Tested application code **`36b7649657daa635099d644ed352f6de62e67574`**,
+[run 39315189594](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39315189594),
+job `118274828184`. GitHub API confirmed `status=completed`,
+`conclusion=success` and this exact `head_sha`.
+
+| Actual command/check | Final result |
+| --- | --- |
+| `python3 parity/verify_web_parity.py` | 21 pinned Java scheduler histories and 20 literal web statistics assertions verified |
+| `./gradlew --no-daemon --stacktrace --console=plain testDebugUnitTest` | BUILD SUCCESSFUL in 3m 16s; **223 tests**, zero failures/errors/skipped |
+| `./gradlew --no-daemon --stacktrace --console=plain assembleDebug` | BUILD SUCCESSFUL in 1m 3s |
+| `./gradlew --no-daemon --stacktrace --console=plain lintDebug` | BUILD SUCCESSFUL in 1m 16s |
+| Schema contract | Committed Room schemas **1–6** match compiler exports; no schema change |
+
+All 192 prior tests and 31 new cases passed: 23 fake-adapter controller cases,
+six web visibility-policy cases and two real Room learning-integration cases.
+Coverage includes async failure/timeout/retry, local voice selection, missing and
+network-only voices, cancellation/replacement/rates, stale callbacks, disposal,
+approved references, hidden targets, no-voice training and no playback grading.
+The existing Java parity guard remains separate from the local nine JS cases.
+
+[Download APK ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39315189594/artifacts/12218061473):
+artifact `12218061473`, **10,877,048 bytes**, expires `2026-11-02T20:03:04Z`.
+Extract `app-debug.apk`; ANDROID_BUILDS.md explains installation and cloud debug-key
+incompatibility. GitHub's ZIP digest is
+`sha256:8edee8e555e6dff4b264182d1b92110c1c0411565fe324eb53235bf4d7844355`,
+not a separately measured extracted APK checksum. No local APK download/install
+was performed.
+
+[JUnit/HTML/lint/schema reports](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39315189594/artifacts/12218201214):
+artifact `12218201214`, 129,624 bytes, expires `2026-11-02T20:03:03Z`.
+A documentation-only `[skip ci]` follow-up records this evidence; application,
+workflow and build files remain identical to the tested commit. Existing PR #1
+is updated without merging main. No APK, build output, SDK path/file, credentials
+or private database is committed.
+
+ Faked-engine tests cannot
 verify installed offline voice availability, audio output or pronunciation quality.
 No physical device/emulator, airplane-mode or OEM settings check has been executed.
 

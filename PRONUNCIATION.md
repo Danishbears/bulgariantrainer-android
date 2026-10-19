@@ -121,3 +121,16 @@ TTS service; validate the chosen engine physically in airplane mode.
 Record pass/fail and the exact build SHA for these checks. No emulator or physical
 check above has been executed in this cloud task. Actual JVM/build results and
 artifact links are recorded in BUILD_REPORT.md.
+
+## Executed cloud checks
+
+[Successful run 39315189594](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39315189594)
+on `36b7649657daa635099d644ed352f6de62e67574`: **223 JVM tests** (31 new TTS
+cases), `assembleDebug`, `lintDebug`, pinned scheduler/statistics guard and Room
+schemas 1–6 passed. The actual web JS file separately executed nine named tests
+locally. These are behavioral/code checks, not physical speech validation.
+
+[APK ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39315189594/artifacts/12218061473)
+and [reports](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39315189594/artifacts/12218201214)
+expire 2026-11-02; extract `app-debug.apk`. Detailed commands, durations and the
+superseded initial run are in BUILD_REPORT.md.
