@@ -50,7 +50,7 @@ fun FlashcardScreen(model: FlashcardViewModel, onDictionary: () -> Unit) {
     val direction by model.direction.collectAsStateWithLifecycle()
     var endConfirmation by rememberSaveable { mutableStateOf(false) }
     val session = state.session
-    PronunciationBoundary("FlashcardScreen.kt:${session?.id}:${session?.question?.id}")
+    PronunciationBoundary("FlashcardScreen.kt:${session?.id}:${session?.status}:${session?.question?.id}")
     val scroll = rememberLazyListState()
     LaunchedEffect(session?.id, session?.question?.id, session?.status) { scroll.scrollToItem(0) }
     val enabled = !state.busy && !state.loading && state.pending == null

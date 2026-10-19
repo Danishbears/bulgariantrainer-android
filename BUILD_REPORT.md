@@ -28,7 +28,15 @@ was not retried. Cloud HTTP policy is enforced/unrestricted without configured
 credentials; this is distinct from Android SDK/TCP access. Hosted CI remains the
 Android build environment (JDK17/SDK35).
 
-Hosted results will be recorded after actual execution. Faked-engine tests cannot
+Initial implementation `6265fa37d9b82c6b8e166030d764a4755e5a8381` started
+[run 39314597721](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39314597721),
+job `118272677840`. Its fixture guard and JVM test steps completed successfully;
+assembly was still in progress when a follow-up was prepared. The follow-up adds
+session-status cancellation and moves dictionary voice settings into a lazy-list
+header so expanded system guidance can scroll on a small screen. Its own full
+CI execution is required before final build claims.
+
+Final hosted results will be recorded after actual execution. Faked-engine tests cannot
 verify installed offline voice availability, audio output or pronunciation quality.
 No physical device/emulator, airplane-mode or OEM settings check has been executed.
 

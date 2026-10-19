@@ -56,7 +56,6 @@ fun VocabularyScreen(model: VocabularyViewModel, onAdd: () -> Unit, onEdit: (Lon
     LaunchedEffect(controls.query, controls.archived) { scroll.scrollToItem(0) }
 
     Column(Modifier.fillMaxSize()) {
-        PronunciationSettings()
         Column(Modifier.padding(horizontal = 20.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween) {
@@ -81,6 +80,7 @@ fun VocabularyScreen(model: VocabularyViewModel, onAdd: () -> Unit, onEdit: (Lon
         }
         LazyColumn(state = scroll, modifier = Modifier.weight(1f), contentPadding = PaddingValues(20.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            item(key = "pronunciation-settings") { PronunciationSettings() }
             if (!controls.queryTooLong) {
                 when {
                     words.loadState.refresh is LoadState.Loading -> item(key = "loading") { LoadingRow() }

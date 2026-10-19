@@ -64,7 +64,7 @@ explicit external system flow and may need Internet.
 Normal rate is `1.0`; slow rate is `0.5`, as in the web implementation. Each tap
 stops the old utterance and uses `QUEUE_FLUSH`. Cancellation failure prevents a
 new utterance. Utterance IDs/generations ignore stale start/end/error callbacks.
-Stop, question/session/route change, control disposal (including paged rows),
+Stop, question/session/status/route change, control disposal (including paged rows),
 Activity backgrounding and disposal cancel speech; disposal shuts down the engine.
 Changing a control's text stops its old playback. Disposing an unrelated old
 control cannot stop the current owner's utterance. No speech is restored or
@@ -96,7 +96,8 @@ TTS service; validate the chosen engine physically in airplane mode.
    can remain enabled in airplane mode). Force-stop/reopen the trainer to avoid
    relying on an already running utterance. Do not force-stop/uninstall voice data.
 4. With your own content, play `котка`, `къща`, `добър ден` and a full Bulgarian
-   sentence. Check both rates audibly. Normal/slow should use Bulgarian; report
+   sentence that has not been played while connected, to reduce reliance on cached
+   synthesis. Check both rates audibly. Normal/slow should use Bulgarian; report
    the device/Android/engine/voice versions and perceived pronunciation separately.
 5. Rapidly tap normal/slow; playback must replace rather than accumulate. Stop;
    move to another question; switch tabs; background/lock the device; rotate;

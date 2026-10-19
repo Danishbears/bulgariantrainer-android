@@ -35,7 +35,7 @@ fun TypingScreen(model: TypingViewModel, onDictionary: () -> Unit) {
     val available by model.availability.collectAsStateWithLifecycle()
     val input by model.input.collectAsStateWithLifecycle()
     val session = state.session
-    PronunciationBoundary("TypingScreen.kt:${session?.id}:${session?.question?.id}")
+    PronunciationBoundary("TypingScreen.kt:${session?.id}:${session?.status}:${session?.question?.id}")
     val enabled = !state.busy && !state.loading && state.pending == null
     var confirmEnd by rememberSaveable { mutableStateOf(false) }
     val scroll = rememberLazyListState()

@@ -30,7 +30,7 @@ fun SentencePracticeScreen(model: SentencePracticeViewModel, onCollection: () ->
     val input by model.input.collectAsStateWithLifecycle()
     val size by model.size.collectAsStateWithLifecycle()
     val session = state.session
-    PronunciationBoundary("sentence:${session?.id}:${session?.question?.id}")
+    PronunciationBoundary("sentence:${session?.id}:${session?.status}:${session?.question?.id}")
     val enabled = !state.busy && !state.loading && state.pending == null
     var end by rememberSaveable { mutableStateOf(false) }
     val scroll = rememberLazyListState()
