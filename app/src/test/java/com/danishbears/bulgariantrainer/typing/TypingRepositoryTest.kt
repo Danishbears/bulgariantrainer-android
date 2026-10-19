@@ -39,7 +39,7 @@ class TypingRepositoryTest {
     private val clock = Clock.fixed(at, ZoneOffset.UTC)
     @Before fun setup() { context = ApplicationProvider.getApplicationContext(); open() }
     private fun open() {
-        db = Room.databaseBuilder(context, TrainerDatabase::class.java, filename).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4).build()
+        db = Room.databaseBuilder(context, TrainerDatabase::class.java, filename).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5).build()
         repository = TypingRepository(db, clock, Random(5)); words = VocabularyRepository(db, clock)
     }
     @After fun teardown() { db.close(); context.deleteDatabase(filename) }

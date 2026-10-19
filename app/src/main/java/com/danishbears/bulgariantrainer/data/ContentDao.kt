@@ -14,6 +14,8 @@ internal interface ContentDao {
     suspend fun sentenceKeys(keys: List<String>): List<SentenceKey>
     @Query("SELECT id FROM sentences WHERE normalized_russian = :key")
     suspend fun sentenceId(key: String): Long?
+    @Query("SELECT COUNT(*) FROM sentences WHERE difficulty IS NULL AND (:includeArchived OR archived = 0)")
+    suspend fun missingDifficulty(includeArchived: Boolean): Long
     @Query("SELECT COUNT(*) FROM sentences")
     fun observeSentenceCount(): Flow<Long>
     @Insert suspend fun insertSentence(sentence: SentenceEntity): Long

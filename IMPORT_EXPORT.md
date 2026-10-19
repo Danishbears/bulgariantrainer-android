@@ -1,3 +1,8 @@
+> Manual sentences may now omit difficulty. The web CSV importer still requires
+> 1–5: sentence export checks this before writing and asks users to set missing
+> levels in the editor. No level is fabricated. Exports remain content-only and
+> exclude every training session/progress record. See [SENTENCES.md](SENTENCES.md).
+
 # Content import and export
 
 ## Source contract and scope

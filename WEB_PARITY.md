@@ -1,5 +1,21 @@
 # Web reference audit and Android plan
 
+## Current Android sentence increment
+
+Building on `3257b19570aa89b85e9e147a5794ced4bc72d63d`, Android adds sentence
+management and Russian→Bulgarian practice: approved alternatives, optional fields,
+multiline answers, exact matches or explicitly labelled self-assessment, durable
+order/submissions/ratings/status, recovery and full summary. Room v5 retains
+existing data while allowing optional difficulty and adds separate sentence
+practice tables. One pending answer is finalized in place, never counted twice;
+no vocabulary/recognition/typing progress is awarded by sentence practice.
+
+[SENTENCES.md](SENTENCES.md) maps actual web source/tests, representative cases,
+non-destructive migration, CSV difficulty preflight and deliberate UI defect fixes.
+Scheduling, vocabulary links and pronunciation remain deferred; no AI or generation
+is added. Existing features and read-only reference commit are preserved.
+Executed verification belongs in BUILD_REPORT.md.
+
 ## Current Android typing increment
 
 Building on `e8174ec0d667b27e65c87b5db0027011e01ca402`, Android adds offline typing:
@@ -497,7 +513,7 @@ not added or executed. Preserve intended behavior; do not silently replicate the
    eligibility/priorities remain deferred. Original stage proposal: bidirectional
    selection, exact normalized matching, original answers, feedback acknowledgement,
    shorter-session consent, snapshots and replay. Test constrained DUE/NEW queues.
-5. **Sentence practice.** Approved sentence management/CSV, alternatives/explanations,
+5. **Sentence practice — implemented.** See SENTENCES.md. Approved sentence management/CSV, alternatives/explanations,
    automatic exact matches and pending self-assessment. Resolve link-snapshot policy;
    verify partial/incorrect grading, pending early exit and isolated usage/progress.
 6. **Scheduling and statistics.** Implement shared scheduler as modes are enabled,

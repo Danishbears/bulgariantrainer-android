@@ -21,7 +21,9 @@ class MainActivity : ComponentActivity() {
             ) {
                 TrainerApp(repository, (application as BulgarianTrainerApplication).transfer,
                     (application as BulgarianTrainerApplication).flashcards,
-                    (application as BulgarianTrainerApplication).typing)
+                    (application as BulgarianTrainerApplication).typing,
+                    (application as BulgarianTrainerApplication).sentences,
+                    (application as BulgarianTrainerApplication).sentencePractice)
             }
         }
     }

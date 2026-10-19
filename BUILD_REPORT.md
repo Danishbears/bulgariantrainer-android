@@ -1,3 +1,36 @@
+# Offline sentence increment — 2026-10-19
+
+Target `codex/android-foundation-parity` started clean at
+`3257b19570aa89b85e9e147a5794ced4bc72d63d`, matching GitHub integration.
+Read-only reference remains `master` at
+`de0a3e883d51561123ca54b7d5dd2e53757baf0a`; both existing checkouts were reused.
+No target/ancestor/nested AGENTS.md was found; reference instructions and actual
+sentence management/practice source, DTOs, migrations, browser UI and tests were
+read. Existing Kotlin/Compose/Room, applicationId and toolchain are preserved.
+
+Implemented sentence CRUD/archive/paging, optional metadata, approved alternatives,
+multiline RU→BG practice, exact automatic matches, explicit pending self-assessment,
+durable feedback/progress/summary/recovery and independent sentence counters.
+No AI, generation, backend, startup import, vocabulary mastery or schedule added.
+SENTENCES.md maps rules, representative cases, discrepancies and the v4→v5 migration.
+
+Local commands/checks actually executed: `git diff --check`, `sh -n gradlew`,
+Python XML/resource checks (268 resolved Kotlin string references) and static count
+of 164 test methods (not a test execution). Python SQLite executed migration 4→5
+with foreign keys enabled against exported v4 SQL: sentence/alternative IDs,
+values and sequence high-water marks retained; nullable difficulty works. All new
+migration fixture SQL statements were also checked against the actual v4 schema.
+`java -version`: runtime 21.0.12.1. `shutil.which` finds no javac/gradle/sdkmanager/adb.
+No local Android build is claimed. GitHub integration access was reconfirmed for
+both repositories. Shell networking was previously blocked with socket operation
+not permitted and was not repeatedly retried. Current cloud HTTP policy reports
+enforced/unrestricted with no credentials; it is distinct from TCP/shell build
+capability and the missing local tools.
+
+Hosted tests/build/lint/schema checks and artifacts will be recorded after actual
+execution. Device installation, real OS process-kill/recovery, keyboard/IME and
+accessibility checks remain unperformed. Earlier milestone evidence follows.
+
 # Offline typing increment — 2026-10-19
 
 Target branch `codex/android-foundation-parity` started clean at

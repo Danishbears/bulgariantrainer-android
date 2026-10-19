@@ -1,3 +1,9 @@
+> Current schema is **v5**. Migration 4→5 preserves sentence/alternative IDs and
+> sequence high-water marks while relaxing difficulty to nullable, then adds
+> independent sentence session/question/attempt/progress tables. Foreign keys stay
+> enabled; existing content and flashcard/typing history are retained. See
+> [SENTENCES.md](SENTENCES.md) for exactly-once finalization and migration tests.
+
 > Current schema is **v4**. Additive migration 3→4 adds independent typing
 > sessions/questions/attempts and `(word,direction)` progress without changing
 > existing content or flashcard tables. History-linked typing words also reject

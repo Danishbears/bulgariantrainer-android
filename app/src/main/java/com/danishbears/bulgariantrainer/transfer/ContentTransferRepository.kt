@@ -115,6 +115,10 @@ class ContentTransferRepository internal constructor(private val database: Train
     /** A consistent, bounded-memory snapshot. Caller owns and closes the Writer. No progress data exported. */
     suspend fun export(kind: ContentKind, includeArchived: Boolean, writer: Writer): Long = withContext(Dispatchers.IO) {
         database.withTransaction {
+            // The web CSV importer requires difficulty 1–5 even though manual creation permits null.
+            // Refuse before writing rather than inventing difficulty or exporting non-importable records.
+            if (kind == ContentKind.SENTENCES && content.missingDifficulty(includeArchived) > 0)
+                throw TransferException(TransferError.SENTENCE_DIFFICULTY_REQUIRED)
             CsvCodec.write(writer, if (kind == ContentKind.WORDS) ContentParser.wordHeader else ContentParser.sentenceHeader)
             var last = 0L
             var count = 0L

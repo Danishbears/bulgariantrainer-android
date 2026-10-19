@@ -1,3 +1,7 @@
+> From **Главная → Предложения**, manage sentences and start offline Russian→Bulgarian
+> practice. Exact approved matches are automatic; other variants require labelled
+> self-assessment. See [SENTENCES.md](SENTENCES.md) and [BUILD_REPORT.md](BUILD_REPORT.md).
+
 > Offline bidirectional typing is implemented in the **Ввод** tab: 30 distinct
 > entries, 15/15 directions, explicit shorter-session consent, exact normalized
 > grading, saved feedback/mistakes and durable recovery. See [TYPING.md](TYPING.md)
@@ -13,8 +17,9 @@ metadata. System document import/export supports vocabulary TXT/CSV and sentence
 CSV with editable previews and explicit transactional confirmation. Offline
 flashcards support both languages/mixed direction, hidden answers, self-ratings,
 durable recovery and saved summaries. Bidirectional typing adds balanced unique
-queues, exact grading, accepted-answer feedback and saved mistake review. Sentence
-training, review scheduling and pronunciation remain future stages; no learning
+queues, exact grading, accepted-answer feedback and saved mistake review. Sentence management and Russian→Bulgarian practice add optional metadata,
+approved alternatives, multiline answers and explicitly labelled self-assessment
+for non-matching variants. Review scheduling and pronunciation remain future stages; no learning
 statistics or sample records are fabricated.
 
 The initial repository at `d18ad8814b391c60b0e1ec2099a5c2251978b2c6` contained
@@ -98,7 +103,7 @@ and ViewModel saved-draft tests. Robolectric
 uses an isolated Android API 28 environment and native SQLite to check constraints,
 transactions, reactive queries and file database reopen; it does not replace a
 physical-device check. Flashcard and typing parity, concurrency, migration and
-recovery tests also run here; sentence training remains future work.
+recovery tests also run here; sentence practice/self-assessment also has parity and durable recovery tests.
 
 The [Android baseline workflow](.github/workflows/android.yml) prepares a JDK and
 SDK on GitHub Actions, runs these checks, and uploads the debug APK as

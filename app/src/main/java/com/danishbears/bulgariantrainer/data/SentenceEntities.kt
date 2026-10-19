@@ -17,7 +17,7 @@ internal data class SentenceEntity(
     @ColumnInfo(name = "russian_text") val russian: String,
     @ColumnInfo(name = "normalized_russian") val normalizedRussian: String,
     @ColumnInfo(name = "bulgarian_text") val bulgarian: String,
-    val explanation: String?, val difficulty: Int, val topic: String?,
+    val explanation: String?, val difficulty: Int?, val topic: String?,
     val archived: Boolean = false, val approved: Boolean = true,
     @ColumnInfo(name = "created_at") val createdAt: Long,
     @ColumnInfo(name = "updated_at") val updatedAt: Long,

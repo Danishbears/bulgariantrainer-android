@@ -49,5 +49,6 @@ import com.danishbears.bulgariantrainer.transfer.TransferError
     TransferError.INVALID_SELECTION -> R.string.transfer_selection_error
     TransferError.TARGET_CHANGED -> R.string.issue_target
     TransferError.ALREADY_CONFIRMED -> R.string.transfer_confirmed_error
+    TransferError.SENTENCE_DIFFICULTY_REQUIRED -> R.string.sentence_export_difficulty
     TransferError.STORAGE_FAILED -> R.string.transfer_storage_error
 })

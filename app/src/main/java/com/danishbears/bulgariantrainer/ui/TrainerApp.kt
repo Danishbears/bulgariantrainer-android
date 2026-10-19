@@ -18,6 +18,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import com.danishbears.bulgariantrainer.sentences.SentenceRepository
+import com.danishbears.bulgariantrainer.sentences.SentencePracticeRepository
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -42,7 +44,7 @@ import com.danishbears.bulgariantrainer.transfer.ContentTransferRepository
 import com.danishbears.bulgariantrainer.transfer.DocumentGateway
 
 @Composable
-fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferRepository, flashcards: FlashcardRepository, typing: TypingRepository) {
+fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferRepository, flashcards: FlashcardRepository, typing: TypingRepository, sentences: SentenceRepository, sentencePractice: SentencePracticeRepository) {
     val controller = rememberNavController()
     val model: VocabularyViewModel = viewModel(factory = viewModelFactory {
         initializer { VocabularyViewModel(repository, createSavedStateHandle()) }
@@ -66,7 +68,7 @@ fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferReposi
     Scaffold(
         snackbarHost = { SnackbarHost(snackbar) },
         bottomBar = {
-            if (!route.startsWith("word/")) NavigationBar {
+            if (!route.startsWith("word/") && !route.startsWith("sentence/")) NavigationBar {
                 listOf("home" to R.string.home, "vocabulary" to R.string.dictionary, "flashcards" to R.string.flashcards, "typing" to R.string.typing, "transfer" to R.string.transfer).forEach { (target, label) ->
                     NavigationBarItem(selected = route == target,
                         onClick = { controller.navigate(target) {
@@ -86,7 +88,8 @@ fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferReposi
                 val state by model.dashboard.collectAsStateWithLifecycle()
                 DashboardScreen(state, model::retryDashboard,
                     onDictionary = { controller.navigate("vocabulary") { launchSingleTop = true } },
-                    onAdd = { controller.navigate("word/new") })
+                    onAdd = { controller.navigate("word/new") },
+                    onSentences = { controller.navigate("sentences") { launchSingleTop = true } })
             }
             composable("vocabulary") {
                 VocabularyScreen(model, onAdd = { controller.navigate("word/new") },
@@ -103,6 +106,25 @@ fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferReposi
                     initializer { TypingViewModel(typing, createSavedStateHandle()) }
                 })
                 TypingScreen(model, onDictionary = { controller.navigate("vocabulary") { launchSingleTop = true } })
+            }
+            composable("sentences") {
+                val model: SentenceListViewModel = viewModel(factory = viewModelFactory {
+                    initializer { SentenceListViewModel(sentences, createSavedStateHandle()) }
+                })
+                SentenceListScreen(model, onAdd = { controller.navigate("sentence/new") },
+                    onEdit = { controller.navigate("sentence/$it") }, onTrain = { controller.navigate("sentence-practice") { launchSingleTop = true } })
+            }
+            composable("sentence-practice") {
+                val model: SentencePracticeViewModel = viewModel(factory = viewModelFactory {
+                    initializer { SentencePracticeViewModel(sentencePractice, createSavedStateHandle()) }
+                })
+                SentencePracticeScreen(model, onCollection = { controller.navigate("sentences") { launchSingleTop = true } })
+            }
+            composable("sentence/{sentenceId}", arguments = listOf(navArgument("sentenceId") { type = NavType.StringType })) {
+                val model: SentenceEditorViewModel = viewModel(factory = viewModelFactory {
+                    initializer { SentenceEditorViewModel(sentences, createSavedStateHandle()) }
+                })
+                SentenceEditorScreen(model, onClose = { controller.popBackStack() })
             }
             composable("transfer") {
                 val context = LocalContext.current.applicationContext
