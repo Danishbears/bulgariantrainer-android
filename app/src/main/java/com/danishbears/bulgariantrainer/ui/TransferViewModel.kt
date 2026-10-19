@@ -143,6 +143,7 @@ class TransferViewModel(
                 val count = documents.write(uri, repository, exportKind, archived)
                 _state.update { it.copy(exported = count) }
             } catch (e: CancellationException) { throw e }
+            catch (e: TransferException) { _state.update { it.copy(error = if (e.code == TransferError.SENTENCE_DIFFICULTY_REQUIRED) e.code else TransferError.WRITE_FAILED) } }
             catch (_: Exception) { _state.update { it.copy(error = TransferError.WRITE_FAILED) } }
             finally { _state.update { it.copy(busy = false) } }
         }

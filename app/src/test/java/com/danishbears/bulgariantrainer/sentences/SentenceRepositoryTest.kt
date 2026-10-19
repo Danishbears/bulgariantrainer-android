@@ -126,7 +126,7 @@ class SentenceRepositoryTest {
         assertEquals(0, count("sentence_sessions"))
     }
     @Test fun referenceAndApprovedAlternativeMatchUnicodeMultilineAutomaticallyWithoutManualAssessment() = runBlocking<Unit> {
-        content.create(SentenceInput("Это мой дом.", "Това е моят дом.", listOf("Това е моята къща.")))
+        content.create(SentenceInput("Это её дом.", "Това е нейният дом.", listOf("Това е нейната къща.")))
         for (useAlternative in listOf(false, true)) {
             val state = start(); val q = state.question!!; val answers = accepted(state)
             val answer = " \t" + java.text.Normalizer.normalize(answers[if (useAlternative) 1 else 0].uppercase(), java.text.Normalizer.Form.NFD).replace(" ", "\n\u00a0  ") + "\n"

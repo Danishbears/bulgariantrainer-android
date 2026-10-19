@@ -120,6 +120,16 @@ class TransferViewModelTest {
         assertEquals("bulgarian,russian,partOfSpeech\r\nкъща,дом,\r\n", bytes.toString("UTF-8"))
         assertEquals(1, VocabularyRepository(db).list().size)
     }
+    @Test fun sentenceExportExplainsMissingOptionalDifficultyWithoutWritingInvalidCsv() = runBlocking<Unit> {
+        com.danishbears.bulgariantrainer.sentences.SentenceRepository(db).create(
+            com.danishbears.bulgariantrainer.sentences.SentenceInput("Дом.", "Къща."))
+        model.setKind(ContentKind.SENTENCES); model.prepareExport()
+        val uri = Uri.parse("content://documents/sentences.csv")
+        val bytes = ByteArrayOutputStream(); resolver.registerOutputStream(uri, bytes)
+        model.export(uri)
+        settled { !it.busy && it.error == TransferError.SENTENCE_DIFFICULTY_REQUIRED }
+        assertEquals(0, bytes.size()); assertNull(model.state.value.exported)
+    }
     @Test fun recreatingAfterProcessLossDoesNotAutomaticallyReadOrImportDocuments() = runBlocking<Unit> {
         val restored = TransferViewModel(repository, gateway, SavedStateHandle(mapOf("hasPreview" to true)))
         store.put("restored", restored)

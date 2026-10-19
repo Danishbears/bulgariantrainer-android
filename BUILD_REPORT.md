@@ -27,9 +27,39 @@ not permitted and was not repeatedly retried. Current cloud HTTP policy reports
 enforced/unrestricted with no credentials; it is distinct from TCP/shell build
 capability and the missing local tools.
 
-Hosted tests/build/lint/schema checks and artifacts will be recorded after actual
-execution. Device installation, real OS process-kill/recovery, keyboard/IME and
-accessibility checks remain unperformed. Earlier milestone evidence follows.
+### First hosted execution and exact compiler schema capture
+
+Code `71315cdddc93a95adb31ee5e680842e7f5039e0b`,
+[run 39301985450](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39301985450),
+job `118229255441`, executed the following separate commands/checks:
+
+| Command/check | Actual result |
+| --- | --- |
+| `./gradlew --no-daemon --stacktrace --console=plain testDebugUnitTest` | BUILD SUCCESSFUL in 2m 50s; **164 tests**, zero failures/errors/skipped |
+| `./gradlew --no-daemon --stacktrace --console=plain assembleDebug` | BUILD SUCCESSFUL in 1m 1s; APK packaged/uploaded |
+| `./gradlew --no-daemon --stacktrace --console=plain lintDebug` | BUILD SUCCESSFUL in 1m 4s |
+| Schema contract | Versions 1–4 verified; failed because newly generated `5.json` was not yet committed |
+
+Overall run **failed** only at the missing-schema guard. Its APK artifact is
+`12210829843`, reports `12211033410`; APK availability alone is not workflow success.
+All 128 existing tests and 36 new tests passed: 24 sentence repository cases,
+ten sentence/editor/list ViewModel cases and two exported-v4 migration cases.
+The exact compiler-generated v5 JSON was captured from the guard diagnostic and
+committed; actual identity **`18a2b4a0ce8d53b6710e88643e1c2014`** came from Room/KSP.
+Structural comparison confirms 12 previous table contracts are identical; the
+sentence table changes only difficulty nullability, with four new practice tables.
+Python SQLite migrated exported v4 and matched table/foreign-key/index PRAGMAs for
+all 17 tables against fresh compiler-exported v5 contracts.
+
+A code-path review also found the export ViewModel replaced every specific export
+failure with WRITE_FAILED, hiding the new missing-difficulty explanation. The
+follow-up preserves that specific error and adds a SAF/ViewModel regression;
+other write failures retain existing handling. A normalization fixture now includes
+Bulgarian й so NFD submissions actually exercise canonical equivalence. Static test
+count becomes **165**; actual follow-up results will be recorded when executed.
+
+Device installation, real OS process-kill/recovery, keyboard/IME and accessibility
+checks remain unperformed. Earlier milestone evidence follows.
 
 # Offline typing increment — 2026-10-19
 

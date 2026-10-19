@@ -94,6 +94,7 @@ session. Return through **Предложения → Перевод предло
 
 ## Persistence and migration
 
+Compiler-exported v5 identity: `18a2b4a0ce8d53b6710e88643e1c2014`.
 Room v5 adds `sentence_sessions`, `sentence_questions`, `sentence_attempts` and
 `sentence_progress`. A session saves request UUID/settings, actual total, current
 position, revision, status and times. Questions enforce unique session/position
