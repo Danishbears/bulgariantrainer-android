@@ -114,7 +114,8 @@ No general claim is made that the web scheduler/other suspected defects are fixe
 
 ## Durable schema and atomicity
 
-Room version **3**, with explicit non-destructive `MIGRATION_2_3`; production
+Room version **3**, compiler-exported identity hash
+`c096057d5434265d3679356753242cec`, with explicit non-destructive `MIGRATION_2_3`; production
 also registers `MIGRATION_1_2` for supported upgrade chains. Existing v1/v2 table
 definitions are retained. New tables:
 

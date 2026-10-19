@@ -64,6 +64,26 @@ Test logging now includes full exception traces, and schema verification also
 runs after failures so compiler exports remain available for diagnosis; it still
 fails on missing/mismatched committed schemas. Workflow permissions are unchanged.
 
+### Third hosted run: code checks passed; schema capture required
+
+Code `1768b17a50bcdc59564439af8a5773a251636e53`,
+[run 39273484446](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39273484446),
+job `118131609859`:
+
+| Actual separate command/check | Result |
+| --- | --- |
+| `./gradlew --no-daemon --stacktrace --console=plain testDebugUnitTest` | BUILD SUCCESSFUL in 2m 25s; **96 tests**, zero failures/errors/skipped |
+| `./gradlew --no-daemon --stacktrace --console=plain assembleDebug` | BUILD SUCCESSFUL in 49s; APK packaged/uploaded |
+| `./gradlew --no-daemon --stacktrace --console=plain lintDebug` | BUILD SUCCESSFUL in 49s |
+| Schema contract | Failed because compiler-generated `3.json` was not yet committed |
+
+The overall run **failed** only at the missing-schema guard. The generated v3 JSON
+was retrieved from its base64 diagnostic, decoded and committed without inventing
+an identity hash. Its actual hash is `c096057d5434265d3679356753242cec`. Structural
+comparison confirms all five v2 table definitions remain exactly unchanged; only
+four learning tables are added. The guard remains strict and a follow-up run
+checks generated v1/v2/v3 exports against the committed contracts.
+
 Later executed schema/build verification is recorded below when available.
 Real device/emulator checks remain unperformed; FLASHCARDS.md lists process-kill,
 airplane mode, reveal visibility/accessibility, rapid taps, rotation and install/
