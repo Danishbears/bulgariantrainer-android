@@ -37,3 +37,5 @@ data class VocabularyFilter(
 class DuplicateWordException : IllegalArgumentException("A word with this Bulgarian text already exists")
 
 class WordNotFoundException(val wordId: Long) : NoSuchElementException("Word $wordId does not exist")
+
+data class VocabularyCounts(val total: Long, val active: Long, val archived: Long, val translations: Long)

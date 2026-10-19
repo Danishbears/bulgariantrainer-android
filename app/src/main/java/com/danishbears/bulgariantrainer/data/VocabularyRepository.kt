@@ -1,6 +1,10 @@
 package com.danishbears.bulgariantrainer.data
 
 import androidx.room.withTransaction
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import java.time.Clock
 import java.time.Instant
 import kotlinx.coroutines.flow.Flow
@@ -13,8 +17,19 @@ class VocabularyRepository internal constructor(
 ) {
     private val dao = database.vocabularyDao()
 
+    fun observeCounts(): Flow<VocabularyCounts> = dao.observeCounts()
+
+    fun pages(filter: VocabularyFilter = VocabularyFilter()): Flow<PagingData<VocabularyWord>> {
+        val params = parameters(filter)
+        return Pager(
+            config = PagingConfig(pageSize = 40, initialLoadSize = 40, prefetchDistance = 8,
+                maxSize = 200, enablePlaceholders = false),
+            pagingSourceFactory = { dao.paging(filter.archived, params.part, params.pattern) },
+        ).flow.map { page -> page.map { it.toWord() } }
+    }
+
     suspend fun create(input: WordInput): VocabularyWord {
-        val valid = validate(input)
+        val valid = VocabularyValidator.normalized(input)
         return database.withTransaction {
             ensureUnique(valid.key)
             val now = clock.millis()
@@ -39,7 +54,7 @@ class VocabularyRepository internal constructor(
     }
 
     suspend fun update(id: Long, input: WordInput): VocabularyWord {
-        val valid = validate(input)
+        val valid = VocabularyValidator.normalized(input)
         return database.withTransaction {
             val previous = dao.get(id) ?: throw WordNotFoundException(id)
             ensureUnique(valid.key, id)
@@ -98,29 +113,6 @@ class VocabularyRepository internal constructor(
         if (existing != null && existing != exceptId) throw DuplicateWordException()
     }
 
-    private fun validate(input: WordInput): ValidatedWord {
-        val text = requiredText(input.bulgarianText, 255)
-        require(input.translations.size in 1..50) { "A word needs between 1 and 50 translations" }
-        val primaryCount = input.translations.count { it.isPrimary }
-        require(primaryCount <= 1) { "Only one translation may be primary" }
-        val keys = HashSet<String>()
-        val translations = input.translations.mapIndexed { index, value ->
-            val translation = requiredText(value.russianText, 255)
-            val key = VocabularyText.key(translation)
-            require(keys.add(key)) { "Duplicate Russian translations are not allowed" }
-            ValidatedTranslation(translation, key, value.isPrimary || (primaryCount == 0 && index == 0))
-        }
-        return ValidatedWord(
-            text, VocabularyText.key(text), optionalText(input.partOfSpeech, 100),
-            optionalText(input.grammaticalGender, 100), optionalText(input.notes, 4000), translations,
-        )
-    }
-
-    private fun requiredText(value: String, max: Int): String {
-        require(value.length <= max) { "Vocabulary text is too long" }
-        return VocabularyText.clean(value).also { require(it.isNotEmpty()) { "Vocabulary text must not be blank" } }
-    }
-
     private fun optionalText(value: String?, max: Int): String? {
         require(value == null || value.length <= max) { "Optional text is too long" }
         return VocabularyText.optional(value)
@@ -145,10 +137,5 @@ class VocabularyRepository internal constructor(
         Instant.ofEpochMilli(word.createdAt), Instant.ofEpochMilli(word.updatedAt),
     )
 
-    private data class ValidatedTranslation(val text: String, val key: String, val primary: Boolean)
-    private data class ValidatedWord(
-        val text: String, val key: String, val part: String?, val gender: String?, val notes: String?,
-        val translations: List<ValidatedTranslation>,
-    )
     private data class FilterParameters(val part: String?, val pattern: String?, val offset: Int)
 }

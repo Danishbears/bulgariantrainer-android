@@ -1,11 +1,11 @@
 # Bulgarian Trainer for Android
 
-Foundation for a standalone, offline Android application for a Russian-speaking
-learner of Bulgarian. Kotlin, Jetpack Compose, Material 3. The app has a welcome
-screen and a Room/SQLite vocabulary storage layer with validated, transactional
-word/translation operations. Training, imports, scheduling, statistics, and
-pronunciation are not implemented. A vocabulary editor screen is a later step;
-the current welcome UI is preserved.
+Standalone offline vocabulary management for a Russian-speaking learner of
+Bulgarian. Kotlin, Jetpack Compose, Material 3 and Room/SQLite. The dashboard shows
+real word/translation counts; the dictionary supports bilingual search, active
+and archived lists, manual creation/editing, multiple Russian translations and
+metadata. Training, imports, review scheduling and pronunciation remain future
+stages; no learning statistics or sample records are fabricated.
 
 The initial repository at `d18ad8814b391c60b0e1ec2099a5c2251978b2c6` contained
 only a README. There was no Android configuration, applicationId, or UI to preserve,
@@ -75,7 +75,8 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
 On Windows, use `.\gradlew.bat --no-daemon testDebugUnitTest lintDebug assembleDebug`.
-`testDebugUnitTest` now runs normalization and Room repository tests. Robolectric
+`testDebugUnitTest` runs normalization, field-validation, Room repository/paging
+and ViewModel saved-draft tests. Robolectric
 uses an isolated Android API 28 environment and native SQLite to check constraints,
 transactions, reactive queries and file database reopen; it does not replace a
 physical-device check. No training-mode behavior is introduced by this milestone.
@@ -92,11 +93,12 @@ changing that repository. Run links and the APK download are in BUILD_REPORT.
 ## Offline scope
 
 The app has no server, WebView, sign-in, network client, or INTERNET permission.
-The welcome screen uses only packaged resources. Vocabulary storage uses the
+The interface and vocabulary work entirely on the device. Vocabulary storage uses the
 app-private `bulgariantrainer.db`, opened lazily through
 `BulgarianTrainerApplication.vocabulary`. Database work uses suspend functions
-and Room Flow, without main-thread query allowances or destructive migration
-fallbacks. Installation does not import sample or personal vocabulary.
+and Room Flow/Paging, without main-thread query allowances or destructive
+migration fallbacks. ViewModels retain editor drafts and search/archive selection
+through SavedStateHandle; Compose collects state with lifecycle awareness. Installation does not import sample or personal vocabulary.
 Future offline pronunciation must use an installed Bulgarian voice that does
 not require a network connection; availability cannot be assumed on every phone.
 

@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import androidx.paging.PagingSource
 import kotlinx.coroutines.flow.Flow
 
 private const val FILTER_WORDS = """
@@ -19,6 +20,26 @@ private const val FILTER_WORDS = """
 
 @Dao
 internal interface VocabularyDao {
+    @Transaction
+    @Query("""
+        SELECT * FROM words w WHERE w.archived = :archived
+          AND (:part IS NULL OR w.normalized_part_of_speech = :part)
+          AND (:pattern IS NULL OR w.normalized_text LIKE :pattern ESCAPE '!'
+            OR EXISTS (SELECT 1 FROM translations t WHERE t.word_id = w.id
+                       AND t.normalized_text LIKE :pattern ESCAPE '!'))
+        ORDER BY w.id ASC
+    """)
+    fun paging(archived: Boolean, part: String?, pattern: String?): PagingSource<Int, WordWithTranslations>
+
+    @Query("""
+        SELECT COUNT(*) AS total,
+               COUNT(CASE WHEN archived = 0 THEN 1 END) AS active,
+               COUNT(CASE WHEN archived = 1 THEN 1 END) AS archived,
+               (SELECT COUNT(*) FROM translations) AS translations
+        FROM words
+    """)
+    fun observeCounts(): Flow<VocabularyCounts>
+
     @Transaction
     @Query(FILTER_WORDS)
     suspend fun list(archived: Boolean, part: String?, pattern: String?, limit: Int, offset: Int): List<WordWithTranslations>

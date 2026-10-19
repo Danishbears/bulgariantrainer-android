@@ -1,20 +1,21 @@
 # Web reference audit and Android plan
 
-## Android storage increment
+## Current Android vocabulary increment
 
-The initial audit below is retained. After foundation commit
-`7043dedcbeea62945cecf954c62cd9a5c21ae8d9`, Android now has a Room/SQLite v1
-vocabulary repository: words/translations, normalized keys, primary selection,
-atomic create/edit/archive/delete, bilingual search, pagination, Flow observation,
-and an injected clock. Source-file mapping and concrete input/output/test cases
-are in [LOCAL_STORAGE.md](LOCAL_STORAGE.md). Stage 1 is partially implemented for
-vocabulary only; sentence/session/history/schedule schemas, vocabulary UI/imports,
-and all training modes remain future work. The original applicationId and
-Compose/Material 3 welcome UI are unchanged. No reference source was modified.
-The current storage increment passed 20 JVM/Robolectric tests, lint, debug APK
-packaging and the committed Room schema check on
-[CI run 39229491461](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39229491461).
-The historical verification section below describes the earlier foundation audit.
+The original audit below is retained as historical evidence. Building on Android
+`66854f0e5c3a9606f81cfd6c11ebaea014282516`, the app now exposes its existing Room
+repository through Compose/Material 3 dashboard, dictionary and editor screens.
+`LOCAL_STORAGE.md` maps Android files, matching web rules, example inputs/outputs,
+tests and the future schema strategy. Dashboard values are actual vocabulary
+counts, not simulated learning statistics. Search includes every Russian
+alternative, uses bounded Room Paging, and separates active/archive lists.
+
+Database version 1 and applicationId are preserved; existing vocabulary is not
+recreated or seeded. No import, session, training, scheduler or pronunciation
+feature is added. The initial foundation's welcome screen is replaced by working
+vocabulary navigation while retaining the existing UI toolkit. Reference source
+remains read-only at `de0a3e883d51561123ca54b7d5dd2e53757baf0a`.
+Executed verification for this increment is recorded separately in BUILD_REPORT.
 
 ## Provenance and scope
 

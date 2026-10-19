@@ -5,6 +5,8 @@ import android.content.Context
 import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
 import androidx.room.Room
+import androidx.paging.PagingSource
+import androidx.paging.testing.asSnapshot
 import androidx.test.core.app.ApplicationProvider
 import java.time.Clock
 import java.time.Duration
@@ -207,6 +209,62 @@ class VocabularyRepositoryTest {
         repository = VocabularyRepository(database, clock)
         assertEquals(archived, repository.get(saved.id))
         assertEquals(listOf(archived), repository.list(VocabularyFilter(archived = true)))
+        assertEquals(VocabularyCounts(1, 0, 1, 1), repository.observeCounts().first())
+        assertEquals(listOf(archived), repository.pages(VocabularyFilter(archived = true)).asSnapshot())
+    }
+
+    @Test fun countsStartAtZeroAndTrackWordsNotTranslationJoinRows() = runBlocking<Unit> {
+        assertEquals(VocabularyCounts(0, 0, 0, 0), repository.observeCounts().first())
+        val first = repository.create(word().copy(translations = listOf(TranslationInput("дом"), TranslationInput("жилище"))))
+        repository.create(word("куче", "собака"))
+        assertEquals(VocabularyCounts(2, 2, 0, 3), repository.observeCounts().first())
+        repository.setArchived(first.id, true)
+        assertEquals(VocabularyCounts(2, 1, 1, 3), repository.observeCounts().first())
+        repository.update(first.id, word())
+        assertEquals(VocabularyCounts(2, 1, 1, 2), repository.observeCounts().first())
+        repository.setArchived(first.id, false)
+        assertEquals(VocabularyCounts(2, 2, 0, 2), repository.observeCounts().first())
+    }
+
+    @Test fun countsFlowInvalidatesForTranslationOnlyEdits() = runBlocking<Unit> {
+        val saved = repository.create(word())
+        val initial = CompletableDeferred<Unit>()
+        val result = async {
+            withTimeout(10_000) {
+                repository.observeCounts().onEach { if (it.translations == 1L) initial.complete(Unit) }
+                    .first { it.translations == 2L }
+            }
+        }
+        withTimeout(10_000) { initial.await() }
+        database.vocabularyDao().insertTranslation(TranslationEntity(
+            wordId = saved.id, russianText = "жилище", normalizedText = "жилище", isPrimary = false))
+        assertEquals(VocabularyCounts(1, 1, 0, 2), result.await())
+    }
+
+    @Test fun pagingLoadsBoundedPagesAndScrollsLargeDictionaryInStableOrder() = runBlocking<Unit> {
+        val saved = (0 until 125).map { repository.create(word("дума$it", "перевод$it")) }
+        val first = repository.pages().asSnapshot()
+        assertTrue(first.size in 40..80) // Initial page plus bounded prefetch; never the whole dictionary.
+        assertEquals(saved.take(first.size), first)
+        val scrolled = repository.pages().asSnapshot { scrollTo(115) }
+        assertEquals(saved, scrolled)
+    }
+
+    @Test fun pagingFindsSecondaryTranslationsLiteralWildcardsAndArchiveChanges() = runBlocking<Unit> {
+        val saved = repository.create(word().copy(translations = listOf(TranslationInput("дом"), TranslationInput("100%_! ЖИЛИЩЕ"))))
+        repository.create(word("куче", "собака"))
+        assertEquals(listOf(saved), repository.pages(VocabularyFilter(query = "жилище")).asSnapshot())
+        assertEquals(listOf(saved), repository.pages(VocabularyFilter(query = "%_!")).asSnapshot())
+        val source = database.vocabularyDao().paging(false, null, VocabularyText.searchPattern("жилище"))
+        val loaded = source.load(PagingSource.LoadParams.Refresh(key = null, loadSize = 40, placeholdersEnabled = false))
+        assertTrue(loaded is PagingSource.LoadResult.Page)
+        val invalidated = CompletableDeferred<Unit>()
+        source.registerInvalidatedCallback { invalidated.complete(Unit) }
+        repository.setArchived(saved.id, true)
+        withTimeout(10_000) { invalidated.await() }
+        assertTrue(repository.pages(VocabularyFilter(query = "жилище")).asSnapshot().isEmpty())
+        assertEquals(listOf(saved.id), repository.pages(VocabularyFilter(query = "жилище", archived = true))
+            .asSnapshot().map { it.id })
     }
 
     @Test fun concurrentDuplicateCreationCommitsOnlyOneCompleteWord() = runBlocking<Unit> {
