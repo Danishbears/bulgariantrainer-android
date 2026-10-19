@@ -156,7 +156,12 @@ vocabulary, sentences, import receipts, unfinished flashcards, attempts and
 recognition, then allows both modes to continue. Existing v1/v2 migration tests
 now validate the entire chain to v4.
 
-Actual commands, results, tested commits and APK artifacts belong in BUILD_REPORT.md.
+[Hosted run 39297229919](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39297229919)
+at `45203c3898cda5a21eb0717c0720135f5a956c65` passed **128 tests**,
+`assembleDebug`, `lintDebug` and committed Room schema checks 1–4.
+[Download the APK ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39297229919/artifacts/12209895308)
+and extract `app-debug.apk`; ANDROID_BUILDS.md explains installation and debug-key
+upgrade limitations. Detailed commands/results and artifact metadata are in BUILD_REPORT.md.
 Static test counts/configuration are not execution evidence. Device/emulator
 checks remain: install/upgrade with a compatible debug key, airplane mode, Android
 OS process termination/relaunch before/after submit and acknowledgement, keyboard

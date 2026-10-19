@@ -52,10 +52,61 @@ Structural comparison confirms all nine v3 table definitions are unchanged and
 only four typing tables are added. Python SQLite also executed migration 3→4
 against exported v3 and compared table/foreign-key/index PRAGMAs to a fresh v4
 export: matching contracts. These local checks do not replace Room migration tests.
-Versions 1/2/3 guards passed in the first run; final v4 verification is pending.
+Versions 1/2/3 guards passed in the first run; final v4 verification is recorded below.
 
-Later actual test/build/lint/schema results and APK artifacts are recorded below
-when available. Device/OS process-kill/keyboard/install checks remain unperformed.
+### Final hosted verification: successful
+
+Tested code: **`45203c3898cda5a21eb0717c0720135f5a956c65`** on branch
+`codex/android-foundation-parity`.
+[Run 39297229919](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39297229919),
+job `118212784621`, completed **successfully** on 2026-10-19. The runner used
+Temurin JDK 17.0.20+1, committed Gradle 8.11.1, AGP 8.9.2, Android platform 35
+and Build Tools 35.0.0. The following separate commands/checks actually executed:
+
+| Command/check | Actual result |
+| --- | --- |
+| `./gradlew --no-daemon --stacktrace --console=plain testDebugUnitTest` | BUILD SUCCESSFUL in 2m 53s; **128 tests**, zero failures/errors/skipped |
+| `./gradlew --no-daemon --stacktrace --console=plain assembleDebug` | BUILD SUCCESSFUL in 1m 7s; debug APK packaged/uploaded |
+| `./gradlew --no-daemon --stacktrace --console=plain lintDebug` | BUILD SUCCESSFUL in 1m 2s; report uploaded |
+| Committed Room schema contract | Versions **1, 2, 3 and 4 verified** against compiler exports |
+
+All 96 existing tests passed. The 32 new tests comprise five pure typing rule
+cases, 20 real Room repository cases, six ViewModel cases and the populated-v3
+migration. Existing populated-v1/v2 tests now verify migration through to v4.
+File reopen and fresh empty-SavedStateHandle tests demonstrate database recovery;
+they do not claim a physical Android OS process-kill test. The following
+commit records documentation only, with no application/workflow changes after
+this tested code; it does not represent another application build.
+
+Artifacts from this successful run (GitHub login/access may be required):
+
+- [bulgariantrainer-debug ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39297229919/artifacts/12209895308):
+  10,567,862 bytes; extract `app-debug.apk` before installation.
+- [android-storage-test-reports ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39297229919/artifacts/12207609920):
+  88,451 bytes; JUnit XML/HTML, lint reports and exported schema contracts.
+
+Both artifacts expire on 2026-11-02 under the 14-day retention policy.
+GitHub-reported SHA-256 digests of the uploaded **ZIPs**, not extracted APKs:
+
+```text
+APK ZIP:     c0cba1408d383f25fd92b342fcea47e855680ee8b27aa3be4d03fdd1acccdee3
+Reports ZIP: e5a2d13fad33d6c4a1cad6e5492bae6c51e76faeee10148c74205fc8247e3600
+```
+
+GitHub integration access and local checkouts work for both repositories. The
+read-only reference remains clean at the pinned commit. Shell networking remains
+a previously observed independent blocker and was not retried. This workspace
+still lacks a full local Android toolchain; all successful Android commands above
+ran on GitHub Actions. No SDK paths, APK/build/database outputs or signing
+credentials were committed; Linux wrapper mode remains 100755.
+
+Remaining device/emulator checks: install/upgrade with compatible debug signing,
+airplane mode, real OS process termination/relaunch around submit/acknowledge,
+keyboard Done/IME resizing, rotation/navigation, rapid touch, large fonts and
+TalkBack. See ANDROID_BUILDS.md for APK extraction/installation and debug-key
+changes that can prevent updating an older cloud build in place. No release
+signing or review scheduling is introduced.
+
 The historical sections below preserve previous milestone evidence.
 
 # Baseline and build evidence
