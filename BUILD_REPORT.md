@@ -55,6 +55,34 @@ JUnit XML counts, preventing an empty NO-SOURCE task from appearing as a test pa
 Physical-device/emulator checks and a local Android build remain unperformed or
 blocked. The unchanged welcome screen does not yet expose vocabulary editing.
 
+Final verified code revision: `623da1f3baa4a6ae034d5cab96c3c164a80f03fb`.
+[Run 39229491461](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39229491461)
+completed successfully after matching the actual web controller's search limits
+(query max 255, part-of-speech max 100, default page size 20):
+
+```text
+./gradlew --no-daemon testDebugUnitTest lintDebug assembleDebug
+BUILD SUCCESSFUL in 2m 43s
+VocabularyRepositoryTest: 15 tests, 0 failures/errors/skipped
+VocabularyTextTest:       5 tests, 0 failures/errors/skipped
+STORAGE_TEST_TOTALS:     20 tests, 0 failures/errors/skipped
+Room schema contract verified: app/schemas/com.danishbears.bulgariantrainer.data.TrainerDatabase/1.json
+```
+
+This includes actual Room/native-SQLite transaction, unique-key, foreign-key,
+reopen durability, no-destructive-fallback and Flow-invalidation executions.
+The intermediate run `39229370768` was cancelled when superseded by the final
+code revision; no success is claimed for that cancelled run.
+
+- [Latest Room debug APK ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39229491461/artifacts/12176357885):
+  artifact `12176357885`, 9,141,200 bytes, retained until 2026-11-02;
+  ZIP SHA-256 `e3f51c18c0ca9557e66a8c69806226dc576ae02b8c38204e3516894cc8c17709`.
+- [Latest JUnit/lint reports and schema](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39229491461/artifacts/12176437766).
+
+These digests describe artifact ZIPs, not separately downloaded APK bytes. Final
+documentation-only changes do not alter the tested application or build workflow.
+No further test/build rerun is needed for those documentation-only changes.
+
 The sections below preserve the previous task's historical baseline evidence.
 
 ## Access and checkouts

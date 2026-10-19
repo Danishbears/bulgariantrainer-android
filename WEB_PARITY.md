@@ -11,6 +11,10 @@ are in [LOCAL_STORAGE.md](LOCAL_STORAGE.md). Stage 1 is partially implemented fo
 vocabulary only; sentence/session/history/schedule schemas, vocabulary UI/imports,
 and all training modes remain future work. The original applicationId and
 Compose/Material 3 welcome UI are unchanged. No reference source was modified.
+The current storage increment passed 20 JVM/Robolectric tests, lint, debug APK
+packaging and the committed Room schema check on
+[CI run 39229491461](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39229491461).
+The historical verification section below describes the earlier foundation audit.
 
 ## Provenance and scope
 

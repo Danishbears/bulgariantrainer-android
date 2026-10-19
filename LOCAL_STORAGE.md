@@ -135,6 +135,11 @@ Robolectric, not a fake/in-memory repository. They do not demonstrate installati
 device rendering, process-kill recovery during an in-flight write, or future
 training persistence. Executed outcomes and CI links are in BUILD_REPORT.md.
 
+On [CI run 39229491461](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39229491461),
+all **20 tests passed** with zero failures/errors/skipped. The same run passed
+lint, built the debug APK and verified the exported v1 schema against the
+checked-in contract. Local Gradle bootstrap remains blocked by shell networking.
+
 ## Next stages
 
 Add a lifecycle-aware vocabulary editor/list UI and controlled file import;
