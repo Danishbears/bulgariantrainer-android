@@ -1,5 +1,7 @@
 package com.danishbears.bulgariantrainer.ui
 
+import com.danishbears.bulgariantrainer.review.StudyScope
+import kotlinx.coroutines.flow.combine
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -42,9 +44,11 @@ class FlashcardViewModel(private val repository: FlashcardRepository, private va
     val state = _state.asStateFlow()
     val size = saved.getStateFlow("size", "20")
     val direction = saved.getStateFlow("direction", FlashcardDirection.BG_TO_RU.name)
+    val scope = saved.getStateFlow("scope", StudyScope.MIXED.name)
+    fun setScope(value: StudyScope) { if (controlsEnabled()) saved["scope"] = value.name }
     private val retryAvailability = MutableStateFlow(0)
-    val availability = retryAvailability.flatMapLatest {
-        repository.observeAvailable().map<Long, FlashcardAvailability> { FlashcardAvailability.Ready(it) }
+    val availability = combine(retryAvailability, scope) { _, value -> value }.flatMapLatest { selected ->
+        repository.observeAvailable(StudyScope.valueOf(selected)).map<Long, FlashcardAvailability> { FlashcardAvailability.Ready(it) }
             .onStart { emit(FlashcardAvailability.Loading) }
             .catch { if (it is CancellationException) throw it else emit(FlashcardAvailability.Failed) }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), FlashcardAvailability.Loading)
@@ -83,7 +87,7 @@ class FlashcardViewModel(private val repository: FlashcardRepository, private va
         if (!controlsEnabled() || _state.value.session?.active == true) return
         val size = size.value.toIntOrNull()
         if (size == null || size !in 1..100) { _state.update { it.copy(error = FlashcardError.INVALID_SETTINGS) }; return }
-        perform(FlashcardAction.Start(UUID.randomUUID().toString(), FlashcardSettings(size, FlashcardDirection.valueOf(direction.value))))
+        perform(FlashcardAction.Start(UUID.randomUUID().toString(), FlashcardSettings(size, FlashcardDirection.valueOf(direction.value), StudyScope.valueOf(scope.value))))
     }
     // IDs come from the rendered card, so delayed callbacks can never rate the next card by accident.
     fun reveal(session: Long, card: Long) = perform(FlashcardAction.Reveal(session, card))

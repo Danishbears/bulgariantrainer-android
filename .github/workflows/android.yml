@@ -32,6 +32,8 @@ jobs:
       - name: Install pinned Android SDK packages
         run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
       - uses: gradle/actions/setup-gradle@v4
+      - name: Verify pinned web business-rule fixtures
+        run: python3 parity/verify_web_parity.py
       - name: Run JVM unit tests
         run: ./gradlew --no-daemon --stacktrace --console=plain testDebugUnitTest
       - name: Assemble debug APK

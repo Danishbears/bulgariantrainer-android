@@ -23,6 +23,8 @@ import com.danishbears.bulgariantrainer.sentences.*
 @Composable
 fun SentencePracticeScreen(model: SentencePracticeViewModel, onCollection: () -> Unit) {
     val state by model.state.collectAsStateWithLifecycle()
+    val scope by model.scope.collectAsStateWithLifecycle()
+    ReviewRefreshOnResume(model::retryAvailable)
     val available by model.availability.collectAsStateWithLifecycle()
     val input by model.input.collectAsStateWithLifecycle()
     val size by model.size.collectAsStateWithLifecycle()
@@ -52,7 +54,8 @@ fun SentencePracticeScreen(model: SentencePracticeViewModel, onCollection: () ->
                 state.loading -> item(key = "loading") { CircularProgressIndicator() }
                 session == null -> item(key = "setup") {
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        val parsed = size.toIntOrNull()
+                        ReviewScopeSelector(scope, model::setScope, enabled)
+                            val parsed = size.toIntOrNull()
                         OutlinedTextField(size, model::setSize, enabled = enabled, singleLine = true, modifier = Modifier.fillMaxWidth(),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), isError = parsed == null || parsed !in 1..100,
                             label = { Text(stringResource(R.string.sentence_size)) })

@@ -29,6 +29,8 @@ import com.danishbears.bulgariantrainer.typing.*
 @Composable
 fun TypingScreen(model: TypingViewModel, onDictionary: () -> Unit) {
     val state by model.state.collectAsStateWithLifecycle()
+    val scope by model.scope.collectAsStateWithLifecycle()
+    ReviewRefreshOnResume(model::retryAvailable)
     val available by model.availability.collectAsStateWithLifecycle()
     val input by model.input.collectAsStateWithLifecycle()
     val session = state.session
@@ -57,7 +59,8 @@ fun TypingScreen(model: TypingViewModel, onDictionary: () -> Unit) {
                 state.loading -> item(key = "loading") { CircularProgressIndicator(); Text(stringResource(R.string.loading)) }
                 session == null -> item(key = "setup") {
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        when (val count = available) {
+                        ReviewScopeSelector(scope, model::setScope, enabled)
+                            when (val count = available) {
                             TypingAvailability.Loading -> Text(stringResource(R.string.loading))
                             TypingAvailability.Failed -> FailureMessage(stringResource(R.string.load_error), model::retryAvailable)
                             is TypingAvailability.Ready -> {
@@ -68,7 +71,7 @@ fun TypingScreen(model: TypingViewModel, onDictionary: () -> Unit) {
                                         OutlinedButton(onClick = onDictionary, enabled = enabled) { Text(stringResource(R.string.open_dictionary)) }
                                     }
                                     count.count < 30L -> {
-                                        Text(stringResource(R.string.typing_short_hint, count.count, (count.count + 1) / 2, count.count / 2))
+                                        Text(stringResource(R.string.typing_short_hint, count.count))
                                         Button(onClick = { model.start(allowShorter = true) }, enabled = enabled, modifier = Modifier.fillMaxWidth()) {
                                             Text(stringResource(R.string.typing_start_short, count.count))
                                         }
@@ -88,6 +91,7 @@ fun TypingScreen(model: TypingViewModel, onDictionary: () -> Unit) {
                     val feedback = question.feedback
                     item(key = "progress") {
                         Text(stringResource(R.string.typing_progress, question.position, session.total, session.answered))
+                        Text(stringResource(R.string.review_direction_counts, session.bgToRuQuestions, session.ruToBgQuestions))
                         LinearProgressIndicator(progress = { session.answered.toFloat() / session.total }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
                     }
                     item(key = "question-${question.id}") {
@@ -156,6 +160,8 @@ fun TypingScreen(model: TypingViewModel, onDictionary: () -> Unit) {
 private fun typingDirectionLabel(direction: TypingDirection) = stringResource(if (direction == TypingDirection.BG_TO_RU) R.string.flash_bg_ru else R.string.flash_ru_bg)
 @Composable
 private fun typingErrorLabel(error: TypingError) = stringResource(when (error) {
+    TypingError.EMPTY_REVIEW_QUEUE -> R.string.review_empty_due
+    TypingError.EMPTY_NEW_QUEUE -> R.string.review_empty_new
     TypingError.EMPTY_DICTIONARY -> R.string.flash_empty
     TypingError.SHORTER_SESSION_REQUIRED -> R.string.typing_short_required
     TypingError.INVALID_REQUEST -> R.string.typing_invalid

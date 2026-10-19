@@ -1,3 +1,8 @@
+> Review scheduling and NEW/DUE/MIXED scopes are now implemented. The original
+> milestone details below are historical where they defer scheduling. Current
+> selection, scoped balance limits, statistics, upgrade and clock rules are in
+> [REVIEW_AND_STATISTICS.md](REVIEW_AND_STATISTICS.md).
+
 # Offline bidirectional typing
 
 ## Reference and implementation map

@@ -1,5 +1,7 @@
 package com.danishbears.bulgariantrainer.ui
 
+import com.danishbears.bulgariantrainer.review.StudyScope
+import kotlinx.coroutines.flow.combine
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,7 +28,7 @@ sealed interface TypingAvailability {
     data object Failed : TypingAvailability
 }
 sealed interface TypingAction {
-    data class Start(val requestId: String, val allowShorter: Boolean) : TypingAction
+    data class Start(val requestId: String, val allowShorter: Boolean, val scope: StudyScope = StudyScope.MIXED) : TypingAction
     data class Submit(val session: Long, val question: Long, val submitted: String) : TypingAction
     data class Next(val session: Long, val question: Long) : TypingAction
     data class Complete(val session: Long) : TypingAction
@@ -41,9 +43,11 @@ class TypingViewModel(private val repository: TypingRepository, private val save
     private val _state = MutableStateFlow(TypingUiState())
     val state = _state.asStateFlow()
     val input = saved.getStateFlow("input", "")
+    val scope = saved.getStateFlow("scope", StudyScope.MIXED.name)
+    fun setScope(value: StudyScope) { if (controlsEnabled()) saved["scope"] = value.name }
     private val retryAvailability = MutableStateFlow(0)
-    val availability = retryAvailability.flatMapLatest {
-        repository.observeAvailable().map<Long, TypingAvailability> { TypingAvailability.Ready(it) }
+    val availability = combine(retryAvailability, scope) { _, value -> value }.flatMapLatest { selected ->
+        repository.observeAvailable(StudyScope.valueOf(selected)).map<Long, TypingAvailability> { TypingAvailability.Ready(it) }
             .onStart { emit(TypingAvailability.Loading) }
             .catch { if (it is CancellationException) throw it else emit(TypingAvailability.Failed) }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TypingAvailability.Loading)
@@ -79,7 +83,7 @@ class TypingViewModel(private val repository: TypingRepository, private val save
     }
     fun start(allowShorter: Boolean = false) {
         if (!controlsEnabled() || _state.value.session?.let { it.active || it.question != null } == true) return
-        perform(TypingAction.Start(UUID.randomUUID().toString(), allowShorter))
+        perform(TypingAction.Start(UUID.randomUUID().toString(), allowShorter, StudyScope.valueOf(scope.value)))
     }
     // Immutable rendered IDs/text prevent a delayed callback from submitting to the next question.
     fun submit(session: Long, question: Long, submitted: String) = perform(TypingAction.Submit(session, question, submitted))
@@ -94,7 +98,7 @@ class TypingViewModel(private val repository: TypingRepository, private val save
         viewModelScope.launch {
             try {
                 val updated = when (action) {
-                    is TypingAction.Start -> repository.start(action.requestId, action.allowShorter)
+                    is TypingAction.Start -> repository.start(action.requestId, action.allowShorter, action.scope)
                     is TypingAction.Submit -> repository.submit(action.session, action.question, action.submitted)
                     is TypingAction.Next -> repository.next(action.session, action.question)
                     is TypingAction.Complete -> repository.complete(action.session)

@@ -1,16 +1,17 @@
 package com.danishbears.bulgariantrainer.flashcards
 
 import java.time.Instant
+import com.danishbears.bulgariantrainer.review.StudyScope
 
 enum class FlashcardDirection { BG_TO_RU, RU_TO_BG, MIXED }
 enum class CardDirection { BG_TO_RU, RU_TO_BG }
 enum class FlashcardStatus { IN_PROGRESS, COMPLETED, ABANDONED }
 enum class CardResult { CORRECT, INCORRECT, SKIPPED }
-enum class FlashcardError { INVALID_SETTINGS, EMPTY_DICTIONARY, SESSION_NOT_FOUND, SESSION_CLOSED,
+enum class FlashcardError { INVALID_SETTINGS, EMPTY_DICTIONARY, EMPTY_REVIEW_QUEUE, EMPTY_NEW_QUEUE, SESSION_NOT_FOUND, SESSION_CLOSED,
     STALE_CARD, ANSWER_HIDDEN, RATING_CONFLICT, START_REQUEST_CHANGED, RESULTS_UNAVAILABLE, STORAGE_FAILED }
 class FlashcardException(val code: FlashcardError) : IllegalStateException(code.name)
 
-data class FlashcardSettings(val size: Int = 20, val direction: FlashcardDirection = FlashcardDirection.BG_TO_RU)
+data class FlashcardSettings(val size: Int = 20, val direction: FlashcardDirection = FlashcardDirection.BG_TO_RU, val scope: StudyScope = StudyScope.MIXED)
 data class FlashcardQuestion(
     val id: Long, val position: Int, val direction: CardDirection,
     val prompt: List<String>, val revealed: Boolean, val answer: List<String>,

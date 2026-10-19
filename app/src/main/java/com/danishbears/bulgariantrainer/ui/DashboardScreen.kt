@@ -21,7 +21,7 @@ import com.danishbears.bulgariantrainer.R
 import java.text.NumberFormat
 
 @Composable
-fun DashboardScreen(state: DashboardState, onRetry: () -> Unit, onDictionary: () -> Unit, onAdd: () -> Unit, onSentences: () -> Unit) {
+fun DashboardScreen(state: DashboardState, onRetry: () -> Unit, onDictionary: () -> Unit, onAdd: () -> Unit, onSentences: () -> Unit, onStatistics: () -> Unit) {
     LazyColumn(contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
         item {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -55,6 +55,7 @@ fun DashboardScreen(state: DashboardState, onRetry: () -> Unit, onDictionary: ()
         }
         item {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(onClick = onStatistics, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.statistics)) }
                 OutlinedButton(onClick = onSentences, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.sentences)) }
                 Button(onClick = onAdd, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.add_word)) }
                 OutlinedButton(onClick = onDictionary, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.open_dictionary)) }

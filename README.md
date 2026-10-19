@@ -1,9 +1,16 @@
+> **Главная → Статистика и повторения** shows actual learning categories, due
+> queues, finalized results by mode/grading source, UTC activity and difficult
+> words. All training setups now offer NEW/DUE/MIXED with the pinned web scheduler.
+> See [REVIEW_AND_STATISTICS.md](REVIEW_AND_STATISTICS.md) for interval, legacy
+> history, constrained typing and time-zone rules; [BUILD_REPORT.md](BUILD_REPORT.md)
+> records executed verification.
+
 > From **Главная → Предложения**, manage sentences and start offline Russian→Bulgarian
 > practice. Exact approved matches are automatic; other variants require labelled
 > self-assessment. See [SENTENCES.md](SENTENCES.md) and [BUILD_REPORT.md](BUILD_REPORT.md).
 
 > Offline bidirectional typing is implemented in the **Ввод** tab: 30 distinct
-> entries, 15/15 directions, explicit shorter-session consent, exact normalized
+> entries, 15/15 when scope eligibility allows it, explicit shorter-session consent, exact normalized
 > grading, saved feedback/mistakes and durable recovery. See [TYPING.md](TYPING.md)
 > and [BUILD_REPORT.md](BUILD_REPORT.md) for behavior and actual verification.
 
@@ -19,7 +26,7 @@ flashcards support both languages/mixed direction, hidden answers, self-ratings,
 durable recovery and saved summaries. Bidirectional typing adds balanced unique
 queues, exact grading, accepted-answer feedback and saved mistake review. Sentence management and Russian→Bulgarian practice add optional metadata,
 approved alternatives, multiline answers and explicitly labelled self-assessment
-for non-matching variants. Review scheduling and pronunciation remain future stages; no learning
+for non-matching variants. Review scheduling and real-record statistics are implemented; pronunciation remains a future stage; no learning
 statistics or sample records are fabricated.
 
 The initial repository at `d18ad8814b391c60b0e1ec2099a5c2251978b2c6` contained

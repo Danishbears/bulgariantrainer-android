@@ -39,7 +39,7 @@ class SentenceMigrationTest {
         }
     }
     private fun open(name: String) = Room.databaseBuilder(context, TrainerDatabase::class.java, name)
-        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5).build()
+        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6).build()
     private fun sequence(db: TrainerDatabase, name: String) = db.openHelper.readableDatabase.query("SELECT seq FROM sqlite_sequence WHERE name = ?", arrayOf(name)).use { it.moveToFirst(); it.getLong(0) }
     @Test fun populatedV4MigratesWithoutLosingAlternativeIdsProvenanceCountersOrUnfinishedOtherModes() = runBlocking<Unit> {
         val name = "sentence-migration-${UUID.randomUUID()}.db"
@@ -79,7 +79,7 @@ class SentenceMigrationTest {
             assertEquals(oldFlash, flash.restore()); assertEquals(oldTyping, typing.restore())
             assertEquals(1, flash.progress(7)!!.attempts)
             db.openHelper.readableDatabase.query("PRAGMA foreign_key_check").use { assertEquals(0, it.count) }
-            assertEquals(5, db.openHelper.readableDatabase.version)
+            assertEquals(6, db.openHelper.readableDatabase.version)
         } finally { db.close(); context.deleteDatabase(name) }
     }
     @Test fun emptyChildTableRetainsDeletedHighWaterIdsAndNewOptionalDifficultyIsValid() = runBlocking<Unit> {

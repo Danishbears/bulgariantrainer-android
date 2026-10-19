@@ -1,6 +1,8 @@
 package com.danishbears.bulgariantrainer.flashcards
 
 import androidx.room.withTransaction
+import com.danishbears.bulgariantrainer.data.*
+import com.danishbears.bulgariantrainer.review.*
 import com.danishbears.bulgariantrainer.data.FlashcardAttemptEntity
 import com.danishbears.bulgariantrainer.data.FlashcardCardEntity
 import com.danishbears.bulgariantrainer.data.FlashcardSessionEntity
@@ -31,7 +33,9 @@ class FlashcardRepository internal constructor(
     private val random: Random = Random.Default,
 ) {
     private val dao = database.flashcardDao()
-    fun observeAvailable(): Flow<Long> = dao.observeAvailable()
+    private val review = database.reviewDao()
+    private val scheduler = ReviewScheduler(clock)
+    fun observeAvailable(scope: StudyScope = StudyScope.MIXED): Flow<Long> = ReviewRepository(database, clock).observeAvailable(ReviewMode.FLASHCARD, scope)
     fun observe(id: Long): Flow<FlashcardState?> = dao.observe(id).map { it?.toState() }.flowOn(Dispatchers.Default)
 
     suspend fun restore(preferred: Long? = null): FlashcardState? = database.withTransaction {
@@ -53,20 +57,20 @@ class FlashcardRepository internal constructor(
         if (settings.size !in 1..100) fail(FlashcardError.INVALID_SETTINGS)
         return database.withTransaction {
             dao.forRequest(request)?.let { previous ->
-                if (previous.requestedSize != settings.size || previous.direction != settings.direction.name)
+                if (previous.requestedSize != settings.size || previous.direction != settings.direction.name || previous.scope != settings.scope.name)
                     fail(FlashcardError.START_REQUEST_CHANGED)
                 return@withTransaction graph(previous.id).toState()
             }
-            // Bounded random selection of distinct active word rows; EXISTS avoids translation join duplicates.
-            // No fabricated DUE/NEW/mastery categorization is applied before a scheduler exists.
-            val ids = dao.candidateIds(settings.size)
-            if (ids.isEmpty()) fail(FlashcardError.EMPTY_DICTIONARY)
+            val at = scheduler.now()
+            val categories = review.words().filter { it.mode == ReviewMode.FLASHCARD.name }.associate { it.wordId to scheduler.category(it.schedule(), at) }
+            val ids = ReviewSelection.flashcards(review.wordIds(), categories, settings.scope, settings.size, random)
+            if (ids.isEmpty()) fail(when (settings.scope) { StudyScope.DUE -> FlashcardError.EMPTY_REVIEW_QUEUE; StudyScope.NEW -> FlashcardError.EMPTY_NEW_QUEUE; StudyScope.MIXED -> FlashcardError.EMPTY_DICTIONARY })
             // Room relation mapping may reset/re-execute its parent statement. Never put RANDOM()
             // in that relation query: the second pass could produce different IDs without child maps.
             val records = dao.candidatesByIds(ids).associateBy { it.word.id }
             val selected = ids.map { records.getValue(it) }
             val id = dao.insertSession(FlashcardSessionEntity(requestId = request, requestedSize = settings.size,
-                direction = settings.direction.name, total = selected.size, startedAt = clock.millis()))
+                direction = settings.direction.name, scope = settings.scope.name, total = selected.size, startedAt = clock.millis()))
             val firstBulgarian = random.nextBoolean()
             selected.forEachIndexed { index, word ->
                 val russian = word.translations.sortedWith(compareByDescending<TranslationEntity> { it.isPrimary }.thenBy { it.id })
@@ -102,6 +106,8 @@ class FlashcardRepository internal constructor(
         val progress = RecognitionUpdates.record(dao.progress(card.wordId)?.toProgress(), card.wordId, known, at)
         dao.saveProgress(RecognitionProgressEntity(progress.wordId, progress.attempts, progress.known,
             progress.consecutiveKnown, progress.lastRatedAt.toEpochMilli()))
+        val scheduled = scheduler.record(review.word(card.wordId, ReviewMode.FLASHCARD.name)?.schedule(), known, at)
+        review.save(scheduled.wordEntity(card.wordId, ReviewMode.FLASHCARD.name))
         val next = session.currentPosition + 1
         dao.updateSession(session.copy(currentPosition = next,
             status = if (next > session.total) FlashcardStatus.COMPLETED.name else FlashcardStatus.IN_PROGRESS.name,
@@ -136,7 +142,7 @@ class FlashcardRepository internal constructor(
             FlashcardResult(it.card.id, it.card.position, CardDirection.valueOf(it.card.direction), it.card.bulgarian,
                 it.card.russian(), when (it.attempt?.known) { true -> CardResult.CORRECT; false -> CardResult.INCORRECT; null -> CardResult.SKIPPED })
         }
-        return FlashcardState(session.id, FlashcardSettings(session.requestedSize, FlashcardDirection.valueOf(session.direction)),
+        return FlashcardState(session.id, FlashcardSettings(session.requestedSize, FlashcardDirection.valueOf(session.direction), StudyScope.valueOf(session.scope)),
             status, session.total, answered, known, answered - known, session.total - answered, session.currentPosition,
             Instant.ofEpochMilli(session.startedAt), session.completedAt?.let(Instant::ofEpochMilli), question, results)
     }

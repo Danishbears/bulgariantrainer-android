@@ -112,6 +112,8 @@ internal fun sentenceErrorLabel(error: SentenceError): String = stringResource(w
     SentenceError.DUPLICATE_SENTENCE -> R.string.sentence_duplicate
     SentenceError.SENTENCE_NOT_FOUND -> R.string.sentence_missing
     SentenceError.INVALID_SETTINGS -> R.string.sentence_size_error
+    SentenceError.EMPTY_REVIEW_QUEUE -> R.string.review_empty_due
+    SentenceError.EMPTY_NEW_QUEUE -> R.string.review_empty_new
     SentenceError.EMPTY_SENTENCES -> R.string.sentence_empty
     SentenceError.INVALID_ANSWER -> R.string.typing_invalid
     SentenceError.SESSION_NOT_FOUND -> R.string.flash_session_missing

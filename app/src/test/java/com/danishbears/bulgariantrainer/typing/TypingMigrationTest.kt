@@ -49,7 +49,7 @@ class TypingMigrationTest {
             sqlite.execSQL("INSERT INTO recognition_progress VALUES(7,1,1,1,102)")
             sqlite.version = 3
         }
-        val db = Room.databaseBuilder(context, TrainerDatabase::class.java, name).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5).build()
+        val db = Room.databaseBuilder(context, TrainerDatabase::class.java, name).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6).build()
         try {
             val vocabulary = VocabularyRepository(db).get(7)
             assertEquals("Заметка", vocabulary.notes); assertEquals(13L, vocabulary.translations.single().id)
@@ -65,7 +65,7 @@ class TypingMigrationTest {
             assertEquals(before, flash.restore()); assertEquals(1, flash.progress(7)!!.attempts)
             flash.reveal(before.id, before.question!!.id)
             assertEquals(FlashcardStatus.COMPLETED, flash.rate(before.id, before.question!!.id, false).status)
-            assertEquals(5, db.openHelper.readableDatabase.version)
+            assertEquals(6, db.openHelper.readableDatabase.version)
         } finally { db.close(); context.deleteDatabase(name) }
     }
 }

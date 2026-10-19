@@ -18,6 +18,7 @@ internal data class TypingSessionEntity(
     val revision: Long = 0,
     @ColumnInfo(name = "started_at") val startedAt: Long,
     @ColumnInfo(name = "completed_at") val completedAt: Long? = null,
+    @ColumnInfo(name = "study_scope", defaultValue = "'MIXED'") val scope: String = "MIXED",
 )
 @Entity(tableName = "typing_questions", foreignKeys = [
     ForeignKey(entity = TypingSessionEntity::class, parentColumns = ["id"], childColumns = ["session_id"], onDelete = ForeignKey.RESTRICT),

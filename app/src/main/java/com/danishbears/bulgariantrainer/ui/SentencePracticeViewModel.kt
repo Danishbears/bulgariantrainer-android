@@ -1,5 +1,7 @@
 package com.danishbears.bulgariantrainer.ui
 
+import com.danishbears.bulgariantrainer.review.StudyScope
+import kotlinx.coroutines.flow.combine
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,7 +28,7 @@ sealed interface SentencePracticeAvailability {
     data object Failed : SentencePracticeAvailability
 }
 sealed interface SentencePracticeAction {
-    data class Start(val requestId: String, val size: Int) : SentencePracticeAction
+    data class Start(val requestId: String, val size: Int, val scope: StudyScope = StudyScope.MIXED) : SentencePracticeAction
     data class Submit(val session: Long, val question: Long, val submitted: String) : SentencePracticeAction
     data class SelfRate(val session: Long, val question: Long, val rating: SentenceRating) : SentencePracticeAction
     data class Next(val session: Long, val question: Long) : SentencePracticeAction
@@ -43,9 +45,11 @@ class SentencePracticeViewModel(private val repository: SentencePracticeReposito
     val state = _state.asStateFlow()
     val input = saved.getStateFlow("input", "")
     val size = saved.getStateFlow("size", "10")
+    val scope = saved.getStateFlow("scope", StudyScope.MIXED.name)
+    fun setScope(value: StudyScope) { if (controlsEnabled()) saved["scope"] = value.name }
     private val retryAvailability = MutableStateFlow(0)
-    val availability = retryAvailability.flatMapLatest {
-        repository.observeAvailable().map<Long, SentencePracticeAvailability> { SentencePracticeAvailability.Ready(it) }
+    val availability = combine(retryAvailability, scope) { _, value -> value }.flatMapLatest { selected ->
+        repository.observeAvailable(StudyScope.valueOf(selected)).map<Long, SentencePracticeAvailability> { SentencePracticeAvailability.Ready(it) }
             .onStart { emit(SentencePracticeAvailability.Loading) }
             .catch { if (it is CancellationException) throw it else emit(SentencePracticeAvailability.Failed) }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SentencePracticeAvailability.Loading)
@@ -84,7 +88,7 @@ class SentencePracticeViewModel(private val repository: SentencePracticeReposito
         if (!controlsEnabled() || _state.value.session?.let { it.active || it.question != null } == true) return
         val requested = size.value.toIntOrNull()
         if (requested == null || requested !in 1..100) { _state.update { it.copy(error = SentenceError.INVALID_SETTINGS) }; return }
-        perform(SentencePracticeAction.Start(UUID.randomUUID().toString(), requested))
+        perform(SentencePracticeAction.Start(UUID.randomUUID().toString(), requested, StudyScope.valueOf(scope.value)))
     }
     // Immutable rendered IDs/text prevent a delayed callback from submitting to the next question.
     fun submit(session: Long, question: Long, submitted: String) = perform(SentencePracticeAction.Submit(session, question, submitted))
@@ -100,7 +104,7 @@ class SentencePracticeViewModel(private val repository: SentencePracticeReposito
         viewModelScope.launch {
             try {
                 val updated = when (action) {
-                    is SentencePracticeAction.Start -> repository.start(action.requestId, action.size)
+                    is SentencePracticeAction.Start -> repository.start(action.requestId, action.size, action.scope)
                     is SentencePracticeAction.Submit -> repository.submit(action.session, action.question, action.submitted)
                     is SentencePracticeAction.SelfRate -> repository.selfRate(action.session, action.question, action.rating)
                     is SentencePracticeAction.Next -> repository.next(action.session, action.question)

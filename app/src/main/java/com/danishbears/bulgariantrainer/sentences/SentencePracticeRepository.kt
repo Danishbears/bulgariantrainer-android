@@ -1,6 +1,7 @@
 package com.danishbears.bulgariantrainer.sentences
 
 import androidx.room.withTransaction
+import com.danishbears.bulgariantrainer.review.*
 import com.danishbears.bulgariantrainer.data.*
 import java.time.Clock
 import java.time.Instant
@@ -16,7 +17,9 @@ import kotlinx.serialization.json.*
 class SentencePracticeRepository internal constructor(private val database: TrainerDatabase,
     private val clock: Clock = Clock.systemUTC(), private val random: Random = Random.Default) {
     private val dao = database.sentenceDao()
-    fun observeAvailable(): Flow<Long> = dao.observeAvailable()
+    private val schedules = database.reviewDao()
+    private val scheduler = ReviewScheduler(clock)
+    fun observeAvailable(scope: StudyScope = StudyScope.MIXED): Flow<Long> = ReviewRepository(database, clock).observeAvailable(ReviewMode.SENTENCE, scope)
     fun observe(id: Long): Flow<SentencePracticeState?> = dao.observe(id).map { it?.toState() }.flowOn(Dispatchers.Default)
     suspend fun restore(preferred: Long? = null): SentencePracticeState? = database.withTransaction {
         val requested = preferred?.let { dao.graph(it) }
@@ -32,18 +35,20 @@ class SentencePracticeRepository internal constructor(private val database: Trai
     suspend fun progress(id: Long): SentenceProgress? = dao.progress(id)?.let {
         SentenceProgress(id, it.attempts, it.correct, it.partial, it.incorrect, it.consecutiveCorrect, Instant.ofEpochMilli(it.lastEvaluatedAt))
     }
-    suspend fun start(requestId: String, size: Int = 10): SentencePracticeState {
+    suspend fun start(requestId: String, size: Int = 10, scope: StudyScope = StudyScope.MIXED): SentencePracticeState {
         val request = try { UUID.fromString(requestId).toString() } catch (_: IllegalArgumentException) { fail(SentenceError.INVALID_SETTINGS) }
         if (size !in 1..100) fail(SentenceError.INVALID_SETTINGS)
         return database.withTransaction {
             dao.forRequest(request)?.let {
-                if (it.requestedSize != size) fail(SentenceError.START_REQUEST_CHANGED)
+                if (it.requestedSize != size || it.scope != scope.name) fail(SentenceError.START_REQUEST_CHANGED)
                 return@withTransaction graph(it.id).toState()
             }
-            val ids = dao.candidateIds().shuffled(random).take(size)
-            if (ids.isEmpty()) fail(SentenceError.EMPTY_SENTENCES)
+            val at = scheduler.now()
+            val categories = schedules.sentences().associate { it.sentenceId to scheduler.category(it.schedule(), at) }
+            val ids = ReviewSelection.sentences(dao.candidateIds(), categories, scope, size, random)
+            if (ids.isEmpty()) fail(when (scope) { StudyScope.DUE -> SentenceError.EMPTY_REVIEW_QUEUE; StudyScope.NEW -> SentenceError.EMPTY_NEW_QUEUE; StudyScope.MIXED -> SentenceError.EMPTY_SENTENCES })
             val selected = dao.candidates(ids).associateBy { it.sentence.id }
-            val id = dao.insertSession(SentenceSessionEntity(requestId = request, requestedSize = size, total = ids.size, startedAt = clock.millis()))
+            val id = dao.insertSession(SentenceSessionEntity(requestId = request, requestedSize = size, scope = scope.name, total = ids.size, startedAt = clock.millis()))
             ids.forEachIndexed { index, sentenceId ->
                 val sentence = selected.getValue(sentenceId).toRecord().input
                 dao.insertQuestion(SentenceQuestionEntity(sessionId = id, sentenceId = sentenceId, position = index + 1,
@@ -113,6 +118,7 @@ class SentencePracticeRepository internal constructor(private val database: Trai
             (old?.partial ?: 0) + if (rating == SentenceRating.PARTIAL) 1 else 0,
             (old?.incorrect ?: 0) + if (rating == SentenceRating.INCORRECT) 1 else 0,
             if (rating == SentenceRating.CORRECT) (old?.consecutiveCorrect ?: 0) + 1 else 0, at))
+        schedules.save(scheduler.record(schedules.sentence(id)?.schedule(), rating == SentenceRating.CORRECT, Instant.ofEpochMilli(at)).sentenceEntity(id))
     }
     private suspend fun finishMutation(session: SentenceSessionEntity, last: Boolean, at: Long) {
         dao.updateSession(session.copy(revision = session.revision + 1,
@@ -142,7 +148,7 @@ class SentencePracticeRepository internal constructor(private val database: Trai
         return SentencePracticeState(session.id, SentenceStatus.valueOf(session.status), session.requestedSize, session.total,
             feedback.size, feedback.count { !it.needsSelfAssessment }, feedback.count { it.result == SentenceResult.CORRECT },
             feedback.count { it.result == SentenceResult.PARTIAL }, feedback.count { it.result == SentenceResult.INCORRECT },
-            feedback.count { it.needsSelfAssessment }, session.currentPosition, session.revision, question, review)
+            feedback.count { it.needsSelfAssessment }, session.currentPosition, session.revision, question, review, StudyScope.valueOf(session.scope))
     }
     private fun fail(code: SentenceError): Nothing = throw SentenceException(code)
 }

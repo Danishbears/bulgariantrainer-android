@@ -1,3 +1,8 @@
+> Current schema is **v6**. Additive migration 5→6 adds persisted study scope and
+> separate word/sentence scheduling facts, retaining every previous counter,
+> attempt, snapshot and timestamp. Legacy provenance and unknown directions are
+> handled explicitly; see [REVIEW_AND_STATISTICS.md](REVIEW_AND_STATISTICS.md).
+
 > Current schema is **v5**. Migration 4→5 preserves sentence/alternative IDs and
 > sequence high-water marks while relaxing difficulty to nullable, then adds
 > independent sentence session/question/attempt/progress tables. Foreign keys stay

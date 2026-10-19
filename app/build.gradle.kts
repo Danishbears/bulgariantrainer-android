@@ -22,7 +22,7 @@ android {
         compose = true
     }
 
-    sourceSets.getByName("test").resources.srcDirs("schemas", "src/main/assets")
+    sourceSets.getByName("test").resources.srcDirs("schemas", "src/main/assets", "../parity/fixtures")
 
     testOptions {
         unitTests.isIncludeAndroidResources = true

@@ -12,6 +12,7 @@ internal data class SentenceSessionEntity(
     val revision: Long = 0,
     @ColumnInfo(name = "started_at") val startedAt: Long,
     @ColumnInfo(name = "completed_at") val completedAt: Long? = null,
+    @ColumnInfo(name = "study_scope", defaultValue = "'MIXED'") val scope: String = "MIXED",
 )
 @Entity(tableName = "sentence_questions", foreignKeys = [
     ForeignKey(entity = SentenceSessionEntity::class, parentColumns = ["id"], childColumns = ["session_id"], onDelete = ForeignKey.RESTRICT),

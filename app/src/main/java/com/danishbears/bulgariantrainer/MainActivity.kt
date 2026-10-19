@@ -23,7 +23,8 @@ class MainActivity : ComponentActivity() {
                     (application as BulgarianTrainerApplication).flashcards,
                     (application as BulgarianTrainerApplication).typing,
                     (application as BulgarianTrainerApplication).sentences,
-                    (application as BulgarianTrainerApplication).sentencePractice)
+                    (application as BulgarianTrainerApplication).sentencePractice,
+                    (application as BulgarianTrainerApplication).statistics)
             }
         }
     }

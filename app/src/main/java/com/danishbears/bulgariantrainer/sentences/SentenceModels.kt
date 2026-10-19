@@ -2,12 +2,13 @@ package com.danishbears.bulgariantrainer.sentences
 
 import com.danishbears.bulgariantrainer.data.VocabularyText
 import java.time.Instant
+import com.danishbears.bulgariantrainer.review.StudyScope
 
 data class SentenceInput(val russian: String, val bulgarian: String, val alternatives: List<String> = emptyList(),
     val explanation: String? = null, val difficulty: Int? = null, val topic: String? = null)
 data class SentenceRecord(val id: Long, val input: SentenceInput, val archived: Boolean, val approved: Boolean,
     val sourceId: String, val sourceFilename: String, val sourceRow: Int)
-enum class SentenceError { INVALID_SENTENCE, DUPLICATE_SENTENCE, SENTENCE_NOT_FOUND, INVALID_SETTINGS, EMPTY_SENTENCES,
+enum class SentenceError { INVALID_SENTENCE, DUPLICATE_SENTENCE, SENTENCE_NOT_FOUND, INVALID_SETTINGS, EMPTY_SENTENCES, EMPTY_REVIEW_QUEUE, EMPTY_NEW_QUEUE,
     INVALID_ANSWER, SESSION_NOT_FOUND, SESSION_CLOSED, STALE_QUESTION, ANSWER_REQUIRED, EVALUATION_REQUIRED,
     ANSWER_CONFLICT, EVALUATION_CONFLICT, START_REQUEST_CHANGED, RESULTS_UNAVAILABLE, STORAGE_FAILED }
 class SentenceException(val code: SentenceError) : IllegalStateException(code.name)
@@ -26,7 +27,8 @@ data class SentenceReview(val questionId: Long, val position: Int, val russian: 
     val accepted: List<String>, val explanation: String?)
 data class SentencePracticeState(val id: Long, val status: SentenceStatus, val requestedSize: Int, val total: Int,
     val submitted: Int, val evaluated: Int, val correct: Int, val partial: Int, val incorrect: Int, val pending: Int,
-    val currentPosition: Int, val revision: Long, val question: SentenceQuestion?, val review: List<SentenceReview>) {
+    val currentPosition: Int, val revision: Long, val question: SentenceQuestion?, val review: List<SentenceReview>,
+    val scope: StudyScope = StudyScope.MIXED) {
     val active get() = status == SentenceStatus.IN_PROGRESS
     val unanswered get() = total - submitted
 }

@@ -1,5 +1,21 @@
 # Web reference audit and Android plan
 
+## Current Android review scheduling and statistics increment
+
+Starting from `84a466610e0cf7ee724f47c699c28dffcd2fc014`, Android implements the
+actual pinned scheduler (1/3/7 then doubling to 365; failure/PARTIAL=1 day;
+5-streak/28-day mastery; due precedence), independent four-mode schedules,
+persisted NEW/DUE/MIXED scopes and real-record statistics. Room v6 conservatively
+copies known legacy scheduling facts without changing old counters or attempts.
+The UI explains inherited data and scoped typing imbalances. UTC daily definitions
+match web statistics; the offline device clock replaces server clock authority.
+
+[REVIEW_AND_STATISTICS.md](REVIEW_AND_STATISTICS.md) maps source/tests, exact
+migration policy, clock/DST boundaries, metrics and known web defects. A pinned
+Java reference harness verifies 21 histories and 20 statistics assertions; Kotlin
+parity tests consume the same fixtures. Current executed verification belongs in
+BUILD_REPORT.md. Prior milestone sections below describe their historical scope.
+
 ## Current Android sentence increment
 
 Building on `3257b19570aa89b85e9e147a5794ced4bc72d63d`, Android adds sentence
@@ -516,7 +532,7 @@ not added or executed. Preserve intended behavior; do not silently replicate the
 5. **Sentence practice — implemented.** See SENTENCES.md. Approved sentence management/CSV, alternatives/explanations,
    automatic exact matches and pending self-assessment. Resolve link-snapshot policy;
    verify partial/incorrect grading, pending early exit and isolated usage/progress.
-6. **Scheduling and statistics.** Implement shared scheduler as modes are enabled,
+6. **Scheduling and statistics — implemented.** See REVIEW_AND_STATISTICS.md. Shared scheduler across modes,
    then derived dashboard using exact interval/category/UTC/rounding rules. Validate
    clock boundaries, due/mastered transition, direction isolation, replay safety,
    7/30-day series, null accuracy and archive behavior with deterministic fixtures.

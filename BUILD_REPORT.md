@@ -1,3 +1,43 @@
+# Review scheduling and statistics increment — 2026-10-19
+
+Target branch `codex/android-foundation-parity` started clean at
+`84a466610e0cf7ee724f47c699c28dffcd2fc014`, matching GitHub integration.
+Read-only web checkout remains `master` at
+`de0a3e883d51561123ca54b7d5dd2e53757baf0a`. Actual scheduler, statistics,
+selection, entities, V6 migration and tests were inspected; both checkouts reused.
+No target/ancestor AGENTS.md was found. Reference Java instructions were read and
+do not replace the existing Android stack. No reference files were edited.
+
+Added literal scheduler/selection ports, independent schedules, scoped recovery,
+transactional schedule/counter/session changes, explicit legacy migration, real
+statistics and lifecycle UI. New Room v6 preserves v5 attempts/counters/queues,
+adding only scope and scheduling facts. REVIEW_AND_STATISTICS.md maps sources,
+cases, migration policy, UTC/device clock handling and reference defects.
+No applicationId, UI toolkit, JDK/SDK/Gradle/AGP version, backend, AI or signing change.
+
+Local checks actually executed: `git diff --check`, `sh -n gradlew`, Python XML
+resource checks (306 resolved references), SQLite migration/fixture execution
+with FKs enabled and unchanged old attempts/counters, and static count **192 test
+methods** (not a pass). `python3 parity/verify_web_parity.py` **actually passed**:
+21 histories executed through the pinned Java scheduler/original record methods;
+20 literal statistics expectations verified against pinned integration-test source.
+Exact copied source hashes/paths are committed in parity/reference/PROVENANCE.json.
+
+Environment observations: shell temporarily failed with exec-server transport
+disconnected, then a local `pwd` succeeded. Both GitHub integrations work. Earlier
+socket-denied networking was not retried. Runtime 21.0.12.1 has no javac executable
+in PATH, but `java --list-modules` reveals jdk.compiler: the reference verifier
+successfully uses `java -m jdk.compiler/com.sun.tools.javac.Main`. This corrects the
+previous assumption that lack of javac in PATH meant no usable compiler module.
+Android SDK/Gradle bootstrap remain unavailable locally; no local Android build
+is claimed. Cloud HTTP policy reports enforced/unrestricted, without configured
+credentials; that does not establish TCP access. Hosted CI uses its existing JDK17
+and SDK35 plus a new pinned-web fixture guard before JVM tests.
+
+Hosted Android tests/APK/lint/schema results will be recorded after actual runs.
+Device process-kill/time-zone/clock/DST/IME/accessibility checks remain unperformed.
+Previous milestone evidence follows.
+
 # Offline sentence increment — 2026-10-19
 
 Target `codex/android-foundation-parity` started clean at

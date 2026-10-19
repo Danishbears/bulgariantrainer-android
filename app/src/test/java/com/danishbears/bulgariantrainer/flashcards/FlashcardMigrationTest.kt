@@ -45,7 +45,7 @@ class FlashcardMigrationTest {
             sqlite.execSQL("INSERT INTO import_receipts VALUES('existing-receipt','fingerprint',2,3,4,77)")
             sqlite.version = 2
         }
-        val db = Room.databaseBuilder(context, TrainerDatabase::class.java, name).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5).build()
+        val db = Room.databaseBuilder(context, TrainerDatabase::class.java, name).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6).build()
         try {
             val word = VocabularyRepository(db).get(7) // Opening validates the full migrated Room schema.
             assertEquals("Заметка", word.notes)
@@ -65,7 +65,7 @@ class FlashcardMigrationTest {
             assertEquals(1L, flashcards.observeAvailable().first())
             val session = flashcards.start(UUID.randomUUID().toString())
             assertEquals(listOf("Къща"), session.question!!.prompt)
-            assertEquals(5, db.openHelper.readableDatabase.version)
+            assertEquals(6, db.openHelper.readableDatabase.version)
         } finally { db.close(); context.deleteDatabase(name) }
     }
 }

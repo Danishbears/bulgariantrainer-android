@@ -1,6 +1,7 @@
 package com.danishbears.bulgariantrainer.typing
 
 import androidx.room.withTransaction
+import com.danishbears.bulgariantrainer.review.*
 import com.danishbears.bulgariantrainer.data.*
 import java.time.Clock
 import java.time.Instant
@@ -19,8 +20,10 @@ class TypingRepository internal constructor(
     random: Random = Random.Default,
 ) {
     private val dao = database.typingDao()
+    private val review = database.reviewDao()
+    private val scheduler = ReviewScheduler(clock)
     private val planner = TypingPlanner(random)
-    fun observeAvailable(): Flow<Long> = dao.observeAvailable()
+    fun observeAvailable(scope: StudyScope = StudyScope.MIXED): Flow<Long> = ReviewRepository(database, clock).observeTypingAvailable(scope)
     fun observe(id: Long): Flow<TypingState?> = dao.observe(id).map { it?.toState() }.flowOn(Dispatchers.Default)
     suspend fun restore(preferred: Long? = null): TypingState? = database.withTransaction {
         val requested = preferred?.let { dao.graph(it) }
@@ -36,21 +39,23 @@ class TypingRepository internal constructor(
     suspend fun progress(wordId: Long, direction: TypingDirection): TypingProgress? = dao.progress(wordId, direction.name)?.let {
         TypingProgress(it.wordId, direction, it.attempts, it.correct, it.consecutiveCorrect, Instant.ofEpochMilli(it.lastSubmittedAt))
     }
-    suspend fun start(requestId: String, allowShorter: Boolean = false): TypingState {
+    suspend fun start(requestId: String, allowShorter: Boolean = false, scope: StudyScope = StudyScope.MIXED): TypingState {
         val request = try { UUID.fromString(requestId).toString() } catch (_: IllegalArgumentException) { fail(TypingError.INVALID_REQUEST) }
         return database.withTransaction {
             dao.forRequest(request)?.let { previous ->
-                if (previous.allowShorter != allowShorter) fail(TypingError.START_REQUEST_CHANGED)
+                if (previous.allowShorter != allowShorter || previous.scope != scope.name) fail(TypingError.START_REQUEST_CHANGED)
                 return@withTransaction graph(previous.id).toState()
             }
-            val ids = dao.candidateIds()
-            if (ids.isEmpty()) fail(TypingError.EMPTY_DICTIONARY)
-            if (ids.size < 30 && !allowShorter) fail(TypingError.SHORTER_SESSION_REQUIRED)
-            val plan = planner.plan(ids)
+            val at = scheduler.now(); val rows = review.words()
+            val bg = rows.filter { it.mode == ReviewMode.TYPING_BG_TO_RU.name }.associate { it.wordId to scheduler.category(it.schedule(), at) }
+            val ru = rows.filter { it.mode == ReviewMode.TYPING_RU_TO_BG.name }.associate { it.wordId to scheduler.category(it.schedule(), at) }
+            val plan = planner.plan(dao.candidateIds(), bg, ru, scope)
+            if (plan.isEmpty()) fail(when (scope) { StudyScope.DUE -> TypingError.EMPTY_REVIEW_QUEUE; StudyScope.NEW -> TypingError.EMPTY_NEW_QUEUE; StudyScope.MIXED -> TypingError.EMPTY_DICTIONARY })
+            if (plan.size < 30 && !allowShorter) fail(TypingError.SHORTER_SESSION_REQUIRED)
             // Only the <=30 selected relations are hydrated; deterministic query avoids Room RANDOM/reset bugs.
             val words = dao.candidates(plan.map { it.wordId }).associateBy { it.word.id }
             val id = dao.insertSession(TypingSessionEntity(requestId = request, allowShorter = allowShorter,
-                total = plan.size, startedAt = clock.millis()))
+                scope = scope.name, total = plan.size, startedAt = clock.millis()))
             plan.forEachIndexed { index, item ->
                 val word = words.getValue(item.wordId)
                 val translations = word.translations.sortedWith(compareByDescending<TranslationEntity> { it.isPrimary }.thenBy { it.id })
@@ -81,6 +86,8 @@ class TypingRepository internal constructor(
         dao.saveProgress(TypingProgressEntity(question.wordId, question.direction, (previous?.attempts ?: 0) + 1,
             (previous?.correct ?: 0) + if (correct) 1 else 0,
             if (correct) (previous?.consecutiveCorrect ?: 0) + 1 else 0, at))
+        val mode = if (question.direction == TypingDirection.BG_TO_RU.name) ReviewMode.TYPING_BG_TO_RU else ReviewMode.TYPING_RU_TO_BG
+        review.save(scheduler.record(review.word(question.wordId, mode.name)?.schedule(), correct, Instant.ofEpochMilli(at)).wordEntity(question.wordId, mode.name))
         val last = question.position == session.total
         dao.updateSession(session.copy(revision = session.revision + 1,
             status = if (last) TypingStatus.COMPLETED.name else session.status, completedAt = if (last) at else null))
@@ -129,7 +136,8 @@ class TypingRepository internal constructor(
                 TypingDirection.valueOf(it.question.direction), it.question.prompt(), it.attempt.submitted, it.question.accepted())
         }
         return TypingState(session.id, TypingStatus.valueOf(session.status), session.total, questions.count { it.attempt != null },
-            questions.count { it.attempt?.correct == true }, session.currentPosition, session.revision, question, mistakes)
+            questions.count { it.attempt?.correct == true }, session.currentPosition, session.revision, question, mistakes, StudyScope.valueOf(session.scope),
+            ordered.count { it.question.direction == TypingDirection.BG_TO_RU.name }, ordered.count { it.question.direction == TypingDirection.RU_TO_BG.name })
     }
     private fun TypingQuestionEntity.russian() = Json.parseToJsonElement(russianJson).jsonArray.map { it.jsonPrimitive.content }
     private fun TypingQuestionEntity.prompt() = if (direction == TypingDirection.BG_TO_RU.name) listOf(bulgarian) else russian()

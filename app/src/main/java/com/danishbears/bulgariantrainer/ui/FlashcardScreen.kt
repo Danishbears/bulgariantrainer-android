@@ -42,6 +42,8 @@ import com.danishbears.bulgariantrainer.flashcards.*
 @Composable
 fun FlashcardScreen(model: FlashcardViewModel, onDictionary: () -> Unit) {
     val state by model.state.collectAsStateWithLifecycle()
+    val scope by model.scope.collectAsStateWithLifecycle()
+    ReviewRefreshOnResume(model::retryAvailable)
     val available by model.availability.collectAsStateWithLifecycle()
     val size by model.size.collectAsStateWithLifecycle()
     val direction by model.direction.collectAsStateWithLifecycle()
@@ -75,6 +77,7 @@ fun FlashcardScreen(model: FlashcardViewModel, onDictionary: () -> Unit) {
                 session == null -> {
                     item(key = "setup") {
                         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            ReviewScopeSelector(scope, model::setScope, enabled)
                             Text(stringResource(R.string.flash_settings), style = MaterialTheme.typography.titleLarge)
                             FlashcardDirection.entries.forEach { option -> FilterChip(selected = direction == option.name,
                                 enabled = enabled, onClick = { model.setDirection(option) }, label = { Text(flashcardDirectionLabel(option)) }) }
@@ -181,6 +184,8 @@ internal fun flashcardDirectionLabel(direction: FlashcardDirection): String = st
 @Composable
 private fun flashcardErrorLabel(error: FlashcardError): String = stringResource(when (error) {
     FlashcardError.INVALID_SETTINGS -> R.string.flash_size_error
+    FlashcardError.EMPTY_REVIEW_QUEUE -> R.string.review_empty_due
+    FlashcardError.EMPTY_NEW_QUEUE -> R.string.review_empty_new
     FlashcardError.EMPTY_DICTIONARY -> R.string.flash_empty
     FlashcardError.SESSION_NOT_FOUND -> R.string.flash_session_missing
     FlashcardError.SESSION_CLOSED -> R.string.flash_session_closed

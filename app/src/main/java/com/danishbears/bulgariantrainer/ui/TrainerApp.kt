@@ -20,6 +20,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import com.danishbears.bulgariantrainer.sentences.SentenceRepository
 import com.danishbears.bulgariantrainer.sentences.SentencePracticeRepository
+import com.danishbears.bulgariantrainer.statistics.StatisticsRepository
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -44,7 +45,7 @@ import com.danishbears.bulgariantrainer.transfer.ContentTransferRepository
 import com.danishbears.bulgariantrainer.transfer.DocumentGateway
 
 @Composable
-fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferRepository, flashcards: FlashcardRepository, typing: TypingRepository, sentences: SentenceRepository, sentencePractice: SentencePracticeRepository) {
+fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferRepository, flashcards: FlashcardRepository, typing: TypingRepository, sentences: SentenceRepository, sentencePractice: SentencePracticeRepository, statistics: StatisticsRepository) {
     val controller = rememberNavController()
     val model: VocabularyViewModel = viewModel(factory = viewModelFactory {
         initializer { VocabularyViewModel(repository, createSavedStateHandle()) }
@@ -89,7 +90,8 @@ fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferReposi
                 DashboardScreen(state, model::retryDashboard,
                     onDictionary = { controller.navigate("vocabulary") { launchSingleTop = true } },
                     onAdd = { controller.navigate("word/new") },
-                    onSentences = { controller.navigate("sentences") { launchSingleTop = true } })
+                    onSentences = { controller.navigate("sentences") { launchSingleTop = true } },
+                    onStatistics = { controller.navigate("statistics") { launchSingleTop = true } })
             }
             composable("vocabulary") {
                 VocabularyScreen(model, onAdd = { controller.navigate("word/new") },
@@ -125,6 +127,16 @@ fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferReposi
                     initializer { SentenceEditorViewModel(sentences, createSavedStateHandle()) }
                 })
                 SentenceEditorScreen(model, onClose = { controller.popBackStack() })
+            }
+            composable("statistics") {
+                val model: StatisticsViewModel = viewModel(factory = viewModelFactory { initializer { StatisticsViewModel(statistics) } })
+                StatisticsScreen(model, onWord = { controller.navigate("statistics-word/$it") })
+            }
+            composable("statistics-word/{wordId}", arguments = listOf(navArgument("wordId") { type = NavType.LongType })) { entry ->
+                val model: WordMistakesViewModel = viewModel(factory = viewModelFactory {
+                    initializer { WordMistakesViewModel(statistics, requireNotNull(entry.arguments).getLong("wordId")) }
+                })
+                WordMistakesScreen(model, onBack = { controller.popBackStack() })
             }
             composable("transfer") {
                 val context = LocalContext.current.applicationContext
