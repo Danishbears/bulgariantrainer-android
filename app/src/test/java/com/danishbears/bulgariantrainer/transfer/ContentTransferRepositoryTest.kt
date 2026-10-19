@@ -205,6 +205,19 @@ class ContentTransferRepositoryTest {
         assertEquals("not-json", p.rows.last().sentence!!.unresolvedAlternatives)
         assertEquals(3, db.contentDao().sentenceBatch(0, true).last().sentence.sourceRow)
     }
+    @Test fun sentenceExportEscapesCsvAndJsonIndependentlyWithoutLosingPunctuation() = runBlocking<Unit> {
+        val draft = SentenceDraft("opaque-id", "Мне нужен \"чай\", пожалуйста.", "Искам чай, моля.",
+            alternatives = listOf("Искам \"черен чай\", моля.", "Чай / кафе, моля."),
+            explanation = "Правило \"цитаты\", пояснение", difficulty = "2", topic = "Кафе, чай")
+        val p = ImportPreview(ContentKind.SENTENCES, "edited.csv", listOf(ImportRow(1, 2, 2, "original source",
+            RowStatus.READY, emptyList(), sentence = draft, selected = true)))
+        transfer.confirm(p)
+        val csv = export(ContentKind.SENTENCES)
+        val restored = ContentParser.parse(ContentKind.SENTENCES, "export.csv", csv.toByteArray()).rows.last().sentence!!
+        assertEquals(draft, restored)
+        assertTrue(csv.contains("\"\"чай\"\""))
+        assertEquals(listOf("Искам \"черен чай\", моля.", "Чай / кафе, моля."), restored.alternatives)
+    }
     @Test fun exportExcludesArchiveUnlessRequestedAndExportsOnlyContentNotProgress() = runBlocking<Unit> {
         vocabulary.setArchived(word().id, true)
         assertEquals("bulgarian,russian,partOfSpeech\r\n", export(ContentKind.WORDS, archived = false))

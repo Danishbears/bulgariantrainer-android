@@ -148,4 +148,6 @@
     <string name="transfer_selection_error">Исправьте выбранные записи или снимите отметки. Проверьте ограничения полей и максимум 50 переводов у слова. Ничего не сохранено.</string>
     <string name="transfer_confirmed_error">Этот предпросмотр уже был подтверждён с другим выбором. Для новых изменений откройте файл заново.</string>
     <string name="transfer_storage_error">Не удалось завершить операцию с базой. Выбранные изменения не сохранены; попробуйте ещё раз.</string>
+    <string name="replace_preview_action">Открыть новый предпросмотр</string>
+    <string name="preview_content_type">Предпросмотр: %1$s</string>
 </resources>

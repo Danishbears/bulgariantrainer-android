@@ -43,11 +43,12 @@ object ContentParser {
             val record = CsvCodec.Record(index + 1, index + 1, source, emptyList(), false)
             if (source.isBlank()) empty(index + 1, record)
             else {
-                val matches = pair.findAll(source).toList().ifEmpty { tabs.findAll(source).toList() }
-                val match = matches.firstOrNull()
+                val pairs = pair.findAll(source).iterator()
+                val matches = if (pairs.hasNext()) pairs else tabs.findAll(source).iterator()
+                val match = if (matches.hasNext()) matches.next() else null
                 if (match == null) invalidWord(index + 1, record, ImportIssue.NO_SEPARATOR)
                 else word(index + 1, record, source.substring(0, match.range.first), source.substring(match.range.last + 1), null,
-                    if (matches.size > 1) listOf(ImportIssue.MULTIPLE_SEPARATORS) else emptyList())
+                    if (matches.hasNext()) listOf(ImportIssue.MULTIPLE_SEPARATORS) else emptyList())
             }
         }
     }

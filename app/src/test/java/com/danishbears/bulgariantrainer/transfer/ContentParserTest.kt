@@ -27,6 +27,12 @@ class ContentParserTest {
         assertEquals("ехать, идти", rows[2].word!!.translations.single().russianText)
         assertTrue(ImportIssue.COMMA_OR_LIST in rows[2].warnings)
         assertTrue(ImportIssue.ALTERNATIVES in rows[3].warnings)
+        val original = words("храна - продукты\nимам/няма - иметь(глагол)/неиметь\nмомиче - девочка (едно момиче средний род) ").rows
+        assertEquals("продукты", original[0].word!!.translations.single().russianText)
+        assertEquals("имам/няма", original[1].word!!.bulgarianText)
+        assertEquals("иметь(глагол)/неиметь", original[1].word!!.translations.single().russianText)
+        assertTrue(ImportIssue.ALTERNATIVES in original[1].warnings)
+        assertTrue(ImportIssue.ANNOTATION in original[2].warnings)
     }
     @Test fun retainsInvalidBlankAndControlRowsWithoutAutoReversingLanguages() {
         val rows = words("hi - здрасти\r\n\r\nзаголовок\r\nкуче - соб\u0000ака\r\n").rows

@@ -1,5 +1,21 @@
 # Web reference audit and Android plan
 
+## Current Android import/export increment
+
+Building on `6c3990df744ca294dc309d4287a617948d6d26b9`, Android adds document-picker
+TXT/CSV vocabulary import, exact sentence CSV/JSON import, editable diagnostics,
+selection, explicit transactional append/confirmation and CSV content exports.
+`IMPORT_EXPORT.md` maps actual reference/Android files, precise formats, tested
+examples, dataset provenance, schema migration 1→2 and deliberate safety fixes.
+The pinned web code has no content-export endpoint: Android exports target its
+actual import schemas. Content exports are not progress backups.
+
+Sentence content/alternatives and committed import receipts are separate Room
+v2 tables. V1 vocabulary data is preserved through an additive migration. No
+training mode or automatic seeding is added. The following vocabulary and
+foundation sections retain earlier milestone context. Current executed checks
+are recorded at the top of BUILD_REPORT.md.
+
 ## Current Android vocabulary increment
 
 The original audit below is retained as historical evidence. Building on Android
@@ -11,8 +27,8 @@ counts, not simulated learning statistics. Search includes every Russian
 alternative, uses bounded Room Paging, and separates active/archive lists.
 
 Database version 1 and applicationId are preserved; existing vocabulary is not
-recreated or seeded. No import, session, training, scheduler or pronunciation
-feature is added. The initial foundation's welcome screen is replaced by working
+recreated or seeded. At that vocabulary milestone no import, session, training, scheduler or
+pronunciation feature was added. Import/export is implemented by the newer increment above. The initial foundation's welcome screen is replaced by working
 vocabulary navigation while retaining the existing UI toolkit. Reference source
 remains read-only at `de0a3e883d51561123ca54b7d5dd2e53757baf0a`.
 Executed verification for this increment is recorded separately in BUILD_REPORT.
@@ -434,8 +450,9 @@ not added or executed. Preserve intended behavior; do not silently replicate the
    migration/reopen tests. H2/Flyway SQL is a contract reference, not executable
    Android migrations. No server or login. Decide backup/export separately.
 2. **Vocabulary and controlled imports.** Dashboard, Russian vocabulary UI,
-   create/edit/search/archive are implemented. Controlled import and history-protected
-   deletion remain future work: Storage Access Framework, strict parsers and preview/edit/
+   create/edit/search/archive, controlled word/sentence imports and content exports
+   are implemented. History-protected deletion remains future work. Storage Access
+   Framework, strict parsers and preview/edit/
    confirm. Port transactional duplicate/append cases and ensure no automatic
    personal/sample import. Decide whether local preview drafts survive process death.
 3. **Flashcards and durable session state.** Persist queue/reveal/rating snapshots,

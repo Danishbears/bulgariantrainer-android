@@ -44,6 +44,7 @@ class TransferViewModel(
     fun setIncludeArchived(value: Boolean) { if (!_state.value.busy) saved["includeArchived"] = value }
     fun preparePicker() { saved["importKind"] = kind.value }
     fun prepareExport(): String {
+        _state.update { it.copy(exported = null, error = null, errorRow = null) }
         saved["exportKind"] = kind.value
         saved["exportArchived"] = includeArchived.value
         return if (kind.value == ContentKind.WORDS.name) "bulgarian-vocabulary.csv" else "bulgarian-sentences.csv"

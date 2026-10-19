@@ -4,8 +4,9 @@ Standalone offline vocabulary management for a Russian-speaking learner of
 Bulgarian. Kotlin, Jetpack Compose, Material 3 and Room/SQLite. The dashboard shows
 real word/translation counts; the dictionary supports bilingual search, active
 and archived lists, manual creation/editing, multiple Russian translations and
-metadata. Training, imports, review scheduling and pronunciation remain future
-stages; no learning statistics or sample records are fabricated.
+metadata. System document import/export supports vocabulary TXT/CSV and sentence
+CSV with editable previews and explicit transactional confirmation. Training,
+review scheduling and pronunciation remain future stages; no learning statistics or sample records are fabricated.
 
 The initial repository at `d18ad8814b391c60b0e1ec2099a5c2251978b2c6` contained
 only a README. There was no Android configuration, applicationId, or UI to preserve,
@@ -17,6 +18,8 @@ implementation stages, and [BUILD_REPORT.md](BUILD_REPORT.md) for executed check
 and environment limitations. The web reference repository remains unchanged.
 See [LOCAL_STORAGE.md](LOCAL_STORAGE.md) for the implemented storage API, schema,
 business rules, test cases, and the remaining stages.
+See [IMPORT_EXPORT.md](IMPORT_EXPORT.md) for exact formats, system document flows,
+source-dataset provenance, migration 1→2 and content-export limitations.
 
 ## Open in Android Studio
 
@@ -44,6 +47,7 @@ in the project.
 | KSP | 2.1.20-1.0.32 |
 | Room runtime / KTX / compiler | 2.7.2 |
 | Coroutines Android | 1.10.1 |
+| Strict JSON parsing | kotlinx.serialization-json 1.8.1 |
 | Compose BOM | 2025.04.01 |
 | Activity Compose | 1.10.1 |
 | Lifecycle Compose / ViewModels | 2.8.7 |
@@ -101,7 +105,9 @@ app-private `bulgariantrainer.db`, opened lazily through
 `BulgarianTrainerApplication.vocabulary`. Database work uses suspend functions
 and Room Flow/Paging, without main-thread query allowances or destructive
 migration fallbacks. ViewModels retain editor drafts and search/archive selection
-through SavedStateHandle; Compose collects state with lifecycle awareness. Installation does not import sample or personal vocabulary.
+through SavedStateHandle; Compose collects state with lifecycle awareness. Installation does not import sample or personal vocabulary. The bundled sentence
+CSV is available only through an explicit preview button followed by confirmation.
+CSV exports contain content and are not complete progress backups.
 Future offline pronunciation must use an installed Bulgarian voice that does
 not require a network connection; availability cannot be assumed on every phone.
 

@@ -1,5 +1,11 @@
 # Room vocabulary storage
 
+Current database version is **2**. The import/export increment adds separate
+sentence/alternative/receipt tables through an additive `MIGRATION_1_2`; the
+original vocabulary schema and data remain intact. See [IMPORT_EXPORT.md](IMPORT_EXPORT.md)
+for new tables, source formats, migration and operational retry rules. The
+sections below describe the preserved vocabulary API and its original v1 contract.
+
 ## Scope and preserved baseline
 
 This increment extends Android `66854f0e5c3a9606f81cfd6c11ebaea014282516` on
@@ -117,7 +123,8 @@ to either words or translations.
   Foreign keys reject orphan translations and cascade only a deleted word's own
   translations. Length limits and exactly-one-primary are enforced by the
   repository, not falsely presented as SQLite CHECK/partial-index constraints.
-- There are currently no sentence links, queues, history or progress tables.
+- There are currently no sentence-word links, queues, history or progress tables;
+  sentence content and alternatives now exist independently.
   Deleting unused vocabulary is supported; **training-history deletion protection
   is not implemented yet**. Future reference/history tables must use restrictive
   foreign keys before introducing training. Do not infer full web delete parity
@@ -223,7 +230,7 @@ milestone has no schema change, so a fabricated `1 -> 2` migration is unnecessar
 
 ## Next stages
 
-Controlled file import, then requested sentence/session/attempt/progress/schedule
-features with explicit migrations. Resolve the suspected web selector/link
+Controlled word/sentence imports and content exports are implemented. Requested
+training session/attempt/progress/schedule features remain future migrations. Resolve the suspected web selector/link
 snapshot defects in WEB_PARITY before porting those training behaviors. No
 additional training mode, backend, account system or release signing is added.

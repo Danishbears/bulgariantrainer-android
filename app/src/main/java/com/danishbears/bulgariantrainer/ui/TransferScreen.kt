@@ -50,6 +50,7 @@ fun TransferScreen(model: TransferViewModel) {
     val creator = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/csv")) { if (it != null) model.export(it) }
     var confirm by rememberSaveable { mutableStateOf(false) }
     var replacement by rememberSaveable { mutableStateOf(false) }
+    var replacementForSample by rememberSaveable { mutableStateOf(false) }
     fun chooseFile() {
         model.preparePicker()
         picker.launch(arrayOf("*/*"))
@@ -58,7 +59,7 @@ fun TransferScreen(model: TransferViewModel) {
     state.editing?.let { ImportRowEditor(it, state.busy, state.showEditErrors, model::changeDraft, model::cancelEdit, model::applyEdit) }
     if (replacement) AlertDialog(onDismissRequest = { replacement = false },
         title = { Text(stringResource(R.string.replace_preview)) }, text = { Text(stringResource(R.string.preview_replace_hint)) },
-        confirmButton = { TextButton(onClick = { replacement = false; chooseFile() }) { Text(stringResource(R.string.choose_file)) } },
+        confirmButton = { TextButton(onClick = { replacement = false; if (replacementForSample) model.sample() else chooseFile() }) { Text(stringResource(R.string.replace_preview_action)) } },
         dismissButton = { TextButton(onClick = { replacement = false }) { Text(stringResource(R.string.continue_editing)) } })
     if (confirm) AlertDialog(onDismissRequest = { confirm = false },
         title = { Text(stringResource(R.string.confirm_import)) },
@@ -85,10 +86,12 @@ fun TransferScreen(model: TransferViewModel) {
                         ContentKind.entries.forEach { value -> FilterChip(selected = value == kind, enabled = !state.busy,
                             onClick = { model.setKind(value) }, label = { Text(stringResource(if (value == ContentKind.WORDS) R.string.dictionary else R.string.sentences)) }) }
                     }
-                    Button(onClick = { if (state.preview != null && state.summary == null) replacement = true else chooseFile() }, enabled = !state.busy) {
+                    Button(onClick = { if (state.preview != null && state.summary == null) { replacementForSample = false; replacement = true } else chooseFile() }, enabled = !state.busy) {
                         Text(stringResource(R.string.choose_file))
                     }
-                    if (kind == ContentKind.SENTENCES && state.preview == null) OutlinedButton(onClick = model::sample, enabled = !state.busy) {
+                    if (kind == ContentKind.SENTENCES) OutlinedButton(onClick = {
+                        if (state.preview != null && state.summary == null) { replacementForSample = true; replacement = true } else model.sample()
+                    }, enabled = !state.busy) {
                         Text(stringResource(R.string.sample_preview))
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -117,6 +120,7 @@ fun TransferScreen(model: TransferViewModel) {
             state.preview?.let { preview ->
                 item(key = "preview_heading") {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(stringResource(R.string.preview_content_type, stringResource(if (preview.kind == ContentKind.WORDS) R.string.dictionary else R.string.sentences)), style = MaterialTheme.typography.labelLarge)
                         Text(preview.filename, style = MaterialTheme.typography.titleLarge)
                         Text(stringResource(R.string.preview_selection_count,
                             preview.rows.count { it.selected && it.action != ImportAction.SKIP }, preview.rows.size))

@@ -1,5 +1,74 @@
 # Baseline and build evidence
 
+## Content import/export increment — 2026-10-19
+
+Target starting revision: `6c3990df744ca294dc309d4287a617948d6d26b9`, branch
+`codex/android-foundation-parity`, clean and matching GitHub. Read-only reference
+remains `master` at `de0a3e883d51561123ca54b7d5dd2e53757baf0a`. Existing app, tests,
+workflows and parity work were preserved. There is no target/ancestor AGENTS.md;
+web instructions, actual parsers/writers/tests and both available datasets were
+inspected. Exact source map, formats and differences are in IMPORT_EXPORT.md.
+
+Added document-picker import/creation flows, editable source-preserving previews,
+explicit append/selection/confirmation, strict UTF-8/TXT/CSV/JSON parsing, sentence
+content/alternatives, transactional confirmation receipts and CSV content exports.
+One explicit sample-preview button exposes the unchanged 100-sentence dataset;
+no launch-time import exists. Existing applicationId/Compose/toolchain are retained.
+Room v2 uses additive migration 1→2; vocabulary table definitions are unchanged.
+No training/progress mode, backend, storage permission or release signing added.
+
+Local checks actually executed:
+
+- `git diff --check`, `git diff --cached --check`, `sh -n gradlew`: passed.
+- Python XML parsing/resource-reference resolution: 149 Kotlin resource references
+  resolve; static count is 68 test methods (not itself an execution result).
+- `git ls-files -s gradlew`: mode 100755 retained. `git check-ignore` confirms SDK
+  location files, APK outputs, private SQLite data and `.env` remain ignored.
+- `sha256sum` on the reference/bundled sentence CSV: identical
+  `403b2a0416491d1e02c3db16459bbb878806da8904b34c320e0f758610441d0a`.
+- Python strict UTF-8/CSV/JSON inspection: actual sentence header, 100 rows,
+  20 alternatives; original TXT 397 records including 10 blank records.
+- Structural comparison of exported schemas: v2 `words` and `translations` are
+  identical to v1. V2 identity `bcea5278b79bd932a6e247746e21b2dc` came from Room/KSP.
+- `java -version`: runtime 21.0.12.1. Python `shutil.which` found no `javac`,
+  `gradle`, `sdkmanager` or `adb`. No local Android task execution is claimed.
+
+GitHub integration reads/writes work; exact checkouts were reused. The earlier
+local Gradle bootstrap failed with `SocketException: Operation not permitted`.
+No identical blocked shell network/download command was retried in this increment.
+Cloud policy reports unrestricted/enforced HTTP, but no TCP destinations are
+listed and no credentials are configured. That setup is separate from working
+GitHub integration and full JDK/SDK availability on hosted Actions runners.
+
+### Initial hosted execution and compiler schema capture
+
+Code `ccd94674ec2e01fac9316760217e88bf9bcb0a5f`,
+[run 39254155286](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39254155286),
+job `118065118754`:
+
+| Actual separate command/check | Result |
+| --- | --- |
+| `./gradlew --no-daemon --stacktrace --console=plain testDebugUnitTest` | BUILD SUCCESSFUL in 2m 22s; 67 tests, zero failures/errors/skipped |
+| `./gradlew --no-daemon --stacktrace --console=plain assembleDebug` | BUILD SUCCESSFUL in 1m 2s; APK produced/uploaded |
+| `./gradlew --no-daemon --stacktrace --console=plain lintDebug` | BUILD SUCCESSFUL in 54s |
+| Room schema contract | Failed because the new compiler-generated `2.json` was not yet committed |
+
+The overall initial run **failed**, despite tests/assembly/lint succeeding. The
+schema guard was not bypassed: its diagnostic exported the generated v2 JSON,
+which was retrieved from runner logs, decoded and committed for follow-up
+verification. No hand-invented schema hash was used. Subsequent changes also
+add an independent CSV/JSON quote-escaping round-trip case and refine preview UI.
+Final verification is recorded separately below when executed.
+
+Device/emulator checks remain unperformed: actual picker/provider cancellation,
+URI-grant failures, disk/provider write failure, IME/dialog layout, rotation and
+OS process recreation, local-document airplane mode, accessibility and long
+preview performance. Robolectric tests cover provider streams and ViewModel
+state, not the OS picker or every DocumentsProvider. Content CSV is not a complete
+progress/data backup; read its documented format limitations before relying on it.
+
+The sections below retain historical milestones.
+
 ## Vocabulary UI and persistence increment — 2026-10-19
 
 Starting target: branch `codex/android-foundation-parity`, commit
