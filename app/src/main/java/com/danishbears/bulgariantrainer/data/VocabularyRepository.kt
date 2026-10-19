@@ -129,9 +129,10 @@ class VocabularyRepository internal constructor(
     private fun parameters(filter: VocabularyFilter): FilterParameters {
         val offset = filter.page.toLong() * filter.size
         require(filter.page >= 0 && filter.size in 1..100 && offset <= Int.MAX_VALUE) { "Invalid page or size" }
+        require(filter.query == null || filter.query.length <= 255) { "Search query is too long" }
         require(filter.query == null || VocabularyText.clean(filter.query).isNotEmpty()) { "Search query must not be blank" }
         return FilterParameters(
-            VocabularyText.optional(filter.partOfSpeech)?.let(VocabularyText::key),
+            optionalText(filter.partOfSpeech, 100)?.let(VocabularyText::key),
             filter.query?.let(VocabularyText::searchPattern), offset.toInt(),
         )
     }

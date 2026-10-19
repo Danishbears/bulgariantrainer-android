@@ -42,8 +42,10 @@ val archived = repository.setArchived(saved.id, true)
 ```
 
 `create`, `update`, `get`, `list`, `setArchived` and `delete` are suspend functions.
-`observe` returns `Flow<List<VocabularyWord>>`. Pagination is zero-based, size
-1–100, ascending word ID. There is no total-count DTO or UI pagination yet.
+`observe` returns `Flow<List<VocabularyWord>>`. Pagination is zero-based, default
+size 20, range 1–100, ascending word ID. Search query length is at most 255,
+part-of-speech filter length at most 100, matching `controller/WordController.java`.
+There is no total-count DTO or UI pagination yet.
 
 ## Rules implemented from the inspected source
 

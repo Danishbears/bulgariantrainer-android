@@ -172,6 +172,7 @@ class VocabularyRepositoryTest {
         listOf(
             VocabularyFilter(query = "\u00A0"), VocabularyFilter(page = -1), VocabularyFilter(size = 0),
             VocabularyFilter(size = 101), VocabularyFilter(page = Int.MAX_VALUE, size = 100),
+            VocabularyFilter(query = "а".repeat(256)), VocabularyFilter(partOfSpeech = "а".repeat(101)),
         ).forEach { filter -> expectFailure<IllegalArgumentException> { repository.list(filter) } }
         expectFailure<WordNotFoundException> { repository.get(999) }
         expectFailure<WordNotFoundException> { repository.update(999, word()) }

@@ -31,7 +31,7 @@ data class VocabularyFilter(
     val partOfSpeech: String? = null,
     val archived: Boolean = false,
     val page: Int = 0,
-    val size: Int = 100,
+    val size: Int = 20,
 )
 
 class DuplicateWordException : IllegalArgumentException("A word with this Bulgarian text already exists")

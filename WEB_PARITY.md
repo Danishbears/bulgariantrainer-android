@@ -80,7 +80,9 @@ Java paths use `src/main/java/com/example/bulgariantrainer/`; Java test paths us
 - Search matches normalized Bulgarian or Russian substrings, escapes `%`, `_`,
   and `!` as literal SQL search characters, can combine exact case-insensitive
   part-of-speech and archive filters, and paginates in ascending word ID.
-  Page is nonnegative, size 1–100; oversized offsets are rejected.
+  Page is nonnegative, default size 20, range 1–100; oversized offsets are rejected.
+  `controller/WordController.java` additionally limits the raw search query to
+  255 characters and the part-of-speech filter to 100; Android enforces these bounds.
 - Archive/restore preserves translations and history. A hard delete is rejected
   when any progress, attempt, sentence link/usage, or queued word question exists.
   Viewing and archiving do not award progress. No automatic vocabulary seeding.
