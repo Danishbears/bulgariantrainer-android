@@ -105,7 +105,7 @@ class VocabularyRepository internal constructor(
 
     /** Protect durable session/history references; owned translations alone may cascade. */
     suspend fun delete(id: Long) = database.withTransaction {
-        if (database.flashcardDao().wordInUse(id)) throw WordInUseException()
+        if (database.flashcardDao().wordInUse(id) || database.typingDao().wordInUse(id)) throw WordInUseException()
         if (dao.deleteWord(id) == 0) throw WordNotFoundException(id)
     }
 

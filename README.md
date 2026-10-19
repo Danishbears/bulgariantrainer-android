@@ -1,3 +1,8 @@
+> Offline bidirectional typing is implemented in the **Ввод** tab: 30 distinct
+> entries, 15/15 directions, explicit shorter-session consent, exact normalized
+> grading, saved feedback/mistakes and durable recovery. See [TYPING.md](TYPING.md)
+> and [BUILD_REPORT.md](BUILD_REPORT.md) for behavior and actual verification.
+
 # Bulgarian Trainer for Android
 
 Standalone offline vocabulary management for a Russian-speaking learner of

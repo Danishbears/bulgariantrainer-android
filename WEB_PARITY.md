@@ -1,5 +1,22 @@
 # Web reference audit and Android plan
 
+## Current Android typing increment
+
+Building on `e8174ec0d667b27e65c87b5db0027011e01ca402`, Android adds offline typing:
+30 unique entries, exactly 15/15 directions and shuffled order; smaller sessions
+require explicit consent and differ by at most one. Room v4 persists snapshots,
+original answers/results, acknowledgement, order/position/status and independent
+per-direction counters. Exact web NFC/Unicode-whitespace/ROOT-case matching
+preserves meaningful spelling differences. Durable recovery works without a
+SavedStateHandle pointer; duplicate/conflicting submissions cannot double-count.
+
+[TYPING.md](TYPING.md) maps actual source/tests, representative cases, migration,
+recovery and deliberate deviations. Current web scheduler scopes can prevent its
+documented unconditional 15/15 balance; Android guarantees the requested balance
+and continues to defer review schedules as a separate integration. Existing
+vocabulary/import/export/flashcard work is preserved. Latest actual verification
+is recorded in BUILD_REPORT.md.
+
 ## Current Android flashcard increment
 
 Starting from `a3393a2c125a93955e5383ae1b835e3236c81d3d`, Android adds offline
@@ -475,7 +492,9 @@ not added or executed. Preserve intended behavior; do not silently replicate the
 3. **Flashcards and durable session state — implemented.** Persisted queue/reveal/rating snapshots,
    UUID replay and completion atomically. Verify rotation/process-death/reopen,
    early exit and no award for viewing. Keep answer/pronunciation visibility aligned.
-4. **Typing.** Approve direction-priority decision, then implement bidirectional
+4. **Typing (implemented).** See TYPING.md: guaranteed balanced all-active
+   selection, independent direction counters and durable feedback; scheduler
+   eligibility/priorities remain deferred. Original stage proposal: bidirectional
    selection, exact normalized matching, original answers, feedback acknowledgement,
    shorter-session consent, snapshots and replay. Test constrained DUE/NEW queues.
 5. **Sentence practice.** Approved sentence management/CSV, alternatives/explanations,

@@ -1,3 +1,8 @@
+> Current schema is **v4**. Additive migration 3→4 adds independent typing
+> sessions/questions/attempts and `(word,direction)` progress without changing
+> existing content or flashcard tables. History-linked typing words also reject
+> hard deletion; archiving remains available. See [TYPING.md](TYPING.md).
+
 # Room vocabulary storage
 
 Current database version is **3**. Flashcard sessions/cards/attempts and isolated

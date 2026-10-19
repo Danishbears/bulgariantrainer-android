@@ -5,17 +5,18 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [WordEntity::class, TranslationEntity::class, SentenceEntity::class, SentenceAlternativeEntity::class, ImportReceiptEntity::class, FlashcardSessionEntity::class, FlashcardCardEntity::class, FlashcardAttemptEntity::class, RecognitionProgressEntity::class], version = 3, exportSchema = true)
+@Database(entities = [WordEntity::class, TranslationEntity::class, SentenceEntity::class, SentenceAlternativeEntity::class, ImportReceiptEntity::class, FlashcardSessionEntity::class, FlashcardCardEntity::class, FlashcardAttemptEntity::class, RecognitionProgressEntity::class, TypingSessionEntity::class, TypingQuestionEntity::class, TypingAttemptEntity::class, TypingProgressEntity::class], version = 4, exportSchema = true)
 internal abstract class TrainerDatabase : RoomDatabase() {
     abstract fun vocabularyDao(): VocabularyDao
     abstract fun contentDao(): ContentDao
     abstract fun flashcardDao(): FlashcardDao
+    abstract fun typingDao(): TypingDao
 
     companion object {
         fun open(context: Context): TrainerDatabase = Room.databaseBuilder(
             context.applicationContext,
             TrainerDatabase::class.java,
             "bulgariantrainer.db",
-        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3).build()
+        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4).build()
     }
 }

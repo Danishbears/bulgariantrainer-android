@@ -20,7 +20,8 @@ class MainActivity : ComponentActivity() {
                 colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme(),
             ) {
                 TrainerApp(repository, (application as BulgarianTrainerApplication).transfer,
-                    (application as BulgarianTrainerApplication).flashcards)
+                    (application as BulgarianTrainerApplication).flashcards,
+                    (application as BulgarianTrainerApplication).typing)
             }
         }
     }

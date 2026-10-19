@@ -1,3 +1,33 @@
+# Offline typing increment — 2026-10-19
+
+Target branch `codex/android-foundation-parity` started clean at
+`e8174ec0d667b27e65c87b5db0027011e01ca402`, matching GitHub integration.
+Read-only reference `master` is unchanged at
+`de0a3e883d51561123ca54b7d5dd2e53757baf0a`. Existing checkouts were reused.
+No target/ancestor/nested AGENTS.md was found; reference instructions and actual
+planner, evaluator, service, DTOs, entity, migrations, browser UI and tests were
+read. Web Java conventions do not replace Android Kotlin/Compose/Room.
+
+Existing dictionary/content-transfer/flashcard functionality is preserved. Added
+balanced typing planning, strict exact normalization, transactional durable
+submissions/feedback, independent direction counters, Room v4 additive migration,
+lifecycle-aware UI and parity/concurrency/recovery/migration tests. TYPING.md
+records source mappings, representative cases, suspected web defects and deferred
+scheduler behavior. No toolchain/dependency/app identity change or release signing.
+
+Local checks actually executed: `git diff --check`, `sh -n gradlew`, Python XML
+parsing/string reference resolution (217 Kotlin references), static test method
+count **128** (not an execution result). `java -version` is runtime 21.0.12.1;
+`shutil.which` finds no javac/gradle/sdkmanager/adb. No local Android build is
+claimed. Shell Gradle networking was previously denied with socket operation not
+permitted; no identical blocked download was retried. GitHub integration access
+works for both repositories. Cloud HTTP policy observation is unknown/not enforced,
+with no configured credentials; that does not establish shell network access.
+
+Hosted test/build/lint/schema execution and artifacts will be recorded below
+after actual completion. Device/OS process-kill/keyboard/install checks remain
+unperformed. The historical sections below preserve previous milestone evidence.
+
 # Baseline and build evidence
 
 ## Durable flashcard increment — 2026-10-19
