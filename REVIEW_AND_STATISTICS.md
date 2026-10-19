@@ -199,7 +199,13 @@ rollback, recovery, real union projections and archived/current mistake detail.
 direction; no fake attempts, old counters/queues preserved, inherited schedules
 and post-upgrade continuation. `StatisticsViewModelTest`: data invalidation and
 clock-only refresh without duplicate sessions. Older migration tests reach v6.
-Actual executed commands/build/schema hashes and artifacts are in BUILD_REPORT.md.
+Final hosted verification: [run 39308758277](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39308758277)
+passed on `4392ab3043cd15bbc264d40d64bdfe70bc5ca8b8`: **192 JVM tests**, the pinned
+21-history/20-assertion guard, `assembleDebug`, `lintDebug` and Room schemas 1–6.
+[APK ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39308758277/artifacts/12214608955)
+and [reports](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39308758277/artifacts/12214019699)
+are available until 2026-11-02. Extract `app-debug.apk`. Actual commands, first-run
+missing-schema failure, final durations and artifact metadata are in BUILD_REPORT.md.
 
 Device/emulator checks remain: installation/upgrade, airplane mode, real process
 termination/relaunch, foreground/background and time-zone/time changes, DST display,

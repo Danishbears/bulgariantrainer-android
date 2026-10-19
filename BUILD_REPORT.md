@@ -63,7 +63,40 @@ The inspection script initially assumed optional `foreignKeys`/`indices` JSON
 keys were always present; using optional-key reads corrected that script and the
 comparison passed. No production migration change was needed.
 
-Final follow-up CI results will be recorded after the schema commit is tested.
+### Final successful hosted execution
+
+Tested code **`4392ab3043cd15bbc264d40d64bdfe70bc5ca8b8`**,
+[successful run 39308758277](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39308758277),
+job `118252573530`. GitHub API confirmed the completed run's `conclusion=success`
+and exact `head_sha`; all required steps succeeded:
+
+| Command/check | Actual final result |
+| --- | --- |
+| `python3 parity/verify_web_parity.py` | 21 identical Java scheduler histories; 20 literal web statistics assertions verified |
+| `./gradlew --no-daemon --stacktrace --console=plain testDebugUnitTest` | BUILD SUCCESSFUL in 2m 47s; **192 tests**, zero failures/errors/skipped |
+| `./gradlew --no-daemon --stacktrace --console=plain assembleDebug` | BUILD SUCCESSFUL in 1m 3s |
+| `./gradlew --no-daemon --stacktrace --console=plain lintDebug` | BUILD SUCCESSFUL in 1m 10s |
+| Schema guard | Committed Room schemas **1–6** match compiler exports |
+
+All 165 previous tests and 27 new cases passed: eight scheduler/selection cases,
+six statistics fixture/date/ranking cases, ten transactional scheduling/statistics
+Room cases, one populated legacy-v5 upgrade case and two statistics ViewModel cases.
+The 21 golden histories are assertions within those tests, not 21 extra test methods.
+
+[Download APK ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39308758277/artifacts/12214608955)
+(artifact `12214608955`, **10,839,804 bytes**, expires `2026-11-02T19:16:06Z`).
+Extract `app-debug.apk` before installation; ANDROID_BUILDS.md covers installation
+and why different cloud debug keys may prevent an in-place update. GitHub reports
+ZIP artifact digest `sha256:2196ceb9866639a5b65801e6baac2e6acf1c6ababd3bef0235cf505c99de256e`;
+this is not a separately measured extracted APK checksum. No local artifact download
+or device installation was executed.
+
+[JUnit, HTML test, lint and schema reports](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39308758277/artifacts/12214019699)
+(artifact `12214019699`, 124,127 bytes, expires `2026-11-02T19:16:05Z`).
+Final documentation-only follow-up records this evidence with `[skip ci]`;
+application, workflow and build files remain identical to the tested commit.
+The existing PR is updated without merging `main`. No APK, SDK path, credentials,
+build output or private database is committed.
 Device process-kill/time-zone/clock/DST/IME/accessibility checks remain unperformed.
 Previous milestone evidence follows.
 
