@@ -22,6 +22,8 @@ android {
         compose = true
     }
 
+    sourceSets.getByName("test").resources.srcDirs("schemas", "src/main/assets")
+
     testOptions {
         unitTests.isIncludeAndroidResources = true
     }
@@ -58,6 +60,7 @@ dependencies {
     implementation("androidx.room:room-ktx:2.7.2")
     implementation("androidx.room:room-paging:2.7.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
     ksp("androidx.room:room-compiler:2.7.2")
 
     testImplementation("junit:junit:4.13.2")

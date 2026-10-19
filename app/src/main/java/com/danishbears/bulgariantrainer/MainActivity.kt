@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
             MaterialTheme(
                 colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme(),
             ) {
-                TrainerApp(repository)
+                TrainerApp(repository, (application as BulgarianTrainerApplication).transfer)
             }
         }
     }

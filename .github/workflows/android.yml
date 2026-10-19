@@ -59,13 +59,18 @@ jobs:
       - name: Verify exported Room schema contract
         run: |
           python3 - <<'PY'
+          import base64
           import json
           from pathlib import Path
           import subprocess
           schemas = sorted(Path('app/schemas').rglob('*.json'))
           assert schemas, 'No Room schema exported'
           for path in schemas:
-              committed = subprocess.check_output(['git', 'show', f'HEAD:{path.as_posix()}'], text=True)
+              result = subprocess.run(['git', 'show', f'HEAD:{path.as_posix()}'], text=True, capture_output=True)
+              if result.returncode:
+                  print('ROOM_SCHEMA_BASE64:', path, base64.b64encode(path.read_bytes()).decode(), flush=True)
+                  raise AssertionError(f'Exported schema must be committed: {path}')
+              committed = result.stdout
               assert json.loads(committed) == json.loads(path.read_text()), f'Uncommitted schema change: {path}'
               print('Room schema contract verified:', path)
           PY

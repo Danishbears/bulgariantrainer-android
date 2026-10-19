@@ -21,6 +21,14 @@ private const val FILTER_WORDS = """
 @Dao
 internal interface VocabularyDao {
     @Transaction
+    @Query("SELECT * FROM words WHERE normalized_text IN (:keys)")
+    suspend fun forKeys(keys: List<String>): List<WordWithTranslations>
+
+    @Transaction
+    @Query("SELECT * FROM words WHERE (:includeArchived OR archived = 0) AND id > :after ORDER BY id LIMIT 100")
+    suspend fun exportBatch(after: Long, includeArchived: Boolean): List<WordWithTranslations>
+
+    @Transaction
     @Query("""
         SELECT * FROM words w WHERE w.archived = :archived
           AND (:part IS NULL OR w.normalized_part_of_speech = :part)
