@@ -15,13 +15,18 @@ adding only scope and scheduling facts. REVIEW_AND_STATISTICS.md maps sources,
 cases, migration policy, UTC/device clock handling and reference defects.
 No applicationId, UI toolkit, JDK/SDK/Gradle/AGP version, backend, AI or signing change.
 
-Local checks actually executed: `git diff --check`, `sh -n gradlew`, Python XML
+Local checks actually executed: `git diff --check` for app/docs changes,
+`git diff HEAD^ HEAD --check -- . ':!parity/reference'`, `sh -n gradlew`, Python XML
 resource checks (306 resolved references), SQLite migration/fixture execution
 with FKs enabled and unchanged old attempts/counters, and static count **192 test
 methods** (not a pass). `python3 parity/verify_web_parity.py` **actually passed**:
 21 histories executed through the pinned Java scheduler/original record methods;
 20 literal statistics expectations verified against pinned integration-test source.
 Exact copied source hashes/paths are committed in parity/reference/PROVENANCE.json.
+The staged full-tree whitespace check reports an upstream extra EOF blank line in
+parity/reference/AttemptResult.java. That frozen file deliberately remains byte-exact;
+app/docs whitespace checks exclude pinned source copies and pass. Source hashes
+are checked by the executable parity verifier.
 
 Environment observations: shell temporarily failed with exec-server transport
 disconnected, then a local `pwd` succeeded. Both GitHub integrations work. Earlier
@@ -34,7 +39,31 @@ is claimed. Cloud HTTP policy reports enforced/unrestricted, without configured
 credentials; that does not establish TCP access. Hosted CI uses its existing JDK17
 and SDK35 plus a new pinned-web fixture guard before JVM tests.
 
-Hosted Android tests/APK/lint/schema results will be recorded after actual runs.
+### First hosted execution and exact compiler schema capture
+
+Code `208b751400411bd86472cddb60ac90d15fc45018`,
+[run 39307721934](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39307721934),
+job `118249011872`, executed:
+
+| Command/check | Actual result |
+| --- | --- |
+| `python3 parity/verify_web_parity.py` | 21 Java scheduler histories and 20 literal web statistics assertions verified |
+| `./gradlew --no-daemon --stacktrace --console=plain testDebugUnitTest` | BUILD SUCCESSFUL in 3m 19s; **192 tests**, zero failures/errors/skipped |
+| `./gradlew --no-daemon --stacktrace --console=plain assembleDebug` | BUILD SUCCESSFUL in 50s |
+| `./gradlew --no-daemon --stacktrace --console=plain lintDebug` | BUILD SUCCESSFUL in 59s |
+| Schema contract | Versions 1–5 verified; failed because generated `6.json` was not yet committed |
+
+This first overall run failed the missing-schema guard; APK availability is not
+workflow success. Captured the exact Room/KSP-generated v6 JSON, identity
+`d539ac4e46ca9a1a6a5f1d8ad8ba0ed5`. Local Python/SQLite then compared all 17 old
+table contracts: only the three session tables gain `study_scope DEFAULT 'MIXED'`;
+two schedule tables are added. Executing the actual migration SQL against exported
+v5 produces the same table/index/FK PRAGMAs as fresh compiler-generated v6.
+The inspection script initially assumed optional `foreignKeys`/`indices` JSON
+keys were always present; using optional-key reads corrected that script and the
+comparison passed. No production migration change was needed.
+
+Final follow-up CI results will be recorded after the schema commit is tested.
 Device process-kill/time-zone/clock/DST/IME/accessibility checks remain unperformed.
 Previous milestone evidence follows.
 
@@ -170,7 +199,8 @@ lifecycle-aware UI and parity/concurrency/recovery/migration tests. TYPING.md
 records source mappings, representative cases, suspected web defects and deferred
 scheduler behavior. No toolchain/dependency/app identity change or release signing.
 
-Local checks actually executed: `git diff --check`, `sh -n gradlew`, Python XML
+Local checks actually executed: `git diff --check` for app/docs changes,
+`git diff HEAD^ HEAD --check -- . ':!parity/reference'`, `sh -n gradlew`, Python XML
 parsing/string reference resolution (217 Kotlin references), static test method
 count **128** (not an execution result). `java -version` is runtime 21.0.12.1;
 `shutil.which` finds no javac/gradle/sdkmanager/adb. No local Android build is

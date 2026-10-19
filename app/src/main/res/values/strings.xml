@@ -270,7 +270,7 @@
     <string name="sentence_size_error">Введите целое число предложений от 1 до 100.</string>
     <string name="sentence_storage_failed">Не удалось прочитать или сохранить данные. Повторите действие или загрузите сохранённое состояние.</string>
     <string name="statistics">Статистика и повторения</string>
-    <string name="review_scope_hint">Какие задания включить? Направления ввода могут различаться по количеству доступных повторений.</string>
+    <string name="review_scope_hint">Новые — без оценок в этом режиме. К повторению — наступил срок. Смешанное — все категории, включая задания с будущим сроком. Число вопросов в направлениях ввода может различаться.</string>
     <string name="review_scope_new">Новые</string>
     <string name="review_scope_due">К повторению</string>
     <string name="review_scope_mixed">Смешанное</string>
