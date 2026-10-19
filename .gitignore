@@ -14,3 +14,7 @@ captures/
 *.keystore
 .env
 .env.*
+*.db
+*.db-shm
+*.db-wal
+*.db-journal

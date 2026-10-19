@@ -31,14 +31,36 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Check and build debug APK
         run: ./gradlew --no-daemon testDebugUnitTest lintDebug assembleDebug
-      - name: Export Room schema for review
+      - name: Summarize executed storage tests
         if: always()
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from xml.etree import ElementTree
+          reports = sorted(Path('app/build/test-results/testDebugUnitTest').glob('TEST-*.xml'))
+          totals = dict(tests=0, failures=0, errors=0, skipped=0)
+          for path in reports:
+              suite = ElementTree.parse(path).getroot()
+              counts = {key: int(suite.attrib.get(key, 0)) for key in totals}
+              print(suite.attrib['name'], counts)
+              for key, value in counts.items():
+                  totals[key] += value
+          print('STORAGE_TEST_TOTALS:', totals)
+          assert totals['tests'] > 0, 'No storage tests executed'
+          assert totals['failures'] == totals['errors'] == 0, 'Storage tests failed'
+          PY
+      - name: Verify exported Room schema contract
         run: |
           python3 - <<'PY'
           import json
           from pathlib import Path
-          for path in Path('app/schemas').rglob('*.json'):
-              print('ROOM_SCHEMA_EXPORT:' + json.dumps({'path': str(path), 'schema': json.loads(path.read_text())}))
+          import subprocess
+          schemas = sorted(Path('app/schemas').rglob('*.json'))
+          assert schemas, 'No Room schema exported'
+          for path in schemas:
+              committed = subprocess.check_output(['git', 'show', f'HEAD:{path.as_posix()}'], text=True)
+              assert json.loads(committed) == json.loads(path.read_text()), f'Uncommitted schema change: {path}'
+              print('Room schema contract verified:', path)
           PY
       - name: Upload storage test and lint reports
         if: always()

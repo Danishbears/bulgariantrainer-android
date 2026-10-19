@@ -1,5 +1,62 @@
 # Baseline and build evidence
 
+## Room vocabulary increment — 2026-10-19
+
+Starting Android revision: `7043dedcbeea62945cecf954c62cd9a5c21ae8d9` on
+`codex/android-foundation-parity`, clean locally and matching the connected GitHub
+branch. The reference remains `master` at
+`de0a3e883d51561123ca54b7d5dd2e53757baf0a`, with no tracked changes. GitHub tools
+again confirmed authenticated login `Danishbears` and repository access. No clone
+or project recreation was needed. There is no target/ancestor AGENTS.md; the
+reference AGENTS.md was read, along with its actual normalization/word service,
+entities, DTOs and normalization tests. The existing parity audit was retained.
+
+Already implemented: Kotlin/Compose/Material 3 welcome screen, applicationId
+`com.danishbears.bulgariantrainer`, official Gradle wrapper, compatible pinned
+build configuration, complete parity audit and working Actions workflows.
+
+Added: Room 2.7.2/KSP 2.1.20-1.0.32, an app-private v1 vocabulary database,
+transactional validated repository, injected UTC clock, Unicode normalization,
+search/archive/pagination/Flow support, and 20 JVM/Robolectric tests. The existing
+welcome screen and applicationId are unchanged; no training modes or imports
+were added. LOCAL_STORAGE.md describes the API, schema and limits.
+
+Current local command results:
+
+| Command | Observed result |
+| --- | --- |
+| `./gradlew assembleDebug` | Exit 1 before project evaluation: the default `/home/agent/.gradle` cache could not create its lock directory in the filesystem sandbox. |
+| `env GRADLE_USER_HOME=/tmp/bulgariantrainer-gradle ./gradlew assembleDebug` | Exit 1 at distribution download: `java.net.SocketException: Operation not permitted`. No compilation/test tasks ran locally. After this socket denial, no further local Gradle/network retries were made. |
+| `java -version`; `command -v javac sdkmanager adb gradle` | Java runtime 21.0.12.1 present; no javac, SDK commands, adb or standalone Gradle found. |
+| `node src/test/js/pronunciation.test.mjs` from the read-only reference | 9 tests passed, zero failed/skipped; reference files unchanged. |
+| `git diff --check`; `sh -n gradlew`; Python XML and workflow-YAML parsing | Passed. These are static checks, not a Kotlin/Room compilation result. |
+| `sha256sum gradle/wrapper/gradle-wrapper.jar` and Python hashlib verification | Original official checksum unchanged. Wrapper/settings/SDK/AGP/Kotlin versions remain intact; only Room/KSP/test dependencies were added. |
+| `git check-ignore local.properties app/build/outputs/apk/debug/app-debug.apk test.db test.db-wal .env` | All ignored; no local SDK paths, database contents, credentials or build outputs staged. Exported Room schema JSON is intentionally tracked as a migration contract. |
+
+Initial Room CI execution:
+[run 39228709486](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39228709486),
+code commit `0079b9a4ca8b58648b66ed442946a28537e9b116`.
+The existing workflow ran `./gradlew --no-daemon testDebugUnitTest lintDebug assembleDebug`
+with full JDK 17 and SDK 35 and finished **BUILD SUCCESSFUL in 2m 30s**. KSP,
+Kotlin compilation, the unit-test task, lint and APK packaging all executed.
+This is new Room-code evidence, not the previous foundation's passing build.
+
+The compiler-generated Room v1 schema has identity hash
+`b3c43139a01c2d8d76ca272ad1d8982d` and was retrieved from the runner's export,
+not hand-invented. It is now checked into `app/schemas/`. A follow-up CI check
+compares the generated and committed schema structurally and summarizes executed
+JUnit XML counts, preventing an empty NO-SOURCE task from appearing as a test pass.
+
+- [Room debug APK ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39228709486/artifacts/12175712131):
+  9,141,097 bytes; ZIP SHA-256
+  `0b0de68368678e0034c756f72984f14aa2843a323403b2b26fc2634c15185101`.
+- [Storage/lint reports and exported schema](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39228709486/artifacts/12175072676).
+
+Physical-device/emulator checks and a local Android build remain unperformed or
+blocked. The unchanged welcome screen does not yet expose vocabulary editing.
+
+The sections below preserve the previous task's historical baseline evidence.
+
 ## Access and checkouts
 
 | Capability | Observed result |

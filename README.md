@@ -1,9 +1,11 @@
 # Bulgarian Trainer for Android
 
 Foundation for a standalone, offline Android application for a Russian-speaking
-learner of Bulgarian. Kotlin, Jetpack Compose, Material 3. This milestone contains
-only a welcome screen and build configuration; training, imports, persistence,
-scheduling, statistics, and pronunciation are not implemented.
+learner of Bulgarian. Kotlin, Jetpack Compose, Material 3. The app has a welcome
+screen and a Room/SQLite vocabulary storage layer with validated, transactional
+word/translation operations. Training, imports, scheduling, statistics, and
+pronunciation are not implemented. A vocabulary editor screen is a later step;
+the current welcome UI is preserved.
 
 The initial repository at `d18ad8814b391c60b0e1ec2099a5c2251978b2c6` contained
 only a README. There was no Android configuration, applicationId, or UI to preserve,
@@ -13,6 +15,8 @@ and no corrupted build files to restore. The new applicationId and namespace are
 See [WEB_PARITY.md](WEB_PARITY.md) for the source-based reference audit and proposed
 implementation stages, and [BUILD_REPORT.md](BUILD_REPORT.md) for executed checks
 and environment limitations. The web reference repository remains unchanged.
+See [LOCAL_STORAGE.md](LOCAL_STORAGE.md) for the implemented storage API, schema,
+business rules, test cases, and the remaining stages.
 
 ## Open in Android Studio
 
@@ -37,6 +41,9 @@ in the project.
 | Gradle wrapper | 8.11.1 |
 | Android Gradle Plugin | 8.9.2 |
 | Kotlin and Compose compiler plugin | 2.1.20 |
+| KSP | 2.1.20-1.0.32 |
+| Room runtime / KTX / compiler | 2.7.2 |
+| Coroutines Android | 1.10.1 |
 | Compose BOM | 2025.04.01 |
 | Activity Compose | 1.10.1 |
 | Compile / target SDK | 35 / 35 |
@@ -65,9 +72,10 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
 On Windows, use `.\gradlew.bat --no-daemon testDebugUnitTest lintDebug assembleDebug`.
-No Android unit tests existed at baseline, and no training behavior tests are
-introduced by this foundation. A `NO-SOURCE` test task is not evidence of passing
-training tests. Device startup and visual behavior require an actual device check.
+`testDebugUnitTest` now runs normalization and Room repository tests. Robolectric
+uses an isolated Android API 28 environment and native SQLite to check constraints,
+transactions, reactive queries and file database reopen; it does not replace a
+physical-device check. No training-mode behavior is introduced by this milestone.
 
 The [Android baseline workflow](.github/workflows/android.yml) prepares a JDK and
 SDK on GitHub Actions, runs these checks, and uploads the debug APK as
@@ -81,8 +89,11 @@ changing that repository. Run links and the APK download are in BUILD_REPORT.
 ## Offline scope
 
 The app has no server, WebView, sign-in, network client, or INTERNET permission.
-The welcome screen uses only packaged resources. Future learning data will live
-on the device; installation does not import sample or personal vocabulary.
+The welcome screen uses only packaged resources. Vocabulary storage uses the
+app-private `bulgariantrainer.db`, opened lazily through
+`BulgarianTrainerApplication.vocabulary`. Database work uses suspend functions
+and Room Flow, without main-thread query allowances or destructive migration
+fallbacks. Installation does not import sample or personal vocabulary.
 Future offline pronunciation must use an installed Bulgarian voice that does
 not require a network connection; availability cannot be assumed on every phone.
 

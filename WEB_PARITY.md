@@ -1,5 +1,17 @@
 # Web reference audit and Android plan
 
+## Android storage increment
+
+The initial audit below is retained. After foundation commit
+`7043dedcbeea62945cecf954c62cd9a5c21ae8d9`, Android now has a Room/SQLite v1
+vocabulary repository: words/translations, normalized keys, primary selection,
+atomic create/edit/archive/delete, bilingual search, pagination, Flow observation,
+and an injected clock. Source-file mapping and concrete input/output/test cases
+are in [LOCAL_STORAGE.md](LOCAL_STORAGE.md). Stage 1 is partially implemented for
+vocabulary only; sentence/session/history/schedule schemas, vocabulary UI/imports,
+and all training modes remain future work. The original applicationId and
+Compose/Material 3 welcome UI are unchanged. No reference source was modified.
+
 ## Provenance and scope
 
 Reference: [`Danishbears/bulgariantrainer`](https://github.com/Danishbears/bulgariantrainer),
