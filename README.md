@@ -55,6 +55,9 @@ No version was upgraded from an existing Android project: this is its first
 configuration. Gradle memory is limited to 1536 MiB with two workers to reduce
 load on smaller machines; Android Studio itself still needs additional memory.
 
+See [ANDROID_BUILDS.md](ANDROID_BUILDS.md) for GitHub Actions runs, failure logs,
+APK artifact extraction, Android installation and debug signature limitations.
+
 ## Build and install
 
 With a full JDK and Android command-line tools installed, set `JAVA_HOME` and
