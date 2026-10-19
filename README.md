@@ -72,7 +72,11 @@ training tests. Device startup and visual behavior require an actual device chec
 The [Android baseline workflow](.github/workflows/android.yml) prepares a JDK and
 SDK on GitHub Actions, runs these checks, and uploads the debug APK as
 `bulgariantrainer-debug`. A configured workflow is not a successful build; consult
-its actual run and [BUILD_REPORT.md](BUILD_REPORT.md).
+its actual run and [BUILD_REPORT.md](BUILD_REPORT.md). The debug APK and lint
+were successfully built on GitHub Actions; local shell networking remains blocked.
+The [pinned reference workflow](.github/workflows/web-reference.yml) also verified
+103 Java tests and 9 pronunciation tests at the web reference commit, without
+changing that repository. Run links and the APK download are in BUILD_REPORT.
 
 ## Offline scope
 

@@ -363,8 +363,9 @@ and `only exposes Bulgarian text at the correct stage in each mode`.
 
 ## Suspected defects / decisions requiring explicit treatment
 
-These are source-inspection findings, not claims that Java integration regressions
-were executed. Preserve intended behavior; do not silently replicate these risks.
+These are source-inspection findings. The existing 103-test Java baseline passed
+on CI, but new regression fixtures for the specific suspected defects below were
+not added or executed. Preserve intended behavior; do not silently replicate these risks.
 
 1. **Typing due priority versus balancing.** `TypingService.select` chooses BG
    first on ties and balances direction before comparing the other direction's
@@ -405,7 +406,8 @@ were executed. Preserve intended behavior; do not silently replicate these risks
 0. **This task: source audit and foundation.** Kotlin/Compose/Material 3 welcome
    screen, pinned wrapper/AGP/SDK configuration, local Studio instructions, CI
    build recipe, and this parity document. No training or persistence features.
-   A successful build/device check remains a separate evidence gate; see BUILD_REPORT.
+   The debug build and lint passed on GitHub Actions; physical-device acceptance
+   remains unverified. See BUILD_REPORT for the exact tested revision and artifact.
 1. **Local domain/storage.** Room/SQLite schema for words, translations, sentences,
    links, snapshots, sessions, attempts and independent schedules; foreign keys,
    unique constraints and atomic writes. Add normalization goldens, injected clock,
@@ -439,7 +441,15 @@ were executed. Preserve intended behavior; do not silently replicate these risks
 `node src/test/js/pronunciation.test.mjs`: **9 tests passed**. The documented
 `node --test src/test/js/pronunciation.test.mjs` command also exited 0; this
 runtime reported one passing file-level test, so direct execution was used to
-confirm all nine named cases. Maven Java tests did not run because the Maven
-distribution could not be downloaded. Android Gradle bootstrap failed before
-test/build tasks ran. No APK or Android runtime test has passed locally. Exact
-commands and results are recorded in [BUILD_REPORT.md](BUILD_REPORT.md).
+confirm all nine named cases. Local Maven Java tests did not run because the Maven
+distribution could not be downloaded. Local Android Gradle bootstrap failed before
+test/build tasks ran. On GitHub Actions, revision
+`d07a29ed142f0fa7e011bd2324df325237c677c2` successfully executed
+`./gradlew --no-daemon testDebugUnitTest lintDebug assembleDebug` and uploaded
+the debug APK. The Android unit-test task was NO-SOURCE, not a passing test suite.
+No device/runtime check was performed. The pinned reference baseline also ran on
+GitHub Actions: `sh ./mvnw --batch-mode clean verify` passed **103 tests** with zero
+failures/errors/skipped; pronunciation passed **9 tests**, and a final
+`git diff --exit-code` confirmed tracked source was unchanged. Exact commands,
+run links and results are recorded in
+[BUILD_REPORT.md](BUILD_REPORT.md).

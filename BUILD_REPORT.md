@@ -8,6 +8,7 @@
 | Existing local checkouts | None initially under `/workspace`. The mounted `/workspace/.git` was empty/read-only. Both complete shallow checkouts were reconstructed through integration blob/tree/commit reads and Git SHA checks. No shell clone was attempted. |
 | Shell network | Earlier `gh api user --jq '{login: .login}'` failed before reaching GitHub: `proxyconnect tcp ... socket: operation not permitted`. Cloud reports unrestricted/enforced HTTP policy, but shell sockets remain restricted. This is not evidence of missing GitHub authorization. No repeated shell repository-access retries were made in this audit. |
 | Local Android build | Blocked: no Android SDK/command-line tools, no cached Gradle distribution, and Java runtime without `javac`. The debug-build command failed at Gradle download before compilation. |
+| GitHub-hosted Android build | **Executed successfully** with full JDK 17, Android SDK 35 and Build Tools 35.0.0. Debug APK uploaded; lint passed. Unit-test task had NO-SOURCE. See the run below. |
 
 Inspected source revisions:
 
@@ -109,17 +110,66 @@ Additional executed checks:
 ```
 
 It uploads `app/build/outputs/apk/debug/app-debug.apk` only if that file exists.
-There are no Android unit test sources in this foundation; a NO-SOURCE test task
-must not be reported as passing business-rule tests. Workflow execution status
-will be recorded after the integration accepts the target branch changes and
-GitHub reports an actual run. Configuration alone is not a passed check.
+
+Observed runs:
+
+1. [Run 39225697599](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39225697599),
+   commit `74776d35dc47c58f4b8c7a71d4280d1526b7a16b`: failed during
+   `android-actions/setup-android@v3` because its default package list requested
+   obsolete SDK package `tools`. The Gradle build step was skipped. The workflow
+   was corrected to explicitly install only `platform-tools`, followed by pinned
+   platform/build-tools packages; checkout and setup-java were updated to v5.
+2. [Run 39226090667](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39226090667),
+   commit `d07a29ed142f0fa7e011bd2324df325237c677c2`: **success**.
+   JDK Temurin 17.0.20+1 and SDK setup succeeded. Logs show `compileDebugKotlin`,
+   `processDebugResources`, `packageDebug`, `assembleDebug`, and `lintDebug`
+   executing, then **BUILD SUCCESSFUL in 2m 26s**. `testDebugUnitTest` and its
+   compilation tasks reported **NO-SOURCE**; there are no Android test sources
+   in this foundation and no passing training tests are claimed.
+
+[Download the debug APK artifact ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39226090667/artifacts/12173967650)
+(GitHub sign-in may be required). Artifact name `bulgariantrainer-debug`,
+ID `12173967650`, ZIP size 8,849,662 bytes, retention until 2026-11-02.
+The artifact ZIP SHA-256 reported by upload-artifact and the artifacts API is
+`0d298ad7c059f58c36a61214cf7d428bf1a5b6b77106b4c78fdeafc8a51b11e3`.
+This is the ZIP digest, not a separately measured APK digest. The APK has not
+been installed or launched on a device in this task.
+
+The subsequent commit `5ece22545da9f7b365ff93d251dfbff967a02c4d` adds a separate
+[pinned reference baseline workflow](.github/workflows/web-reference.yml), with
+read-only checkout of web commit `de0a3e883d51561123ca54b7d5dd2e53757baf0a`
+under `web-reference`, JDK 21, `sh ./mvnw --batch-mode clean verify`,
+`node src/test/js/pronunciation.test.mjs`, and `git diff --exit-code`.
+It changes no Android app source/build version. Its execution outcome is recorded
+below from actual runner logs.
+
+### Pinned web reference baseline: executed
+
+[Run 39226473668](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39226473668)
+checked out the immutable web commit above with read-only credentials and used
+Temurin JDK **21.0.12+1**. The job completed successfully:
+
+| Executed command | Actual result |
+| --- | --- |
+| `sh ./mvnw --batch-mode clean verify` | **BUILD SUCCESS**, 103 tests, zero failures/errors/skipped; total Maven time 36.992 s. Included vocabulary, imports, flashcards, typing, sentence, scheduling, statistics, application and migration suites. |
+| `node src/test/js/pronunciation.test.mjs` | **9 tests passed**, zero failed. |
+| `git diff --exit-code` | Success; tracked reference source unchanged after verification. |
+
+Surefire reports were uploaded as `pinned-web-reference-test-reports` on that run.
+These are genuine baseline executions on GitHub-hosted infrastructure. They do
+not remove the local shell/JDK/SDK limitations above. No reference code was edited
+or pushed, and suspected uncovered defects in WEB_PARITY are not validated by the
+existing suite passing.
 
 ## Remaining evidence gaps
 
-- Full web Java baseline, including database migrations, concurrency and scheduling.
-- Successful Android dependency resolution, Kotlin/resource compilation, lint and APK packaging.
+- New regression cases for suspected defects listed in WEB_PARITY (the existing
+  103-test Java baseline, including migrations/concurrency/scheduling, did pass).
+- Local Android toolchain installation and local build remain blocked; the cloud
+  runner did successfully resolve dependencies, compile Kotlin/resources, lint and package an APK.
 - Device/emulator startup, visual review, Cyrillic rendering, accessibility and airplane-mode checks.
 - All future training features: intentionally not implemented by this task.
 
-No Java integration test, Android build, device check, or training feature is
-claimed successful on the basis of source inspection or configuration alone.
+The Android build claim is based on executed runner logs and an uploaded artifact.
+No Java integration test, device check, or training feature is claimed successful
+on the basis of source inspection or configuration alone.
