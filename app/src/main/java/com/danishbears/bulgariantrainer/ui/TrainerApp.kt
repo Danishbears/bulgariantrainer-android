@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Star
+import com.danishbears.bulgariantrainer.flashcards.FlashcardRepository
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.platform.LocalContext
@@ -38,7 +40,7 @@ import com.danishbears.bulgariantrainer.transfer.ContentTransferRepository
 import com.danishbears.bulgariantrainer.transfer.DocumentGateway
 
 @Composable
-fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferRepository) {
+fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferRepository, flashcards: FlashcardRepository) {
     val controller = rememberNavController()
     val model: VocabularyViewModel = viewModel(factory = viewModelFactory {
         initializer { VocabularyViewModel(repository, createSavedStateHandle()) }
@@ -63,14 +65,14 @@ fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferReposi
         snackbarHost = { SnackbarHost(snackbar) },
         bottomBar = {
             if (!route.startsWith("word/")) NavigationBar {
-                listOf("home" to R.string.home, "vocabulary" to R.string.dictionary, "transfer" to R.string.transfer).forEach { (target, label) ->
+                listOf("home" to R.string.home, "vocabulary" to R.string.dictionary, "flashcards" to R.string.flashcards, "transfer" to R.string.transfer).forEach { (target, label) ->
                     NavigationBarItem(selected = route == target,
                         onClick = { controller.navigate(target) {
                             popUpTo(controller.graph.findStartDestination().id) { saveState = true }
                             launchSingleTop = true
                             restoreState = true
                         } },
-                        icon = { Icon(when (target) { "home" -> Icons.Default.Home; "vocabulary" -> Icons.AutoMirrored.Filled.List; else -> Icons.Default.Settings }, contentDescription = null) },
+                        icon = { Icon(when (target) { "home" -> Icons.Default.Home; "vocabulary" -> Icons.AutoMirrored.Filled.List; "flashcards" -> Icons.Default.Star; else -> Icons.Default.Settings }, contentDescription = null) },
                         label = { Text(stringResource(label)) })
                 }
             }
@@ -87,6 +89,12 @@ fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferReposi
             composable("vocabulary") {
                 VocabularyScreen(model, onAdd = { controller.navigate("word/new") },
                     onEdit = { controller.navigate("word/$it") })
+            }
+            composable("flashcards") {
+                val model: FlashcardViewModel = viewModel(factory = viewModelFactory {
+                    initializer { FlashcardViewModel(flashcards, createSavedStateHandle()) }
+                })
+                FlashcardScreen(model, onDictionary = { controller.navigate("vocabulary") { launchSingleTop = true } })
             }
             composable("transfer") {
                 val context = LocalContext.current.applicationContext

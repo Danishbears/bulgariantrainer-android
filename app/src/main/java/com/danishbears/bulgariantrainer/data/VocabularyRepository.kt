@@ -103,8 +103,9 @@ class VocabularyRepository internal constructor(
             .map { rows -> rows.map { it.toWord() } }
     }
 
-    /** Only translations currently depend on words. Future history tables must use restrictive FKs. */
+    /** Protect durable session/history references; owned translations alone may cascade. */
     suspend fun delete(id: Long) = database.withTransaction {
+        if (database.flashcardDao().wordInUse(id)) throw WordInUseException()
         if (dao.deleteWord(id) == 0) throw WordNotFoundException(id)
     }
 
