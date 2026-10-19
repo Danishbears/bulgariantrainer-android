@@ -1,5 +1,58 @@
 # Baseline and build evidence
 
+## Durable flashcard increment — 2026-10-19
+
+Starting target branch `codex/android-foundation-parity`, commit
+`a3393a2c125a93955e5383ae1b835e3236c81d3d`, clean and matching GitHub. The read-only
+reference remains branch `master`, commit `de0a3e883d51561123ca54b7d5dd2e53757baf0a`.
+Existing checkouts, vocabulary/import/export work, applicationId, UI toolkit,
+toolchain and workflows were preserved. No target/ancestor AGENTS.md was found;
+web AGENTS.md and actual flashcard service/DTO/entity/JS/integration tests were read.
+FLASHCARDS.md maps the exact sources and rules, including scheduling deferral.
+
+Added Room v3 session/card/attempt/recognition tables with additive migration 2→3,
+durable order/direction/answer snapshots/reveal/position/status, transactional
+ratings/counters, replay/conflict protection, history-protected words and Compose
+setup/training/recovery/summary. Recognition counters are shared across card
+directions and isolated from future modes. No scheduler/NEW/DUE/mastery behavior,
+other training mode, account/server, generated vocabulary or release signing added.
+
+Local checks executed: `git diff --check`, staged whitespace checks, `sh -n gradlew`,
+XML/string-reference verification (191 Kotlin resource references), and static
+count of 95 test methods (not itself a test pass). `java -version` reports runtime
+21.0.12.1; `shutil.which` finds no javac/gradle/sdkmanager/adb. No local JVM/Android
+build is claimed and no previously blocked shell download was retried. GitHub
+integration access was confirmed for both repositories and used for hosted builds.
+Cloud environment HTTP policy currently reports state unknown, not enforced;
+that setup observation is not evidence of shell networking or SDK availability.
+
+### First hosted run
+
+Code `fc63cbd823b7f3cfaab0c50fa5d41e723bb60999`,
+[run 39271903831](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39271903831),
+job `118126095384`, executed:
+
+```sh
+./gradlew --no-daemon --stacktrace --console=plain testDebugUnitTest
+```
+
+Actual result: **95 tests executed, 94 passed, one failed**; BUILD FAILED in
+2m 29s. `FlashcardMigrationTest` failed while preparing its exported-v2 fixture,
+before opening/migrating Room: the fixture reader assumed every entity contained
+an `indices` array. Room omits it for index-free `import_receipts`. The reader was
+fixed to treat the missing array as empty. The actual populated-v1→latest test,
+20 repository parity/durability tests and six flashcard ViewModel tests passed.
+APK assembly and lint were skipped, so this first run produced **no APK**.
+The run's test-report artifact is `12195737851`. No success is claimed for it.
+
+Later executed schema/build verification is recorded below when available.
+Real device/emulator checks remain unperformed; FLASHCARDS.md lists process-kill,
+airplane mode, reveal visibility/accessibility, rapid taps, rotation and install/
+upgrade acceptance. File reopen/fresh-ViewModel tests are real persistence evidence
+but not a claim of Android OS process termination testing.
+
+The sections below preserve previous milestone evidence.
+
 ## Content import/export increment — 2026-10-19
 
 Target starting revision: `6c3990df744ca294dc309d4287a617948d6d26b9`, branch

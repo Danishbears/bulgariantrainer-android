@@ -33,7 +33,7 @@ class FlashcardMigrationTest {
                 val e = entity.jsonObject
                 val table = e.getValue("tableName").jsonPrimitive.content
                 sqlite.execSQL(e.getValue("createSql").jsonPrimitive.content.replace("\${TABLE_NAME}", table))
-                e.getValue("indices").jsonArray.forEach { index -> sqlite.execSQL(index.jsonObject.getValue("createSql").jsonPrimitive.content.replace("\${TABLE_NAME}", table)) }
+                e["indices"]?.jsonArray.orEmpty().forEach { index -> sqlite.execSQL(index.jsonObject.getValue("createSql").jsonPrimitive.content.replace("\${TABLE_NAME}", table)) }
             }
             schema.getValue("setupQueries").jsonArray.forEach { sqlite.execSQL(it.jsonPrimitive.content) }
             sqlite.execSQL("INSERT INTO words VALUES(7,'Къща','къща','съществително','съществително','женский','Заметка',0,1234,5678)")

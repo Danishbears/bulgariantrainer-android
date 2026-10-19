@@ -1,6 +1,8 @@
 # Room vocabulary storage
 
-Current database version is **2**. The import/export increment adds separate
+Current database version is **3**. Flashcard sessions/cards/attempts and isolated
+recognition counters are added through `MIGRATION_2_3`; see
+[FLASHCARDS.md](FLASHCARDS.md). The prior import/export milestone used version 2. The import/export increment adds separate
 sentence/alternative/receipt tables through an additive `MIGRATION_1_2`; the
 original vocabulary schema and data remain intact. See [IMPORT_EXPORT.md](IMPORT_EXPORT.md)
 for new tables, source formats, migration and operational retry rules. The
@@ -123,11 +125,12 @@ to either words or translations.
   Foreign keys reject orphan translations and cascade only a deleted word's own
   translations. Length limits and exactly-one-primary are enforced by the
   repository, not falsely presented as SQLite CHECK/partial-index constraints.
-- There are currently no sentence-word links, queues, history or progress tables;
-  sentence content and alternatives now exist independently.
-  Deleting unused vocabulary is supported; **training-history deletion protection
-  is not implemented yet**. Future reference/history tables must use restrictive
-  foreign keys before introducing training. Do not infer full web delete parity
+- Sentence-word links and typing/sentence-training records remain absent. Durable
+  flashcard queues/attempts and recognition progress now exist; sentence content
+  and alternatives remain independent.
+  Deleting unused vocabulary is supported; flashcard-linked vocabulary now has
+  repository and restrictive-FK history protection. Future reference/history tables
+  must retain restrictive foreign keys. Do not infer full web delete parity
   from the current two-table database.
 - Creation/update timestamps use one injected `Clock`, stored as UTC epoch
   milliseconds and returned as `Instant`. This is millisecond precision rather

@@ -5,8 +5,10 @@ Bulgarian. Kotlin, Jetpack Compose, Material 3 and Room/SQLite. The dashboard sh
 real word/translation counts; the dictionary supports bilingual search, active
 and archived lists, manual creation/editing, multiple Russian translations and
 metadata. System document import/export supports vocabulary TXT/CSV and sentence
-CSV with editable previews and explicit transactional confirmation. Training,
-review scheduling and pronunciation remain future stages; no learning statistics
+CSV with editable previews and explicit transactional confirmation. Offline
+flashcards support both languages/mixed direction, hidden answers, self-ratings,
+durable recovery and saved summaries. Typing/sentence training, review scheduling
+and pronunciation remain future stages; no learning statistics
 or sample records are fabricated.
 
 The initial repository at `d18ad8814b391c60b0e1ec2099a5c2251978b2c6` contained
@@ -21,6 +23,8 @@ See [LOCAL_STORAGE.md](LOCAL_STORAGE.md) for the implemented storage API, schema
 business rules, test cases, and the remaining stages.
 See [IMPORT_EXPORT.md](IMPORT_EXPORT.md) for exact formats, system document flows,
 source-dataset provenance, migration 1→2 and content-export limitations.
+See [FLASHCARDS.md](FLASHCARDS.md) for durable recognition sessions, migration
+2→3, parity, retry rules and the explicitly deferred scheduling boundary.
 
 ## Open in Android Studio
 
@@ -87,7 +91,8 @@ On Windows, use `.\gradlew.bat --no-daemon testDebugUnitTest lintDebug assembleD
 and ViewModel saved-draft tests. Robolectric
 uses an isolated Android API 28 environment and native SQLite to check constraints,
 transactions, reactive queries and file database reopen; it does not replace a
-physical-device check. No training-mode behavior is introduced by this milestone.
+physical-device check. Flashcard parity/recovery tests also run here; typing/sentence training remains
+future work.
 
 The [Android baseline workflow](.github/workflows/android.yml) prepares a JDK and
 SDK on GitHub Actions, runs these checks, and uploads the debug APK as

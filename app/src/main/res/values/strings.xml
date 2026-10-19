@@ -185,7 +185,7 @@
     <string name="flash_ru_bg">Русский → болгарский</string>
     <string name="flash_mixed">Смешанное направление</string>
     <string name="flash_session_missing">Сохранённое занятие не найдено. Загрузите состояние или начните новое.</string>
-    <string name="flash_session_closed">Занятие уже завершено. Загружен сохранённый результат.</string>
+    <string name="flash_session_closed">Занятие уже завершено. Обновите состояние, чтобы увидеть результат.</string>
     <string name="flash_stale">Текущая карточка изменилась. Проверьте загруженное состояние.</string>
     <string name="flash_hidden_error">Сначала откройте ответ; оценка не сохранена.</string>
     <string name="flash_rating_conflict">Для этой карточки уже сохранена другая оценка. Она не изменена.</string>

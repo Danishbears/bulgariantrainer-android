@@ -24,7 +24,8 @@ pronunciation modules; they are not a content-export format. Android CSV exports
 therefore target the actual web **import schemas**, not an invented export API.
 The broader learning audit and known web defects remain in WEB_PARITY.md.
 
-No new training mode, generated translation, automatic language reversal, server,
+The import/export increment added no training mode. The later FLASHCARDS.md
+increment adds recognition sessions separately. No generated translation, automatic language reversal, server,
 account, broad storage permission or release signing is introduced.
 
 ## Use on Android
@@ -192,7 +193,7 @@ Kotlin paths use `app/src/main/java/com/danishbears/bulgariantrainer/`:
 | `ui/TransferViewModel.kt` | Async load/edit/confirm/export state and guarded retries |
 | `ui/TransferScreen.kt`, `ImportRowEditor.kt`, `TransferLabels.kt` | System picker launchers, lazy preview, editing, selection and explicit confirmation |
 
-Room version **2** adds `sentences`, `sentence_alternatives`, `import_receipts`.
+The import/export migration 1→2 adds `sentences`, `sentence_alternatives`, `import_receipts`.
 The compiler-exported v2 identity hash is `bcea5278b79bd932a6e247746e21b2dc`.
 The v1 `words`/`translations` definitions, IDs and data remain unchanged. Migration
 is registered on production open; no destructive fallback/main-thread queries.

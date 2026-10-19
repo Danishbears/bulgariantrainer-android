@@ -1,5 +1,22 @@
 # Web reference audit and Android plan
 
+## Current Android flashcard increment
+
+Starting from `a3393a2c125a93955e5383ae1b835e3236c81d3d`, Android adds offline
+flashcard recognition: both directions/mixed, bounded session sizes, hidden/revealed
+answers, self-ratings, progress, early completion and summaries. Durable Room v3
+session/card/attempt/recognition tables preserve order, snapshots, reveal state,
+position and status across process recreation. Additive migration 2→3 retains
+existing content; linked words are protected from hard deletion.
+
+[FLASHCARDS.md](FLASHCARDS.md) maps actual web/Android source and representative
+cases, recovery guarantees, tests and safety differences. Scheduling is deferred
+as requested: Android offers direction selection and all-active-word sampling,
+not NEW/DUE review scopes, intervals or mastery classification. Recognition
+counters are isolated from future typing/sentence modes; reveal/view awards none.
+The original source audit and earlier milestone sections below remain historical
+context. Latest executed verification is at the top of BUILD_REPORT.md.
+
 ## Current Android import/export increment
 
 Building on `6c3990df744ca294dc309d4287a617948d6d26b9`, Android adds document-picker
@@ -455,7 +472,7 @@ not added or executed. Preserve intended behavior; do not silently replicate the
    Framework, strict parsers and preview/edit/
    confirm. Port transactional duplicate/append cases and ensure no automatic
    personal/sample import. Decide whether local preview drafts survive process death.
-3. **Flashcards and durable session state.** Persist queue/reveal/rating snapshots,
+3. **Flashcards and durable session state — implemented.** Persisted queue/reveal/rating snapshots,
    UUID replay and completion atomically. Verify rotation/process-death/reopen,
    early exit and no award for viewing. Keep answer/pronunciation visibility aligned.
 4. **Typing.** Approve direction-priority decision, then implement bidirectional
