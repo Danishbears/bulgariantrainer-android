@@ -6,7 +6,8 @@ real word/translation counts; the dictionary supports bilingual search, active
 and archived lists, manual creation/editing, multiple Russian translations and
 metadata. System document import/export supports vocabulary TXT/CSV and sentence
 CSV with editable previews and explicit transactional confirmation. Training,
-review scheduling and pronunciation remain future stages; no learning statistics or sample records are fabricated.
+review scheduling and pronunciation remain future stages; no learning statistics
+or sample records are fabricated.
 
 The initial repository at `d18ad8814b391c60b0e1ec2099a5c2251978b2c6` contained
 only a README. There was no Android configuration, applicationId, or UI to preserve,

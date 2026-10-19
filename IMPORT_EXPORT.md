@@ -212,6 +212,9 @@ Receipts are operational import metadata, not learning attempts/progress.
   the web; content is not guessed. Vocabulary unsupported headers/rows remain
   individually visible for correction. HEADER/EMPTY rows cannot be selected in
   Android; a malformed selected row must be explicitly corrected first.
+- Android also rejects disallowed control characters in sentence fields (except
+  TAB/CR/LF), matching the vocabulary safety rule; the web sentence preview lacks
+  this explicit check.
 - Android uses one in-memory ViewModel preview rather than a server's five-entry,
   30-minute preview cache. Its committed receipt survives restart. No server is
   needed; process loss requires a fresh preview, not automatic confirmation.
@@ -224,7 +227,10 @@ strict encodings/limits, quoted/multiline/malformed CSV, JSON types, original
 source ranges, no-write preview, archive duplicates, append identity/limits,
 transaction rollback, retry/concurrency, frozen picker options, actual dataset,
 export/import round-trips and a populated exported-v1 migration. See BUILD_REPORT
-for actual run results; source inspection is not a test pass.
+for complete commands and results. Code `5defa7518f4956441cf83a4511d99400c1ea4142`
+passed **68 tests**, `assembleDebug`, `lintDebug` and both committed Room schema
+checks on [run 39255088356](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39255088356).
+This is an actual hosted execution, not a claim based on source inspection.
 
 Still verify on Android: actual system picker/creation providers and cancellation,
 USB/on-phone install, Cyrillic/IME input in dialogs, rotation and process loss

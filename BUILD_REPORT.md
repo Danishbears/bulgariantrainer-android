@@ -60,6 +60,40 @@ verification. No hand-invented schema hash was used. Subsequent changes also
 add an independent CSV/JSON quote-escaping round-trip case and refine preview UI.
 Final verification is recorded separately below when executed.
 
+### Final hosted verification: successful
+
+Final tested code: `5defa7518f4956441cf83a4511d99400c1ea4142`.
+[Run 39255088356](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39255088356),
+job `118068247579`, completed **successfully** with full JDK 17 and Android SDK 35.
+The following separate commands actually ran:
+
+| Command/check | Actual result |
+| --- | --- |
+| `./gradlew --no-daemon --stacktrace --console=plain testDebugUnitTest` | BUILD SUCCESSFUL in 2m 22s; **68 tests**, zero failures/errors/skipped |
+| `./gradlew --no-daemon --stacktrace --console=plain assembleDebug` | BUILD SUCCESSFUL in 59s; debug APK packaged |
+| `./gradlew --no-daemon --stacktrace --console=plain lintDebug` | BUILD SUCCESSFUL in 54s |
+| Schema contract | Both exported `1.json` and `2.json` structurally equal the committed files |
+
+Executed suites: vocabulary repository 19, text normalization 5, validator 4,
+content migration 1, content parser 10, content transfer repository 16, transfer
+ViewModel/document provider 5, word editor ViewModel 8. The **32 added checks**
+include no-write previews, actual dataset, original source ranges, malformed
+UTF-8/CSV/JSON, append/duplicate/race/rollback safety, confirmation receipts after
+reopen, format round-trips, provider streams and populated-v1 migration.
+
+- [Download debug APK ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39255088356/artifacts/12187937054):
+  `bulgariantrainer-debug`, artifact `12187937054`, 10,393,793 bytes.
+  Extract `app-debug.apk` before installing. API-reported artifact ZIP SHA-256:
+  `41d30bd57a1d835f682d3a006cb2ed420572f7103ad8582e3013ac7a654b1055`.
+- [Download JUnit/lint reports and schemas](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39255088356/artifacts/12187837259):
+  artifact `12187837259`, 62,012 bytes.
+
+Artifacts expire 2026-11-02; GitHub sign-in may be required. Sizes/digests describe
+ZIP artifacts, not a separately inspected extracted APK. The APK was not installed
+or launched on a device. Follow-up documentation-only changes do not change this
+tested application, schema, test code or workflow; they are marked `[skip ci]`.
+The existing feature branch/PR #1 is updated; `main` is not merged by this task.
+
 Device/emulator checks remain unperformed: actual picker/provider cancellation,
 URI-grant failures, disk/provider write failure, IME/dialog layout, rotation and
 OS process recreation, local-document airplane mode, accessibility and long
