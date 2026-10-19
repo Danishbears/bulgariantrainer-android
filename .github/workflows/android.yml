@@ -31,6 +31,27 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Check and build debug APK
         run: ./gradlew --no-daemon testDebugUnitTest lintDebug assembleDebug
+      - name: Export Room schema for review
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          for path in Path('app/schemas').rglob('*.json'):
+              print('ROOM_SCHEMA_EXPORT:' + json.dumps({'path': str(path), 'schema': json.loads(path.read_text())}))
+          PY
+      - name: Upload storage test and lint reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-storage-test-reports
+          path: |
+            app/build/test-results/testDebugUnitTest/
+            app/build/reports/tests/testDebugUnitTest/
+            app/build/reports/lint-results-debug.html
+            app/schemas/
+          if-no-files-found: warn
+          retention-days: 14
       - uses: actions/upload-artifact@v4
         with:
           name: bulgariantrainer-debug
