@@ -46,6 +46,9 @@ in the project.
 | Coroutines Android | 1.10.1 |
 | Compose BOM | 2025.04.01 |
 | Activity Compose | 1.10.1 |
+| Lifecycle Compose / ViewModels | 2.8.7 |
+| Navigation Compose | 2.8.9 |
+| Paging / Paging Compose | 3.3.6 |
 | Compile / target SDK | 35 / 35 |
 | Build Tools | 35.0.0 |
 | Minimum SDK | 26 |

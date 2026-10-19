@@ -422,18 +422,20 @@ not added or executed. Preserve intended behavior; do not silently replicate the
 
 ## Proposed Android implementation stages
 
-0. **This task: source audit and foundation.** Kotlin/Compose/Material 3 welcome
+0. **Completed foundation audit.** Kotlin/Compose/Material 3 welcome
    screen, pinned wrapper/AGP/SDK configuration, local Studio instructions, CI
    build recipe, and this parity document. No training or persistence features.
    The debug build and lint passed on GitHub Actions; physical-device acceptance
    remains unverified. See BUILD_REPORT for the exact tested revision and artifact.
 1. **Local domain/storage.** Room/SQLite schema for words, translations, sentences,
    links, snapshots, sessions, attempts and independent schedules; foreign keys,
-   unique constraints and atomic writes. Add normalization goldens, injected clock,
+   unique constraints and atomic writes. Vocabulary storage is implemented; later
+   learning tables remain deferred. Add normalization goldens, injected clock,
    migration/reopen tests. H2/Flyway SQL is a contract reference, not executable
    Android migrations. No server or login. Decide backup/export separately.
-2. **Vocabulary and controlled imports.** Russian UI, CRUD/search/archive/protected
-   delete; Storage Access Framework file picker, strict parsers and preview/edit/
+2. **Vocabulary and controlled imports.** Dashboard, Russian vocabulary UI,
+   create/edit/search/archive are implemented. Controlled import and history-protected
+   deletion remain future work: Storage Access Framework, strict parsers and preview/edit/
    confirm. Port transactional duplicate/append cases and ensure no automatic
    personal/sample import. Decide whether local preview drafts survive process death.
 3. **Flashcards and durable session state.** Persist queue/reveal/rating snapshots,

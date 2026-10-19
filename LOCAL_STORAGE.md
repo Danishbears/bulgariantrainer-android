@@ -188,8 +188,13 @@ Robolectric, not a fake/in-memory repository. They do not demonstrate installati
 device rendering, process-kill recovery during an in-flight write, or future
 training persistence. Executed outcomes and CI links are in BUILD_REPORT.md.
 
-The preceding storage baseline passed 20 tests; this increment's actual executed
-counts, commands, build status and APK link are recorded in BUILD_REPORT.md.
+The preceding storage baseline passed 20 tests. This increment passed all
+**36 tests** (19 repository, 5 normalizer, 4 validator, 8 ViewModel), lint,
+`assembleDebug` and the unchanged exported-schema check on
+[run 39247504111](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39247504111)
+at code commit `95d4b6ae9650bfd709df3ce34e5ee56816c83d43`.
+Exact commands, artifacts and device-only checks are recorded in BUILD_REPORT.md.
+
 Local Gradle bootstrap remains blocked by shell networking.
 
 ## Design for later learning data
@@ -201,7 +206,7 @@ requested features, through explicit additive versioned Room migrations:
 | --- | --- |
 | Sessions and queued questions | Session UUID/request identity and settings; ordered queue with unique `(session_id, position)`; prompt/accepted-answer snapshots independent of later edits |
 | Attempts | Immutable session/question/word references, raw answer, result/source, acknowledgement and timestamps; unique operation/question identity for idempotent retries |
-| Word progress | Separate record from `words`; unique `(word_id, mode, direction)` so flashcards and each typing direction cannot overwrite each other |
+| Word progress | Separate record from `words`; unique `(word_id, mode, direction)` with a non-null shared-direction sentinel for flashcards, so flashcards and each typing direction cannot overwrite each other |
 | Review schedules | Next due instant, interval/streak, last finalized attempt; updated atomically with that attempt and its separate progress record |
 | Sentences and their progress | Own identity, answer snapshots and independent schedule; vocabulary usage links never award word progress |
 

@@ -1,5 +1,98 @@
 # Baseline and build evidence
 
+## Vocabulary UI and persistence increment — 2026-10-19
+
+Starting target: branch `codex/android-foundation-parity`, commit
+`66854f0e5c3a9606f81cfd6c11ebaea014282516`, initially clean and matching GitHub.
+Reference: local branch `master` at `de0a3e883d51561123ca54b7d5dd2e53757baf0a`,
+unchanged. No target/ancestor AGENTS.md exists; the web AGENTS.md and applicable
+source/parity documentation were inspected. Existing checkouts were reused.
+
+Already present: app identity, Compose/Material 3, compatible pinned toolchain,
+Room v1 entities and transactional repository, normalization/search/archive,
+20 real JVM/Robolectric tests, exported schema and Actions APK/report workflow.
+
+Added: Russian dashboard with actual counts, bounded Room Paging dictionary with
+bilingual search, active/archive filters, manual editor with alternatives and
+metadata, archive/restore, shared field validation, lifecycle-aware ViewModels,
+SavedStateHandle drafts, loading/empty/error states and 16 additional tests.
+No schema/entity change, app identity change, demo records or training feature.
+
+| Capability | This increment's observed result |
+| --- | --- |
+| GitHub integration | Repository read/write access works; used connected tools to update the existing PR #1 branch and trigger CI. |
+| Local checkouts | Both repositories already present with real source and exact Git commits; no clone or project recreation. Reference remains clean. |
+| Shell networking | Gradle distribution download failed with socket denial; not treated as missing GitHub authorization and not retried. |
+| Local Android build | Java runtime only; no javac/sdkmanager/adb/standalone Gradle on PATH. Local tests and APK build did not reach Gradle task execution. |
+| GitHub-hosted build | See the actual run result recorded below. Configuration alone is not counted as passing. |
+
+Actual local command:
+
+```sh
+env GRADLE_USER_HOME=/tmp/bulgariantrainer-gradle ./gradlew --no-daemon testDebugUnitTest assembleDebug
+```
+
+Exit 1 while bootstrapping Gradle 8.11.1:
+`java.net.SocketException: Operation not permitted`. No local JVM test or Kotlin
+compilation is claimed. There was one attempt in this increment.
+
+Executed static checks: `git diff --check`, `git diff --cached --check`,
+`sh -n gradlew` and Python parsing of all four Android XML files passed.
+All 63 Kotlin string-resource references resolve. These checks do not compile
+Kotlin or substitute for AGP lint. `git ls-files -s gradlew` confirms Linux mode
+100755. `git diff HEAD^ -- app/schemas .../TrainerDatabase.kt` was empty for the
+implementation commit: Room remains version 1 with the original exported schema.
+
+### Executed GitHub Actions result
+
+Code commit: `95d4b6ae9650bfd709df3ce34e5ee56816c83d43`.
+[Run 39247504111](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39247504111),
+job `118042915140`, completed **successfully**. Runner used full Temurin JDK 17,
+Android SDK 35/Build Tools 35.0.0, and the committed executable wrapper.
+The following commands actually executed as separate steps:
+
+| Command/check | Observed result |
+| --- | --- |
+| `./gradlew --no-daemon --stacktrace --console=plain testDebugUnitTest` | BUILD SUCCESSFUL in 2m 6s; 36 tests, zero failures/errors/skipped |
+| `./gradlew --no-daemon --stacktrace --console=plain assembleDebug` | BUILD SUCCESSFUL in 1m 1s; debug APK packaged |
+| `./gradlew --no-daemon --stacktrace --console=plain lintDebug` | BUILD SUCCESSFUL in 46s |
+| JUnit XML summary | Repository 19, normalization 5, validator 4, ViewModel 8; total 36 |
+| Exported Room schema contract | Generated v1 JSON structurally equals the committed schema |
+
+The compiler reported a non-blocking deprecation for `Icons.Filled.List` in favor
+of its AutoMirrored variant. Runner logs also warn about upstream action Node.js
+runtime deprecations; setup, tests, packaging, lint and uploads still completed.
+No claim of warning-free compilation or physical-device verification is made.
+
+Artifacts (GitHub sign-in may be required; retention until 2026-11-02):
+
+- [Debug APK ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39247504111/artifacts/12184760508),
+  `bulgariantrainer-debug`, 10,117,648 bytes. Extract `app-debug.apk` before
+  installing. API-reported ZIP SHA-256:
+  `e7780e2f147e426cbcba96f2162b1500c405312c98b68a26bd09945c8c1f832d`.
+- [JUnit/lint reports and exported schema](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39247504111/artifacts/12184645657),
+  `android-storage-test-reports`, 48,360 bytes.
+
+These are artifact ZIP digests/sizes, not an independently measured extracted
+APK digest. Follow-up documentation-only changes do not alter the tested app,
+dependencies, tests, schema or workflow. The existing PR #1 branch is updated;
+`main` is not merged or replaced by this task. Debug signing is unchanged;
+successive cloud-runner keys may differ, as explained in ANDROID_BUILDS.md.
+
+### Device/emulator checks still required
+
+No device or emulator was used. Verify fresh install is empty, manual Cyrillic
+input, duplicate/length messages, adding/removing/selecting translations, edits,
+archive/restore, search, restart persistence and airplane-mode operation. Check
+rotation and process recreation with an unsaved long form, IME visibility, Back
+confirmation, narrow screens, large font, dark mode, TalkBack and dictionary
+scroll/search performance on the target phone. SavedStateHandle unit tests do
+not establish Android OS process-kill behavior or recovery during an in-flight
+write. No migration step is needed for this unchanged v1 schema; future schema
+changes still require explicit preservation-tested migrations.
+
+The following sections retain historical baseline evidence.
+
 ## Room vocabulary increment — 2026-10-19
 
 Starting Android revision: `7043dedcbeea62945cecf954c62cd9a5c21ae8d9` on
