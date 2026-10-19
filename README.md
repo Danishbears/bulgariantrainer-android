@@ -12,9 +12,10 @@ and archived lists, manual creation/editing, multiple Russian translations and
 metadata. System document import/export supports vocabulary TXT/CSV and sentence
 CSV with editable previews and explicit transactional confirmation. Offline
 flashcards support both languages/mixed direction, hidden answers, self-ratings,
-durable recovery and saved summaries. Typing/sentence training, review scheduling
-and pronunciation remain future stages; no learning statistics
-or sample records are fabricated.
+durable recovery and saved summaries. Bidirectional typing adds balanced unique
+queues, exact grading, accepted-answer feedback and saved mistake review. Sentence
+training, review scheduling and pronunciation remain future stages; no learning
+statistics or sample records are fabricated.
 
 The initial repository at `d18ad8814b391c60b0e1ec2099a5c2251978b2c6` contained
 only a README. There was no Android configuration, applicationId, or UI to preserve,
@@ -96,8 +97,8 @@ On Windows, use `.\gradlew.bat --no-daemon testDebugUnitTest lintDebug assembleD
 and ViewModel saved-draft tests. Robolectric
 uses an isolated Android API 28 environment and native SQLite to check constraints,
 transactions, reactive queries and file database reopen; it does not replace a
-physical-device check. Flashcard parity/recovery tests also run here; typing/sentence training remains
-future work.
+physical-device check. Flashcard and typing parity, concurrency, migration and
+recovery tests also run here; sentence training remains future work.
 
 The [Android baseline workflow](.github/workflows/android.yml) prepares a JDK and
 SDK on GitHub Actions, runs these checks, and uploads the debug APK as

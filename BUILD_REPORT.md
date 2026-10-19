@@ -24,9 +24,39 @@ permitted; no identical blocked download was retried. GitHub integration access
 works for both repositories. Cloud HTTP policy observation is unknown/not enforced,
 with no configured credentials; that does not establish shell network access.
 
-Hosted test/build/lint/schema execution and artifacts will be recorded below
-after actual completion. Device/OS process-kill/keyboard/install checks remain
-unperformed. The historical sections below preserve previous milestone evidence.
+### First hosted run: fixture failures and compiler schema capture
+
+Code `073b241f3165f921ac076ff32f933788b4f5177f`,
+[run 39296560879](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39296560879),
+job `118210499749`, actually executed:
+
+```sh
+./gradlew --no-daemon --stacktrace --console=plain testDebugUnitTest
+```
+
+Result: **128 tests executed, 126 passed, two failed**, zero errors/skipped;
+BUILD FAILED in 3m 5s. The failures occurred in new test fixture setup:
+`TypingRepositoryTest.emptyOrTranslationlessPoolNeverCreatesSession` used a
+nonexistent `normalized_bulgarian` column instead of `normalized_text`;
+`TypingMigrationTest` omitted mandatory sentence source-ID/filename/row columns.
+Both fixtures were corrected and their INSERTs executed locally using Python
+SQLite against the actual exported-v3 CREATE statements. Production code did not
+change for those failures. All six typing ViewModel tests, five pure rules tests
+and the 96 existing tests passed. **APK assembly and lint were skipped**; this
+run produced no APK. Its reports artifact is `12209501646`.
+
+The schema guard also failed because the new compiler-generated `4.json` had not
+yet been committed. The exact file was captured from its diagnostic, decoded and
+committed; identity **`60b12add3ca435a9eeb8c7130f4f5ae4`** came from Room/KSP.
+Structural comparison confirms all nine v3 table definitions are unchanged and
+only four typing tables are added. Python SQLite also executed migration 3→4
+against exported v3 and compared table/foreign-key/index PRAGMAs to a fresh v4
+export: matching contracts. These local checks do not replace Room migration tests.
+Versions 1/2/3 guards passed in the first run; final v4 verification is pending.
+
+Later actual test/build/lint/schema results and APK artifacts are recorded below
+when available. Device/OS process-kill/keyboard/install checks remain unperformed.
+The historical sections below preserve previous milestone evidence.
 
 # Baseline and build evidence
 

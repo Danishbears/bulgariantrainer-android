@@ -71,7 +71,7 @@ class TypingRepositoryTest {
     }
     @Test fun emptyOrTranslationlessPoolNeverCreatesSession() = runBlocking<Unit> {
         expect(TypingError.EMPTY_DICTIONARY) { start() }
-        val id = db.openHelper.writableDatabase.compileStatement("INSERT INTO words(bulgarian_text,normalized_bulgarian,archived,created_at,updated_at) VALUES('без','без',0,1,1)").executeInsert()
+        val id = db.openHelper.writableDatabase.compileStatement("INSERT INTO words(bulgarian_text,normalized_text,archived,created_at,updated_at) VALUES('без','без',0,1,1)").executeInsert()
         assertTrue(id > 0)
         expect(TypingError.EMPTY_DICTIONARY) { start() }
         assertEquals(0, count("typing_sessions"))
