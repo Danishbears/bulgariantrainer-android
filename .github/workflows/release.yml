@@ -68,6 +68,7 @@ jobs:
           ANDROID_RELEASE_KEYSTORE: ${{ runner.temp }}/bulgariantrainer-release.jks
           ANDROID_SIGNING_CERT_SHA256: ${{ vars.ANDROID_SIGNING_CERT_SHA256 }}
         run: |
+          set -euo pipefail
           set +x
           umask 077
           trap 'rm -f "$ANDROID_RELEASE_KEYSTORE"' EXIT
@@ -85,7 +86,8 @@ jobs:
           PY
           unset ANDROID_KEYSTORE_BASE64
           ./gradlew --no-daemon --no-configuration-cache --console=plain assembleRelease
-          python3 scripts/verify_apk.py app/build/outputs/apk/release/app-release.apk --signing release | tee release-verification.txt
+          python3 scripts/verify_apk.py app/build/outputs/apk/release/app-release.apk --signing release > release-verification.txt
+          cat release-verification.txt
       - name: Upload verified signed APK
         uses: actions/upload-artifact@v4
         with:

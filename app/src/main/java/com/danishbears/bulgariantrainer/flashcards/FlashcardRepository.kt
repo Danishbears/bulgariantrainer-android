@@ -25,7 +25,7 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonPrimitive
 
 /** Durable recognition practice. All state transitions and their counters commit atomically.
- * Review scheduling is intentionally absent; future schedules belong to a separate component/table.
+ * The shared scheduler writes an independent recognition schedule in the same transaction.
  */
 class FlashcardRepository internal constructor(
     private val database: TrainerDatabase,

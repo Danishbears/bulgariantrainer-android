@@ -65,6 +65,13 @@ jobs:
           print('STORAGE_TEST_TOTALS:', totals)
           assert totals['tests'] > 0, 'No storage tests executed'
           assert totals['failures'] == totals['errors'] == 0, 'Storage tests failed'
+          for variant in ('debug', 'release'):
+              lint = Path(f'app/build/reports/lint-results-{variant}.xml')
+              if lint.exists():
+                  issues = ElementTree.parse(lint).getroot().findall('issue')
+                  print('LINT_TOTALS:', variant, {level: sum(i.get('severity') == level for i in issues) for level in ('Fatal', 'Error', 'Warning', 'Information')})
+                  for issue in issues:
+                      print('LINT_ISSUE:', variant, issue.get('severity'), issue.get('id'), issue.get('message'))
           PY
       - name: Verify exported Room schema contract
         if: always()
