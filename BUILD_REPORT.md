@@ -50,7 +50,20 @@ and compared its PRAGMA table_info with the generated v7 contract: passed.
 Follow-up also rejects unpaired Unicode escapes and deeply nested encoded answer
 JSON before parsing/binding, adds a CSV-alternative/receipt round-trip, and captures
 the data epoch before asynchronous content-import preprocessing. Static test count
-is now **256**, not a pass. Final hosted results will be recorded after execution.
+is now **256**, not a pass. ### Second hosted execution
+
+Code `3265416039f42d218df5c41f5bd57fe2841aab9e`,
+[run 39380928823](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39380928823),
+job `118489624076`: `testDebugUnitTest` executed **256 tests**, one failure,
+zero errors/skipped, BUILD FAILED in 2m 45s. The two original round-trip failures
+are fixed. The only remaining failure was the new CSV fixture selecting the
+nonselectable header row; fixed its selection to `row.selectable`, without changing
+parser behavior. All production backup cases and previous 223 tests passed.
+The reference guard and Room schemas **1–7** passed. APK/lint steps were skipped.
+Added a further end-to-end case with finalized recognition, both typing directions,
+automatic sentence matching and PARTIAL self-assessment, checking all four
+schedules and grading-source statistics after restore. Static total is now 257.
+Final hosted results will be recorded after actual execution.
 Physical-device document providers, installation, process-death/low-storage,
 large-history memory and TalkBack checks remain unperformed.
 

@@ -128,8 +128,10 @@ and sequences together. A database generation check rejects mutations queued bef
 the replacement. Navigation is blocked during restore and after success until
 **Открыть восстановленные данные** creates a fresh Activity task, clearing stale
 ViewModels, pending commands, monotonic feedback guards and draft/session pointers.
-A process death instead opens directly against the atomically committed database.
-There is no automatic merge or background restore.
+A process death reopens the last complete committed state (old or restored),
+never a half-replaced database.
+There is no automatic merge or background restore. Stored deadlines stay exact;
+current due/activity views still use current device UTC time, not the backup date.
 
 ## Verification and physical checks
 

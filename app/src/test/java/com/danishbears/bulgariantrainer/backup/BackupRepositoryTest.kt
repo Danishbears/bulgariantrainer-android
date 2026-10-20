@@ -78,6 +78,30 @@ class BackupRepositoryTest {
         assertEquals(stats.reviewAttempts+1,StatisticsRepository(db,clock).overview().reviewAttempts)
         assertEquals(1,db.sentenceDao().progress(db.sentenceDao().question(s.id,s.question!!.id)!!.sentenceId)!!.attempts)
     }
+    @Test fun finalizedSchedulesInAllFourModesAndAutomaticVersusSelfGradingRoundTrip()=runBlocking<Unit> {
+        repeat(2){word("дума$it")}
+        val flash=FlashcardRepository(db,clock);var f=flash.start(request(),FlashcardSettings(1))
+        flash.reveal(f.id,f.question!!.id);flash.rate(f.id,f.question!!.id,true)
+        val typing=TypingRepository(db,clock,Random(8));var t=typing.start(request(),true)
+        while(t.question!=null) {
+            val q=t.question!!;val stored=db.typingDao().question(t.id,q.id)!!
+            val answer=if(stored.direction=="BG_TO_RU")Json.parseToJsonElement(stored.russianJson).jsonArray.first().jsonPrimitive.content else stored.bulgarian
+            typing.submit(t.id,q.id,answer);t=typing.next(t.id,q.id)
+        }
+        SentenceRepository(db,clock).create(SentenceInput("Я здесь.","Тук съм.",difficulty=1))
+        val sentence=SentencePracticeRepository(db,clock);val auto=sentence.start(request(),1)
+        sentence.submit(auto.id,auto.question!!.id,"Тук съм.");sentence.next(auto.id,auto.question!!.id)
+        val manual=sentence.start(request(),1);sentence.submit(manual.id,manual.question!!.id,"Другой вариант")
+        sentence.selfRate(manual.id,manual.question!!.id,SentenceRating.PARTIAL);sentence.next(manual.id,manual.question!!.id)
+        val before=StatisticsRepository(db,clock).overview();val bytes=backup.snapshot();val prepared=backup.prepare(bytes)
+        f=flash.start(request(),FlashcardSettings(1));flash.reveal(f.id,f.question!!.id);flash.rate(f.id,f.question!!.id,false)
+        backup.restore(prepared)
+        assertArrayEquals(bytes,backup.snapshot());assertEquals(before,StatisticsRepository(db,clock).overview())
+        assertEquals(setOf("FLASHCARD","TYPING_BG_TO_RU","TYPING_RU_TO_BG"),db.reviewDao().words().map{it.mode}.toSet())
+        assertEquals(2,db.reviewDao().sentences().single().attempts);assertEquals(1,db.reviewDao().sentences().single().successes)
+        assertEquals(3L,before.overall.automatic.attempts);assertEquals(2L,before.overall.selfAssessed.attempts)
+        assertEquals(1L,before.typingBgToRu.total.attempts);assertEquals(1L,before.typingRuToBg.total.attempts)
+    }
     @Test fun failedLateInsertRollsBackDeletedContentSettingsSchedulesAndSqliteSequences()=runBlocking<Unit> {
         word();val original=backup.prepare(backup.snapshot());word("новое");TrainerPreferencesRepository(db).flashcardSize(42)
         val before=backup.snapshot()
@@ -111,7 +135,7 @@ class BackupRepositoryTest {
         val transfer=com.danishbears.bulgariantrainer.transfer.ContentTransferRepository(db,clock)
         val csv="id,russian,bulgarian,alternativeTranslations,grammaticalExplanation,difficulty,topic\n1,Я здесь.,Тук съм.,\"[\"\"Аз съм тук.\"\"]\",Пояснение,2,Разговор"
         val preview=transfer.preview(com.danishbears.bulgariantrainer.transfer.ContentKind.SENTENCES,"import.csv",csv.toByteArray())
-        transfer.confirm(preview.copy(rows=preview.rows.map{it.copy(selected=true)}))
+        transfer.confirm(preview.copy(rows=preview.rows.map{it.copy(selected=it.selectable)}))
         val bytes=backup.snapshot();val prepared=backup.prepare(bytes)
         val alternatives=prepared.document.getValue("tables").jsonObject.getValue("sentence_alternatives").jsonArray
         assertEquals(0L,alternatives.single().jsonObject.getValue("position").jsonPrimitive.long)
