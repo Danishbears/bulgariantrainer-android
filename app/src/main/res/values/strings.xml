@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Болгарский тренажёр</string>
-    <string name="welcome">Добро пожаловать! Здесь начинается ваше знакомство с болгарским языком.</string>
     <string name="home">Главная</string>
     <string name="dictionary">Словарь</string>
     <string name="dashboard_title">Ваш болгарский словарь</string>

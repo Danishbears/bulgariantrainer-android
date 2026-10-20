@@ -1,5 +1,13 @@
 # Manual full backup and restore
 
+Android automatic app-data backup is disabled with `allowBackup=false` and explicit
+all-domain exclusions in `res/xml/backup_rules.xml` and Android 12+
+`res/xml/data_extraction_rules.xml` (cloud backup and device transfer). Manual
+SAF JSON backup/restore remains available. These platform rules do not clear
+local data or affect an in-place, same-signature app update. Actual OEM transfer
+behavior still requires device acceptance; do not rely on automatic system backup
+as a substitute for saving a full JSON snapshot.
+
 Open **Главная → Полный бэкап и восстановление**. This is separate from vocabulary
 and sentence CSV content export. No server, account, periodic job or automatic
 desktop/mobile synchronization is involved. Android system document creation and

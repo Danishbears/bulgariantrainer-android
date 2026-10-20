@@ -82,6 +82,10 @@ imported only by your explicit action.
    or Android's update prompt, keeping storage intact. Reconcile all recorded data.
    Debug signatures are unsuitable as a guarantee for successive cloud updates.
 
+The manifest and backup XML explicitly exclude automatic cloud/device-transfer
+app data on supported Android versions; manual JSON is the supported transfer
+path. Actual OEM behavior is not established by lint or JVM tests.
+
 ## Deliberate differences from the pinned web app
 
 - Kotlin/Compose/Room with local device storage, not a browser, Spring server or
