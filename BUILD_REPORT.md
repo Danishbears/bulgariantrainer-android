@@ -1,3 +1,189 @@
+# Personal offline-use and release preparation — 2026-10-20
+
+Starting target checkout: `codex/android-foundation-parity` at
+`2de34df10c84e4255cc2e91b6a54e398500c5674`, clean and matching existing PR #1.
+Existing work was preserved. Reference checkout/remote: `master` at
+`de0a3e883d51561123ca54b7d5dd2e53757baf0a`, read-only and unchanged. GitHub API
+confirmed access and pull/push permissions to both repositories. Existing local
+checkouts were reused; no clone, project recreation or web modification occurred.
+No target/nested/ancestor AGENTS.md exists; reference AGENTS.md was read.
+
+Reviewed WEB_PARITY.md and actual Android repositories, DAOs, session ViewModels,
+UI/document/TTS flows, migration tests and both existing workflows, against actual
+web normalizer, typing planner, scheduler, imports, statistics and pronunciation
+source/tests. Frozen fixture copies match all eight pinned source hashes. The
+bundled sentence CSV is byte-exact to the reference: 100 data rows, 20 alternatives,
+actual header `id,russian,bulgarian,alternativeTranslations,grammaticalExplanation,difficulty,topic`.
+
+### Existing functionality retained
+
+Vocabulary/accepted translations/metadata/archive, real counts and bilingual paged
+search; controlled TXT/CSV and sentence CSV/JSON import/export; durable flashcards,
+bidirectional typing and Russian→Bulgarian sentences with explicit self-assessment;
+four independent review schedules; real-record statistics; local Bulgarian TTS
+visibility/cancellation; manual full backup and validated transactional restore,
+including history, IDs/sequences, schedules and training defaults. No mode or
+unrelated redesign was added. Learning algorithms, applicationId and Room v7
+schema are unchanged; no migration or destructive fallback was introduced.
+
+### Changes and defects addressed
+
+- Corrected stale parity/README/source-comment statements that still called
+  scheduling and pronunciation deferred. Current overview and the detailed
+  acceptance matrix separate implemented behavior from unexecuted device checks.
+- Fixed lint's Android 12+ data-extraction policy gap: explicit all-domain
+  cloud/device-transfer exclusions plus legacy backup rules supplement
+  `allowBackup=false`. Manual JSON backup and in-place update data remain intact.
+  Removed the unused foundation welcome resource reported by lint.
+- Increased application version from code 1/0.1.0 to **code 2/0.2.0** in committed
+  `version.properties`; preserved `com.danishbears.bulgariantrainer` and established
+  Kotlin/Compose/Room/tool versions. Every future distributed update must increment
+  code above installed versions and retain the same key/applicationId.
+- Added conditional environment-based release signing with no embedded credentials,
+  no debug-key fallback and a failure for partially supplied configuration.
+- Added **Personal signed release** workflow: JDK17/SDK35, tests/lint before private
+  key decoding, one owner-supplied persistent key, runner-temporary private file,
+  no uploaded Gradle cache or configuration cache, cleanup, final signature/certificate check and
+  a downloadable verified signed-APK artifact only after success.
+- Extended baseline CI to build/lint unsigned release as well as debug, and verify
+  actual APK manifest ID/version/minSdk/debuggable flags, permission scope, ZIP
+  integrity and debug signature. Unsigned release is not an installable artifact.
+- Added five Python APK contract tests and additional secret/key ignore patterns.
+  RELEASE_SIGNING.md documents exactly four Secrets, a pinned public certificate
+  variable, interactive key generation and encrypted backup, Actions/downloads,
+  safe install/update and debug→release full-backup transition.
+
+### Access and local execution
+
+| Capability | Actual observation |
+| --- | --- |
+| GitHub integration | Both repositories accessible; target feature-branch commits/PR CI usable |
+| Local source | Both exact checkouts present; reference remains clean |
+| Shell networking | Gradle distribution download fails with `java.net.SocketException: Operation not permitted`; no repeated network retry |
+| Local Android | Java 21.0.12.1 available (compiler module supports parity harness); no SDK, sdkmanager, adb, emulator or system Gradle found |
+| Hosted Android | Existing GitHub Actions uses compatible JDK17, wrapper8.11.1, AGP8.9.2, Kotlin2.1.20, SDK/build-tools35 |
+
+Actual local commands/results:
+
+- `./gradlew --no-daemon --stacktrace --console=plain testDebugUnitTest lintDebug assembleDebug`:
+  stopped before bootstrap because default `/home/agent/.gradle` is not writable.
+- Same command with `GRADLE_USER_HOME=/workspace/.gradle`: stopped downloading
+  Gradle8.11.1 with the socket denial above. **No local Android task executed**;
+  no Gradle test, lint or build pass is inferred from either attempt.
+- `python3 parity/verify_web_parity.py`: passed 21 Java scheduler histories and
+  20 assertions from actual pinned statistics test source.
+- `node /workspace/bulgariantrainer/src/test/js/pronunciation.test.mjs`:
+  nine named tests passed; mocked/browser-rule tests do not prove device voices.
+- `python3 -m unittest discover -s scripts -p 'test_*.py' -v`: five tests passed.
+- All workflow YAML parsed; each run script passed `bash -n`; inline Python parsed.
+- Executed the release configuration-check script with an intentionally empty
+  local signing environment: exit1, all missing names clearly reported, no key
+  generated. This is a fail-closed smoke check, **not inspection of GitHub Secrets**.
+- `git diff --check`, tracked-file guards and source XML checks passed. No app
+  network/storage permissions; no committed APK/key/database/local.properties.
+  Wrapper remains Git mode100755; Room schemas1–7 unchanged from starting revision.
+
+### Hosted execution
+
+First revision `b72520bda36a4f73935655b5b6a861b18f889503`,
+[run39384195292](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39384195292),
+failed before tests at Gradle Kotlin script configuration (47s): `java.util`
+resolved through the Gradle `java` extension. Fixed with explicit
+`import java.util.Properties`. **Zero JVM tests ran** and APK/lint steps were
+skipped in that run. Also made signature-verification failure stop the signing
+step explicitly before artifact upload, independent of shell pipeline defaults.
+
+Corrected revision `3f1d68f234d292bf7e5e701eecb20d92fd24a404`,
+[run39384458911](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39384458911):
+**passed**: 257 JVM tests, no failures/errors/skips; `assembleDebug`, `lintDebug`,
+`assembleRelease lintRelease`, debug APK signature/manifest checks and unsigned
+release checks passed. Actual times: JVM3m1s, debug1m3s, debug lint1m14s,
+release build/lint2m44s. Lint had zero errors and 16 warnings per variant, including
+DataExtractionRules and UnusedResources. Those two prompted the narrow fixes above;
+the remaining SDK/dependency-update advice does not justify an unrelated toolchain
+upgrade in this personal-use task. No warning was suppressed.
+
+Final candidate `5f60a34201aa73fc2ef4f8ca86f5d29df9374fe1`,
+[run39385597476](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39385597476):
+GitHub API confirmed `status=completed`, `conclusion=success`, exact head SHA
+above, job `118504561095`. This is the tested application/build/workflow revision.
+
+| Actual final command/check | Result |
+| --- | --- |
+| `python3 parity/verify_web_parity.py` | 21 Java histories and 20 web statistics assertions passed |
+| `python3 -m unittest discover -s scripts -p 'test_*.py' -v` | Five APK contract tests passed |
+| `./gradlew --no-daemon --stacktrace --console=plain testDebugUnitTest` | **257 tests, zero failures/errors/skipped**, BUILD SUCCESSFUL, 2m51s |
+| `./gradlew --no-daemon --stacktrace --console=plain assembleDebug` | BUILD SUCCESSFUL, 58s |
+| `./gradlew --no-daemon --stacktrace --console=plain lintDebug` | BUILD SUCCESSFUL, 1m11s; zero fatal/errors, 14 warnings |
+| `python3 scripts/verify_apk.py app/build/outputs/apk/debug/app-debug.apk --signing debug` | ZIP/manifest/version/minSdk/permissions/debug signature verified |
+| `./gradlew --no-daemon --stacktrace --console=plain assembleRelease lintRelease` | BUILD SUCCESSFUL, 2m25s; zero fatal/errors, 14 release warnings |
+| `python3 scripts/verify_apk.py app/build/outputs/apk/release/app-release-unsigned.apk --signing unsigned` | Unsigned release structure/identity/permissions verified; **not installable, not release signing** |
+| Room export contract | Compiler exports match committed schemas1–7 |
+
+The 14 warnings per variant are **OldTargetApi (1)** and **GradleDependency (13)**:
+the pinned API35/AndroidX dependency set has newer available versions. They are
+reported without suppression; unrelated version upgrades were intentionally not
+introduced. DataExtractionRules and UnusedResources are resolved. Explicit backup
+exclusions are XML-checked and accepted by build/lint; actual OEM backup/transfer
+behavior remains a device check.
+
+Both final APK checks report applicationId `com.danishbears.bulgariantrainer`,
+versionCode **2**, versionName **0.2.0**, minSdk **26**; expected debuggability and
+no INTERNET/MANAGE_EXTERNAL_STORAGE/READ_EXTERNAL_STORAGE/WRITE_EXTERNAL_STORAGE.
+Extracted debug APK SHA-256:
+`c6fd6d30168177a1ff423922fb9c7b1c8d4ada8270324b803bfa5d2f2b02b2c7`.
+Its public debug certificate SHA-256 is
+`28e2dcfa07e051ba966668c524fbf672a53f883943262af359cab19e5f33e46b`.
+This differs from the previous run's debug certificate, demonstrating why cloud
+debug builds are not a persistent-key update channel.
+
+[Download final debug APK ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39385597476/artifacts/12247542044):
+artifact **12247542044**, 10950790 bytes, expires **2026-11-03T07:25:47Z**.
+Extract **app-debug.apk** and open it on Android8/API26+ (allow installation for
+your file manager if asked), or use `adb install -r app-debug.apk`.
+ZIP digest `41fb5347edfb10101e2bb94f2a426df2e4c4b0fbc0212b972808eb4806766ae7`
+is the artifact archive hash, not the extracted APK hash above.
+[JUnit/HTML/debug-and-release-lint/schema reports](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39385597476/artifacts/12248025515):
+artifact **12248025515**, 172678 bytes, expires **2026-11-03T07:25:46Z**.
+Sign in to GitHub if required; artifacts expire, so keep a trusted local copy or
+run a new build. ANDROID_BUILDS.md and RELEASE_SIGNING.md explain extraction,
+installation, signature conflicts, full-backup transition and data-preserving updates.
+
+The follow-up commit contains only BUILD_REPORT.md/WEB_PARITY.md documentation
+and skips redundant CI. Application, resources, workflows, scripts, version and
+build files are compared unchanged against the tested revision above.
+
+### Remaining acceptance and signing status
+
+No physical device/emulator is available; instrumentation and actual process
+termination/rotation/IME/small-screen/airplane-mode/TTS-quality/update-install
+checks were **not executed**. JVM native-SQLite reopen, concurrency and migration
+coverage is distinct from those checks. Use PERSONAL_USE_CHECKLIST.md for the
+feature-by-feature evidence map and reproducible device steps, including all
+training modes, imports, duplicate actions, statistics and full backup/restore.
+No large-history memory/low-storage or cloud document-provider stress acceptance
+was performed. Backup remains bounded JSONv1/schema7 (32MiB/250000rows), not sync.
+
+**Release signing is incomplete/unverified.** No release credentials were created,
+read or supplied; available GitHub tools cannot inspect repository Secrets.
+Personal signed release has not been dispatched and no release-key-signed APK
+is claimed. Set four Secrets `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`,
+`ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`, plus the public Actions variable
+`ANDROID_SIGNING_CERT_SHA256`, following RELEASE_SIGNING.md. The workflow must
+exist on main before manual dispatch becomes available. Existing PR #1 remains
+open/unmerged; main is still the README baseline. A successful signed workflow
+and real same-key, higher-version device update remain necessary.
+
+Known web differences: standalone device Room storage/clock and UTC boundaries;
+local Bulgarian voices only; no inferred sentence-word links; temporary unconfirmed
+previews; stricter validation and serialized local mutations; explicit optional
+sentence-difficulty export preflight; Android-only full JSON backup. Actual scoped
+web typing imbalance is retained/displayed, with 15+15 only for unconstrained
+eligibility. No backend/account/AI/generation/automatic import/sync is introduced.
+See WEB_PARITY.md and PERSONAL_USE_CHECKLIST.md for exact rules and source/test map.
+
+---
+
 # Manual full backup increment — 2026-10-20
 
 Target branch `codex/android-foundation-parity` started clean at

@@ -503,9 +503,9 @@ and `only exposes Bulgarian text at the correct stage in each mode`.
 
 ## Suspected defects / decisions requiring explicit treatment
 
-These are source-inspection findings. The existing 103-test Java baseline passed
-on CI, but new regression fixtures for the specific suspected defects below were
-not added or executed. Preserve intended behavior; do not silently replicate these risks.
+These are source-inspection findings from the original audit. The 103-test Java
+baseline passed on CI; at that milestone the specific new regression fixtures
+below had not been added. Current Android decisions are recorded after the list.
 
 1. **Typing due priority versus balancing.** `TypingService.select` chooses BG
    first on ties and balances direction before comparing the other direction's
@@ -540,6 +540,17 @@ not added or executed. Preserve intended behavior; do not silently replicate the
    does. A READY row can therefore fail confirmation. Duplicate sentences are
    skipped before validating all other corrected fields. Keep transactionality,
    but add a preview/confirmation consistency fixture and explicit skip semantics.
+
+Current Android handling of those findings:
+
+| Finding | Decision / evidence |
+| --- | --- |
+| Greedy typing priority/imbalance | Preserved explicitly by `TypingPlanner` in `typing/TypingModels.kt`; `ReviewSchedulerTest.typingPreservesWebGreedyTieBehaviorAndOppositeDueExclusivityRules` and scoped-direction cases cover it. UI shows actual counts. |
+| Live sentence-word links | Not copied: Android has no inferred or editable sentence-word associations, and sentence practice never updates vocabulary mastery. |
+| Legacy nullable duplicate keys | Android uses its own normalized Room content schema; web H2 files are not imported. CSV confirmation normalizes/rechecks keys transactionally without overwriting progress; `ContentTransferRepositoryTest` covers duplicates/rollback. |
+| Concurrent start UUID race | Local starts are serialized in Room transactions with unique request IDs and exact settings replay. Repository concurrency cases cover starts and ratings/submissions. |
+| Mixed clocks | Repositories and shared scheduler take an injectable Clock; schedules use 24-hour durations, statistics UTC days. `ReviewSchedulerTest`, `ReviewIntegrationTest` and statistics fixtures cover boundaries. |
+| Preview validation gap | Android preview uses the same normalized alternative/content validation as confirmation. Invalid alternatives and selected-row failures are covered by `ContentParserTest`/`ContentTransferRepositoryTest`; no partial save. |
 
 ## Proposed Android implementation stages
 
@@ -581,6 +592,11 @@ not added or executed. Preserve intended behavior; do not silently replicate the
    font scaling, dark mode, narrow screens and process recovery. Build/install a
    debug APK; actual CI evidence is in BUILD_REPORT.md. Offline voice availability
    and quality still require the physical checks in PRONUNCIATION.md.
+8. **Manual full backup implemented; personal release setup prepared.** JSONv1/
+   Room7 snapshot/validated replacement and training defaults are implemented.
+   Release workflow, versionCode2 and installation/update/key-backup instructions
+   are prepared; owner signing configuration and a real successful signed build
+   remain necessary. Physical acceptance follows PERSONAL_USE_CHECKLIST.md.
 
 ## Historical foundation verification status
 
