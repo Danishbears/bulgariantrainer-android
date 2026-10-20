@@ -1,3 +1,8 @@
+> **Manual full backup increment:** a separate Android versioned JSON format
+> preserves all content, learning records and training defaults. It is not the
+> web-compatible CSV format and provides no automatic synchronization. See
+> BACKUP_RESTORE.md for exact validation, confirmation and atomic replacement.
+
 > **Pronunciation increment:** Android TextToSpeech now follows the pinned web
 > visibility helpers, with local Bulgarian-only discovery, optional audio,
 > lifecycle cancellation and fake-adapter tests. See PRONUNCIATION.md and

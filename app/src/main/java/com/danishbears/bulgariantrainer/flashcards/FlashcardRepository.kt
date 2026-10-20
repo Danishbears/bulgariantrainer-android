@@ -1,6 +1,6 @@
 package com.danishbears.bulgariantrainer.flashcards
 
-import androidx.room.withTransaction
+import com.danishbears.bulgariantrainer.data.withContentTransaction as withTransaction
 import com.danishbears.bulgariantrainer.data.*
 import com.danishbears.bulgariantrainer.review.*
 import com.danishbears.bulgariantrainer.data.FlashcardAttemptEntity

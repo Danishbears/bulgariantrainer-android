@@ -46,6 +46,9 @@ import com.danishbears.bulgariantrainer.transfer.DocumentGateway
 
 @Composable
 fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferRepository, flashcards: FlashcardRepository, typing: TypingRepository, sentences: SentenceRepository, sentencePractice: SentencePracticeRepository, statistics: StatisticsRepository) {
+    val application = LocalContext.current.applicationContext as com.danishbears.bulgariantrainer.BulgarianTrainerApplication
+    val backupModel: BackupViewModel = viewModel(factory = viewModelFactory { initializer { BackupViewModel(application.backup, com.danishbears.bulgariantrainer.backup.BackupDocuments(application)) } })
+    val backupState by backupModel.state.collectAsStateWithLifecycle()
     val controller = rememberNavController()
     val model: VocabularyViewModel = viewModel(factory = viewModelFactory {
         initializer { VocabularyViewModel(repository, createSavedStateHandle()) }
@@ -72,7 +75,7 @@ fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferReposi
         bottomBar = {
             if (!route.startsWith("word/") && !route.startsWith("sentence/")) NavigationBar {
                 listOf("home" to R.string.home, "vocabulary" to R.string.dictionary, "flashcards" to R.string.flashcards, "typing" to R.string.typing, "transfer" to R.string.transfer).forEach { (target, label) ->
-                    NavigationBarItem(selected = route == target,
+                    NavigationBarItem(enabled = !backupState.busy && !backupState.restored, selected = route == target,
                         onClick = { controller.navigate(target) {
                             popUpTo(controller.graph.findStartDestination().id) { saveState = true }
                             launchSingleTop = true
@@ -92,7 +95,8 @@ fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferReposi
                     onDictionary = { controller.navigate("vocabulary") { launchSingleTop = true } },
                     onAdd = { controller.navigate("word/new") },
                     onSentences = { controller.navigate("sentences") { launchSingleTop = true } },
-                    onStatistics = { controller.navigate("statistics") { launchSingleTop = true } })
+                    onStatistics = { controller.navigate("statistics") { launchSingleTop = true } },
+                    onBackup = { controller.navigate("backup") { launchSingleTop = true } })
             }
             composable("vocabulary") {
                 VocabularyScreen(model, onAdd = { controller.navigate("word/new") },
@@ -100,13 +104,13 @@ fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferReposi
             }
             composable("flashcards") {
                 val model: FlashcardViewModel = viewModel(factory = viewModelFactory {
-                    initializer { FlashcardViewModel(flashcards, createSavedStateHandle()) }
+                    initializer { FlashcardViewModel(flashcards, createSavedStateHandle(), application.preferences) }
                 })
                 FlashcardScreen(model, onDictionary = { controller.navigate("vocabulary") { launchSingleTop = true } })
             }
             composable("typing") {
                 val model: TypingViewModel = viewModel(factory = viewModelFactory {
-                    initializer { TypingViewModel(typing, createSavedStateHandle()) }
+                    initializer { TypingViewModel(typing, createSavedStateHandle(), application.preferences) }
                 })
                 TypingScreen(model, onDictionary = { controller.navigate("vocabulary") { launchSingleTop = true } })
             }
@@ -119,7 +123,7 @@ fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferReposi
             }
             composable("sentence-practice") {
                 val model: SentencePracticeViewModel = viewModel(factory = viewModelFactory {
-                    initializer { SentencePracticeViewModel(sentencePractice, createSavedStateHandle()) }
+                    initializer { SentencePracticeViewModel(sentencePractice, createSavedStateHandle(), application.preferences) }
                 })
                 SentencePracticeScreen(model, onCollection = { controller.navigate("sentences") { launchSingleTop = true } })
             }
@@ -139,6 +143,7 @@ fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferReposi
                 })
                 WordMistakesScreen(model, onBack = { controller.popBackStack() })
             }
+            composable("backup") { BackupScreen(backupModel) }
             composable("transfer") {
                 val context = LocalContext.current.applicationContext
                 val model: TransferViewModel = viewModel(factory = viewModelFactory {

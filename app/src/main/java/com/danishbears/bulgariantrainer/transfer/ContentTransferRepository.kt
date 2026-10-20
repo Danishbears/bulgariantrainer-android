@@ -1,6 +1,6 @@
 package com.danishbears.bulgariantrainer.transfer
 
-import androidx.room.withTransaction
+import com.danishbears.bulgariantrainer.data.withContentTransaction as withTransaction
 import com.danishbears.bulgariantrainer.data.ImportReceiptEntity
 import com.danishbears.bulgariantrainer.data.SentenceAlternativeEntity
 import com.danishbears.bulgariantrainer.data.SentenceEntity

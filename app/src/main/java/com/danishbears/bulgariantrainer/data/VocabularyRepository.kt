@@ -1,6 +1,6 @@
 package com.danishbears.bulgariantrainer.data
 
-import androidx.room.withTransaction
+import com.danishbears.bulgariantrainer.data.withContentTransaction as withTransaction
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData

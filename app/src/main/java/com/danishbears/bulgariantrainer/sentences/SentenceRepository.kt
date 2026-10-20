@@ -4,7 +4,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
-import androidx.room.withTransaction
+import com.danishbears.bulgariantrainer.data.withContentTransaction as withTransaction
 import com.danishbears.bulgariantrainer.data.*
 import java.time.Clock
 import java.util.UUID

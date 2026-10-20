@@ -2,6 +2,7 @@ package com.danishbears.bulgariantrainer.ui
 
 import com.danishbears.bulgariantrainer.review.StudyScope
 import kotlinx.coroutines.flow.combine
+import com.danishbears.bulgariantrainer.data.TrainerPreferencesRepository
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -40,13 +41,15 @@ data class SentencePracticeUiState(
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class SentencePracticeViewModel(private val repository: SentencePracticeRepository, private val saved: SavedStateHandle) : ViewModel() {
+class SentencePracticeViewModel(private val repository: SentencePracticeRepository, private val saved: SavedStateHandle, private val preferences: TrainerPreferencesRepository? = null) : ViewModel() {
+    private val originalKeys = saved.keys()
+    private var preferencesLoaded = false
     private val _state = MutableStateFlow(SentencePracticeUiState())
     val state = _state.asStateFlow()
     val input = saved.getStateFlow("input", "")
     val size = saved.getStateFlow("size", "10")
     val scope = saved.getStateFlow("scope", StudyScope.MIXED.name)
-    fun setScope(value: StudyScope) { if (controlsEnabled()) saved["scope"] = value.name }
+    fun setScope(value: StudyScope) { if (controlsEnabled()) { saved["scope"] = value.name; persist { sentenceScope(value) } } }
     private val retryAvailability = MutableStateFlow(0)
     val availability = combine(retryAvailability, scope) { _, value -> value }.flatMapLatest { selected ->
         repository.observeAvailable(StudyScope.valueOf(selected)).map<Long, SentencePracticeAvailability> { SentencePracticeAvailability.Ready(it) }
@@ -57,9 +60,14 @@ class SentencePracticeViewModel(private val repository: SentencePracticeReposito
     private var observingId: Long? = null
     init { reload() }
 
+    private fun persist(write: suspend TrainerPreferencesRepository.() -> Unit) {
+        val settings = preferences ?: return
+        viewModelScope.launch { try { settings.write() } catch (e: CancellationException) { throw e }
+            catch (_: Exception) { _state.update { it.copy(error = SentenceError.STORAGE_FAILED) } } }
+    }
     private fun controlsEnabled() = !_state.value.busy && !_state.value.loading && _state.value.pending == null
     fun setInput(value: String) { if (controlsEnabled() && _state.value.session?.question?.feedback == null) saved["input"] = value }
-    fun setSize(value: String) { if (controlsEnabled()) saved["size"] = value }
+    fun setSize(value: String) { if (controlsEnabled()) { saved["size"] = value; value.toIntOrNull()?.takeIf { it in 1..100 }?.let { persist { sentenceSize(it) } } } }
     fun retryAvailable() { retryAvailability.update { it + 1 } }
 
     fun reload(force: Boolean = false) {
@@ -68,6 +76,12 @@ class SentencePracticeViewModel(private val repository: SentencePracticeReposito
         _state.update { it.copy(busy = true, error = null) }
         viewModelScope.launch {
             try {
+                if (!preferencesLoaded && preferences != null) {
+                    val defaults = preferences.get()
+                    if ("scope" !in originalKeys) saved["scope"] = defaults.sentenceScope
+                    if ("size" !in originalKeys) saved["size"] = defaults.sentenceSize.toString()
+                    preferencesLoaded = true
+                }
                 val restored = repository.restore(saved.get<Long>("sessionId"))
                 if (restored != null && (force || saved.get<Boolean>("setupRequested") != true || restored.active)) {
                     accept(restored)

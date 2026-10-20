@@ -1,6 +1,6 @@
 package com.danishbears.bulgariantrainer.sentences
 
-import androidx.room.withTransaction
+import com.danishbears.bulgariantrainer.data.withContentTransaction as withTransaction
 import com.danishbears.bulgariantrainer.review.*
 import com.danishbears.bulgariantrainer.data.*
 import java.time.Clock

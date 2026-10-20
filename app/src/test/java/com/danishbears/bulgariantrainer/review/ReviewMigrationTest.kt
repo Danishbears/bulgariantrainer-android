@@ -56,7 +56,7 @@ class ReviewMigrationTest {
             s.execSQL("INSERT INTO sentence_attempts VALUES(32,23,'Вариант.','вариант.',0,NULL,1001,NULL)")
             s.version=5
         }
-        val db=Room.databaseBuilder(context,TrainerDatabase::class.java,name).addMigrations(MIGRATION_1_2,MIGRATION_2_3,MIGRATION_3_4,MIGRATION_4_5,MIGRATION_5_6).build()
+        val db=Room.databaseBuilder(context,TrainerDatabase::class.java,name).addMigrations(MIGRATION_1_2,MIGRATION_2_3,MIGRATION_3_4,MIGRATION_4_5,MIGRATION_5_6, MIGRATION_6_7).build()
         val at=Instant.parse("2026-10-10T12:30:00Z");val clock=Clock.fixed(at,ZoneOffset.UTC)
         try {
             val review=db.reviewDao();val flash=review.word(7,"FLASHCARD")!!.schedule()
@@ -81,7 +81,7 @@ class ReviewMigrationTest {
             sentences.selfRate(pending.id,pending.question!!.id,SentenceRating.PARTIAL)
             assertEquals(4,review.sentence(9)!!.attempts);assertEquals(1,review.sentence(9)!!.intervalDays)
             db.openHelper.readableDatabase.query("PRAGMA foreign_key_check").use { assertEquals(0,it.count) }
-            assertEquals(6,db.openHelper.readableDatabase.version)
+            assertEquals(7,db.openHelper.readableDatabase.version)
         } finally { db.close();context.deleteDatabase(name) }
     }
 }

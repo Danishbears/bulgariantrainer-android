@@ -2,6 +2,7 @@ package com.danishbears.bulgariantrainer.ui
 
 import com.danishbears.bulgariantrainer.review.StudyScope
 import kotlinx.coroutines.flow.combine
+import com.danishbears.bulgariantrainer.data.TrainerPreferencesRepository
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -39,13 +40,15 @@ data class FlashcardUiState(
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class FlashcardViewModel(private val repository: FlashcardRepository, private val saved: SavedStateHandle) : ViewModel() {
+class FlashcardViewModel(private val repository: FlashcardRepository, private val saved: SavedStateHandle, private val preferences: TrainerPreferencesRepository? = null) : ViewModel() {
+    private val originalKeys = saved.keys()
+    private var preferencesLoaded = false
     private val _state = MutableStateFlow(FlashcardUiState())
     val state = _state.asStateFlow()
     val size = saved.getStateFlow("size", "20")
     val direction = saved.getStateFlow("direction", FlashcardDirection.BG_TO_RU.name)
     val scope = saved.getStateFlow("scope", StudyScope.MIXED.name)
-    fun setScope(value: StudyScope) { if (controlsEnabled()) saved["scope"] = value.name }
+    fun setScope(value: StudyScope) { if (controlsEnabled()) { saved["scope"] = value.name; persist { flashcardScope(value) } } }
     private val retryAvailability = MutableStateFlow(0)
     val availability = combine(retryAvailability, scope) { _, value -> value }.flatMapLatest { selected ->
         repository.observeAvailable(StudyScope.valueOf(selected)).map<Long, FlashcardAvailability> { FlashcardAvailability.Ready(it) }
@@ -56,9 +59,14 @@ class FlashcardViewModel(private val repository: FlashcardRepository, private va
     private var observingId: Long? = null
     init { reload() }
 
+    private fun persist(write: suspend TrainerPreferencesRepository.() -> Unit) {
+        val settings = preferences ?: return
+        viewModelScope.launch { try { settings.write() } catch (e: CancellationException) { throw e }
+            catch (_: Exception) { _state.update { it.copy(error = FlashcardError.STORAGE_FAILED) } } }
+    }
     private fun controlsEnabled() = !_state.value.busy && !_state.value.loading && _state.value.pending == null
-    fun setSize(value: String) { if (controlsEnabled()) saved["size"] = value }
-    fun setDirection(value: FlashcardDirection) { if (controlsEnabled()) saved["direction"] = value.name }
+    fun setSize(value: String) { if (controlsEnabled()) { saved["size"] = value; value.toIntOrNull()?.takeIf { it in 1..100 }?.let { persist { flashcardSize(it) } } } }
+    fun setDirection(value: FlashcardDirection) { if (controlsEnabled()) { saved["direction"] = value.name; persist { flashcardDirection(value) } } }
     fun retryAvailable() { retryAvailability.update { it + 1 } }
 
     fun reload(force: Boolean = false) {
@@ -67,6 +75,13 @@ class FlashcardViewModel(private val repository: FlashcardRepository, private va
         _state.update { it.copy(busy = true, error = null) }
         viewModelScope.launch {
             try {
+                if (!preferencesLoaded && preferences != null) {
+                    val defaults = preferences.get()
+                    if ("scope" !in originalKeys) saved["scope"] = defaults.flashcardScope
+                    if ("size" !in originalKeys) saved["size"] = defaults.flashcardSize.toString()
+                    if ("direction" !in originalKeys) saved["direction"] = defaults.flashcardDirection
+                    preferencesLoaded = true
+                }
                 val restored = repository.restore(saved.get<Long>("sessionId"))
                 if (restored != null && (force || saved.get<Boolean>("setupRequested") != true || restored.active)) {
                     accept(restored)

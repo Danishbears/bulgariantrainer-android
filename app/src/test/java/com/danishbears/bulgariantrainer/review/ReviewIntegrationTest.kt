@@ -41,7 +41,7 @@ class ReviewIntegrationTest {
     private lateinit var statistics: StatisticsRepository
     @Before fun setup() { context=ApplicationProvider.getApplicationContext();open() }
     private fun open() {
-        db=Room.databaseBuilder(context,TrainerDatabase::class.java,filename).addMigrations(MIGRATION_1_2,MIGRATION_2_3,MIGRATION_3_4,MIGRATION_4_5,MIGRATION_5_6).build()
+        db=Room.databaseBuilder(context,TrainerDatabase::class.java,filename).addMigrations(MIGRATION_1_2,MIGRATION_2_3,MIGRATION_3_4,MIGRATION_4_5,MIGRATION_5_6, MIGRATION_6_7).build()
         flash=FlashcardRepository(db,clock,Random(5));typing=TypingRepository(db,clock,Random(5));sentences=SentencePracticeRepository(db,clock,Random(5));statistics=StatisticsRepository(db,clock)
     }
     @After fun teardown() { db.close();context.deleteDatabase(filename) }

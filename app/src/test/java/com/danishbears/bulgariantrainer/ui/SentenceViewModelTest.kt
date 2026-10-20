@@ -37,7 +37,7 @@ class SentenceViewModelTest {
     private val filename = "sentence-vm-${UUID.randomUUID()}.db"
     @Before fun setup() { Dispatchers.setMain(UnconfinedTestDispatcher()); context = ApplicationProvider.getApplicationContext(); open() }
     private fun open() {
-        db = Room.databaseBuilder(context, TrainerDatabase::class.java, filename).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6).build()
+        db = Room.databaseBuilder(context, TrainerDatabase::class.java, filename).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7).build()
         repository = SentencePracticeRepository(db); content = SentenceRepository(db)
     }
     @After fun teardown() { store.clear(); db.close(); context.deleteDatabase(filename); Dispatchers.resetMain() }

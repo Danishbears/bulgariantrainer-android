@@ -1,3 +1,7 @@
+> Manual full backup/confirmed restore is implemented separately from CSV.
+> Room v7 adds persistent training defaults while retaining existing history.
+> See [BACKUP_RESTORE.md](BACKUP_RESTORE.md) and [BUILD_REPORT.md](BUILD_REPORT.md).
+
 > Current schema is **v6**. Additive migration 5→6 adds persisted study scope and
 > separate word/sentence scheduling facts, retaining every previous counter,
 > attempt, snapshot and timestamp. Legacy provenance and unknown directions are

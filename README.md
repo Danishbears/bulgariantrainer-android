@@ -1,3 +1,9 @@
+> **Главная → Полный бэкап и восстановление** saves a versioned full snapshot,
+> including content, sessions/attempts, progress/schedules and training defaults.
+> Restore validates everything, shows a preview and requires explicit replacement
+> confirmation. This is separate from CSV content export. See
+> [BACKUP_RESTORE.md](BACKUP_RESTORE.md).
+
 > Bulgarian pronunciation is available in the dictionary and current training
 > questions, with normal/slow/stop controls and hidden-answer visibility rules.
 > An installed local Bulgarian Android TTS voice is required; all training works

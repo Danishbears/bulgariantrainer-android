@@ -1,3 +1,7 @@
+> Manual full backup/confirmed restore is implemented separately from CSV.
+> Room v7 adds persistent training defaults while retaining existing history.
+> See [BACKUP_RESTORE.md](BACKUP_RESTORE.md) and [BUILD_REPORT.md](BUILD_REPORT.md).
+
 > Manual sentences may now omit difficulty. The web CSV importer still requires
 > 1–5: sentence export checks this before writing and asks users to set missing
 > levels in the editor. No level is fabricated. Exports remain content-only and

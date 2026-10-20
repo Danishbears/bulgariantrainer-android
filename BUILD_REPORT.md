@@ -1,3 +1,35 @@
+# Manual full backup increment — 2026-10-20
+
+Target branch `codex/android-foundation-parity` started clean at
+`a7ac0078bfacf2295b2896978ad436f076307954`, matching existing PR #1 through GitHub
+integration. Read-only web `master` remains
+`de0a3e883d51561123ca54b7d5dd2e53757baf0a`. Existing checkouts reused and previous
+work retained. No Android/nested/ancestor AGENTS.md exists; web Java instructions
+were read and apply only to that read-only source. No reference files changed.
+
+Inspected all Room tables, session repositories, SavedStateHandle defaults, SAF
+flows, workflow and last successful TTS report (223 tests). Added a separate v1
+full JSON snapshot/validation/confirmed transactional replacement flow. Room v7
+adds only durable training defaults. No applicationId, Kotlin/Compose, toolchain,
+release signing, CSV format or network/storage permission change. No automatic sync.
+
+Local checks executed: `git diff --check`, `sh -n gradlew`, Python XML/resource
+validation (353 resolved strings) and static count **253 @Test methods** (not an
+execution/pass). `python3 parity/verify_web_parity.py` executed separately; results
+below will record its actual outcome. Inspection initially requested a nonexistent
+Entities.kt before reading actual VocabularyEntities.kt; no source was invented.
+
+Runtime `java -version` reports 21.0.12.1; no javac executable, gradle, sdkmanager
+or adb is on PATH. The compiler module remains available to the parity harness.
+No local Android build is claimed. Previously socket-denied shell network access
+was not retried; GitHub integration is independently usable. Managed environment
+started pending then became ready; its current HTTP policy readiness was unknown,
+not assumed enforced. Android validation uses existing hosted JDK17/SDK35 CI.
+
+Hosted test/build/lint/schema results will be recorded after actual execution.
+Physical-device document providers, installation, process-death/low-storage,
+large-history memory and TalkBack checks remain unperformed.
+
 # Bulgarian pronunciation increment — 2026-10-19
 
 Target `codex/android-foundation-parity` started clean at
