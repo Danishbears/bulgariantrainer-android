@@ -1,0 +1,115 @@
+name: Android baseline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+          log-accepted-android-sdk-licenses: false
+      - name: Install pinned Android SDK packages
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Verify pinned web business-rule fixtures
+        run: python3 parity/verify_web_parity.py
+      - name: Test APK contract checks
+        run: python3 -m unittest discover -s scripts -p 'test_*.py' -v
+      - name: Run JVM unit tests
+        run: ./gradlew --no-daemon --stacktrace --console=plain testDebugUnitTest
+      - name: Assemble debug APK
+        run: ./gradlew --no-daemon --stacktrace --console=plain assembleDebug
+      - name: Run Android lint
+        run: ./gradlew --no-daemon --stacktrace --console=plain lintDebug
+      - name: Verify debug APK identity, permissions and signature
+        run: python3 scripts/verify_apk.py app/build/outputs/apk/debug/app-debug.apk --signing debug
+      - name: Check unsigned release build and lint without private keys
+        run: |
+          ./gradlew --no-daemon --stacktrace --console=plain assembleRelease lintRelease
+          python3 scripts/verify_apk.py app/build/outputs/apk/release/app-release-unsigned.apk --signing unsigned
+      - name: Summarize executed storage tests
+        if: always()
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from xml.etree import ElementTree
+          reports = sorted(Path('app/build/test-results/testDebugUnitTest').glob('TEST-*.xml'))
+          totals = dict(tests=0, failures=0, errors=0, skipped=0)
+          for path in reports:
+              suite = ElementTree.parse(path).getroot()
+              counts = {key: int(suite.attrib.get(key, 0)) for key in totals}
+              print(suite.attrib['name'], counts)
+              for key, value in counts.items():
+                  totals[key] += value
+          print('STORAGE_TEST_TOTALS:', totals)
+          assert totals['tests'] > 0, 'No storage tests executed'
+          assert totals['failures'] == totals['errors'] == 0, 'Storage tests failed'
+          for variant in ('debug', 'release'):
+              lint = Path(f'app/build/reports/lint-results-{variant}.xml')
+              if lint.exists():
+                  issues = ElementTree.parse(lint).getroot().findall('issue')
+                  print('LINT_TOTALS:', variant, {level: sum(i.get('severity') == level for i in issues) for level in ('Fatal', 'Error', 'Warning', 'Information')})
+                  for issue in issues:
+                      print('LINT_ISSUE:', variant, issue.get('severity'), issue.get('id'), issue.get('message'))
+          PY
+      - name: Verify exported Room schema contract
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import base64
+          import json
+          from pathlib import Path
+          import subprocess
+          schemas = sorted(Path('app/schemas').rglob('*.json'))
+          assert schemas, 'No Room schema exported'
+          for path in schemas:
+              result = subprocess.run(['git', 'show', f'HEAD:{path.as_posix()}'], text=True, capture_output=True)
+              if result.returncode:
+                  print('ROOM_SCHEMA_BASE64:', path, base64.b64encode(path.read_bytes()).decode(), flush=True)
+                  raise AssertionError(f'Exported schema must be committed: {path}')
+              committed = result.stdout
+              assert json.loads(committed) == json.loads(path.read_text()), f'Uncommitted schema change: {path}'
+              print('Room schema contract verified:', path)
+          PY
+      - name: Upload storage test and lint reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-storage-test-reports
+          path: |
+            app/build/test-results/testDebugUnitTest/
+            app/build/reports/tests/testDebugUnitTest/
+            app/build/reports/lint-results-debug.*
+            app/build/reports/lint-results-release.*
+            app/schemas/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Upload debug APK
+        if: ${{ !cancelled() && hashFiles('app/build/outputs/apk/debug/app-debug.apk') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: bulgariantrainer-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
