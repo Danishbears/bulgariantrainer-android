@@ -152,3 +152,13 @@ survives. Test local and chosen cloud document providers, cancellation, low stor
 rotation/process termination, large histories and TalkBack. Run in airplane mode
 with a local provider; TTS still depends on separately installed voice data.
 No device/emulator/provider-cloud acceptance is claimed from JVM tests.
+
+## Executed build evidence
+
+[Successful Actions run 39381477249](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39381477249)
+tested `d47a6acdbbda3a8b3c10f8bda986577746b3f56c`: **257 JVM tests** (34 new backup
+cases), `assembleDebug`, `lintDebug`, the pinned web guard and Room schemas 1–7
+passed. [APK ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39381477249/artifacts/12245269760)
+and [reports](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39381477249/artifacts/12246105186)
+expire 2026-11-03; extract `app-debug.apk`. BUILD_REPORT.md records the two initial
+failures/fixes, actual commands, final results and remaining device limitations.

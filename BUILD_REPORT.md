@@ -63,7 +63,42 @@ The reference guard and Room schemas **1–7** passed. APK/lint steps were skipp
 Added a further end-to-end case with finalized recognition, both typing directions,
 automatic sentence matching and PARTIAL self-assessment, checking all four
 schedules and grading-source statistics after restore. Static total is now 257.
-Final hosted results will be recorded after actual execution.
+### Final successful hosted execution
+
+Tested application code **`d47a6acdbbda3a8b3c10f8bda986577746b3f56c`**,
+[successful run 39381477249](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39381477249),
+job `118491335659`. GitHub API confirmed `status=completed`,
+`conclusion=success` and the exact `head_sha` above.
+
+| Actual command/check | Final result |
+| --- | --- |
+| `python3 parity/verify_web_parity.py` | 21 pinned Java scheduler histories and 20 literal web statistics assertions verified |
+| `./gradlew --no-daemon --stacktrace --console=plain testDebugUnitTest` | BUILD SUCCESSFUL in 2m 13s; **257 tests**, zero failures/errors/skipped |
+| `./gradlew --no-daemon --stacktrace --console=plain assembleDebug` | BUILD SUCCESSFUL in 49s |
+| `./gradlew --no-daemon --stacktrace --console=plain lintDebug` | BUILD SUCCESSFUL in 59s |
+| Exported schema contract | Committed Room schemas **1–7** match compiler output |
+
+All 223 prior tests and **34 new cases** passed: eight format/Unicode/version
+cases, 18 real Room backup/rollback/WAL/history cases, seven SAF/confirmation/
+preferences ViewModel cases and one exported-v6 migration case. The final all-mode
+case preserves recognition, both typing direction schedules, sentence automatic
+matching/PARTIAL self-assessment and their real grading-source statistics.
+
+[Download APK ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39381477249/artifacts/12245269760):
+artifact `12245269760`, **10,949,340 bytes**, expires `2026-11-03T06:41:58Z`.
+Extract `app-debug.apk` before installing. ANDROID_BUILDS.md covers installation
+and differing cloud debug keys; this task does not change signing or claim an
+in-place device upgrade. GitHub reports ZIP digest
+`sha256:6408f28d0692e924bdb4978518980e45879c7fc29361032e6970ad4edda0d1e0`;
+this is not a separately measured extracted APK checksum. No artifact was locally
+downloaded or installed.
+
+[JUnit/HTML/lint/schema reports](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39381477249/artifacts/12246105186):
+artifact `12246105186`, 151,213 bytes, expires `2026-11-03T06:41:58Z`.
+Final `[skip ci]` follow-up records documentation only; application/workflow/build
+files remain identical to the tested commit. PR #1 is updated without merging main.
+No APK, SDK file/path, local.properties, credentials, build output, personal backup
+or private database is committed.
 Physical-device document providers, installation, process-death/low-storage,
 large-history memory and TalkBack checks remain unperformed.
 
