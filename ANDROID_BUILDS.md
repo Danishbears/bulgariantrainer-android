@@ -9,7 +9,8 @@ installation or emulator is required for JVM/Robolectric tests.
 It runs on pull requests, pushes to the actual default branch (`main`), and
 manual `workflow_dispatch` runs. Its only token permission is `contents: read`;
 checkout does not persist credentials. It runs `testDebugUnitTest`,
-`assembleDebug`, lint and the existing Room schema contract check. Test failures
+`assembleDebug`, debug/release lint, unsigned `assembleRelease`, final APK
+identity/version/permission/signature checks and the Room schema contract check. Test failures
 fail the job. Reports are uploaded even after failures when files exist; an APK
 is uploaded if assembly produced it, even if a later lint/schema check fails.
 An APK's presence alone does not mean the full workflow passed.
@@ -46,7 +47,7 @@ Under the run summary's **Artifacts**, download
 `android-storage-test-reports` and extract the ZIP. Open the unit-test HTML
 `index.html` from the `reports/tests/testDebugUnitTest` directory; JUnit XML
 under `test-results/testDebugUnitTest` contains individual failures and traces.
-Open `lint-results-debug.html` for lint findings. The archive also includes
+Open `lint-results-debug.html` and `lint-results-release.html` for lint findings. The archive also includes
 the Room schema. A missing report means that phase may not have run; consult
 the logs. Reports and APKs expire after 14 days.
 
@@ -78,6 +79,13 @@ build, uninstall the old app first; this deletes its app-private vocabulary and
 other local data. Preserve any needed data before uninstalling. The application
 ID is `com.danishbears.bulgariantrainer`.
 
-This workflow has no release signing setup. APKs, AABs, keystores, signing
+The separate **Personal signed release** workflow supports a persistent personal
+key, pinned public certificate and signed APK artifacts after owner configuration.
+See [RELEASE_SIGNING.md](RELEASE_SIGNING.md) for the exact four Secrets, required
+public variable, secure key creation/backup, versionCode increments and updates.
+The unsigned release APK in baseline CI is validation only and is not uploaded
+for installation. No successful signed release is implied by baseline CI.
+
+APKs, AABs, keystores, signing
 credentials, SDK installations and machine-specific `local.properties` must
 stay out of Git. Downloaded debug APKs are for development/testing.

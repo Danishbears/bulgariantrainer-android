@@ -1,0 +1,112 @@
+name: Personal signed release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - version.properties
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: personal-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Check signing configuration without exposing values
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_SIGNING_CERT_SHA256: ${{ vars.ANDROID_SIGNING_CERT_SHA256 }}
+        run: |
+          python3 - <<'PY'
+          import os, re
+          required = ['ANDROID_KEYSTORE_BASE64', 'ANDROID_KEYSTORE_PASSWORD', 'ANDROID_KEY_ALIAS', 'ANDROID_KEY_PASSWORD', 'ANDROID_SIGNING_CERT_SHA256']
+          missing = [name for name in required if not os.environ.get(name)]
+          if missing:
+              raise SystemExit('Release signing INCOMPLETE. Configure: ' + ', '.join(missing) + '. See RELEASE_SIGNING.md. No installable release was produced.')
+          digest = os.environ['ANDROID_SIGNING_CERT_SHA256'].replace(':', '').strip()
+          if not re.fullmatch('[0-9a-fA-F]{64}', digest):
+              raise SystemExit('ANDROID_SIGNING_CERT_SHA256 must be the public SHA-256 certificate fingerprint; see RELEASE_SIGNING.md')
+          print('All required signing configuration names are present; values are not logged.')
+          PY
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+          log-accepted-android-sdk-licenses: false
+      - name: Install pinned SDK
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-disabled: true
+      - name: Run checks before exposing the key to Gradle
+        run: |
+          python3 parity/verify_web_parity.py
+          python3 -m unittest discover -s scripts -p 'test_*.py' -v
+          ./gradlew --no-daemon --no-configuration-cache --console=plain testDebugUnitTest lintRelease
+      - name: Decode private key, sign and verify release APK
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_RELEASE_KEYSTORE: ${{ runner.temp }}/bulgariantrainer-release.jks
+          ANDROID_SIGNING_CERT_SHA256: ${{ vars.ANDROID_SIGNING_CERT_SHA256 }}
+        run: |
+          set +x
+          umask 077
+          trap 'rm -f "$ANDROID_RELEASE_KEYSTORE"' EXIT
+          python3 - <<'PY'
+          import base64, os
+          from pathlib import Path
+          try:
+              encoded = ''.join(os.environ['ANDROID_KEYSTORE_BASE64'].split())
+              data = base64.b64decode(encoded, validate=True)
+              if not data:
+                  raise ValueError()
+          except ValueError:
+              raise SystemExit('ANDROID_KEYSTORE_BASE64 is not a valid non-empty base64 keystore')
+          Path(os.environ['ANDROID_RELEASE_KEYSTORE']).write_bytes(data)
+          PY
+          unset ANDROID_KEYSTORE_BASE64
+          ./gradlew --no-daemon --no-configuration-cache --console=plain assembleRelease
+          python3 scripts/verify_apk.py app/build/outputs/apk/release/app-release.apk --signing release | tee release-verification.txt
+      - name: Upload verified signed APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: bulgariantrainer-signed-release-${{ github.run_number }}
+          path: |
+            app/build/outputs/apk/release/app-release.apk
+            version.properties
+            release-verification.txt
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload useful reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: personal-release-test-reports
+          path: |
+            app/build/test-results/testDebugUnitTest/
+            app/build/reports/tests/testDebugUnitTest/
+            app/build/reports/lint-results-release.*
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Remove runner key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/bulgariantrainer-release.jks"

@@ -12,6 +12,14 @@ captures/
 *.aab
 *.jks
 *.keystore
+*.p12
+*.pfx
+*.pem
+keystore.properties
+signing.properties
+*keystore*.b64
+*keystore*.base64
+__pycache__/
 .env
 .env.*
 *.db

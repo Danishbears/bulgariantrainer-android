@@ -1,3 +1,10 @@
+> Personal installation/update instructions and persistent-key release setup:
+> [RELEASE_SIGNING.md](RELEASE_SIGNING.md). Current candidate: **0.2.0/code 2**;
+> release signing still requires owner configuration and a successful signed run.
+> [PERSONAL_USE_CHECKLIST.md](PERSONAL_USE_CHECKLIST.md) separates automated
+> coverage from physical-device checks. Latest executed checks/artifacts:
+> [BUILD_REPORT.md](BUILD_REPORT.md).
+
 > **Главная → Полный бэкап и восстановление** saves a versioned full snapshot,
 > including content, sessions/attempts, progress/schedules and training defaults.
 > Restore validates everything, shows a preview and requires explicit replacement
@@ -55,7 +62,7 @@ business rules, test cases, and the remaining stages.
 See [IMPORT_EXPORT.md](IMPORT_EXPORT.md) for exact formats, system document flows,
 source-dataset provenance, migration 1→2 and content-export limitations.
 See [FLASHCARDS.md](FLASHCARDS.md) for durable recognition sessions, migration
-2→3, parity, retry rules and the explicitly deferred scheduling boundary.
+2→3, parity and retry rules. Current scheduling is described in REVIEW_AND_STATISTICS.md.
 
 ## Open in Android Studio
 
@@ -63,7 +70,7 @@ See [FLASHCARDS.md](FLASHCARDS.md) for durable recognition sessions, migration
 2. Open the directory containing `settings.gradle.kts` in Android Studio
    Meerkat 2024.3.1 or newer with support for AGP 8.9.
 3. Use a full JDK 17 for the Gradle JVM. A full JDK 21 is also compatible with
-   this Gradle/AGP combination; the cloud image currently has only a Java runtime.
+   this Gradle/AGP combination; hosted CI uses JDK 17.
 4. Install Android SDK Platform 35 and Build Tools 35.0.0 using SDK Manager.
 5. Let Gradle sync. The first build needs internet for tools and dependencies.
 6. Run on a physical Android device with Android 8.0/API 26 or newer and USB
@@ -145,7 +152,7 @@ migration fallbacks. ViewModels retain editor drafts and search/archive selectio
 through SavedStateHandle; Compose collects state with lifecycle awareness. Installation does not import sample or personal vocabulary. The bundled sentence
 CSV is available only through an explicit preview button followed by confirmation.
 CSV exports contain content and are not complete progress backups.
-Future offline pronunciation must use an installed Bulgarian voice that does
+Offline pronunciation uses an installed Bulgarian voice advertised as one that does
 not require a network connection; availability cannot be assumed on every phone.
 
 ## Wrapper provenance

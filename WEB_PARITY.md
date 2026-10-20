@@ -1,3 +1,29 @@
+# Current Android parity status for personal use
+
+This is the authoritative current overview; the increment/foundation sections
+below retain historical scope, not current feature absences. The actual web source
+remains pinned to `master` at `de0a3e883d51561123ca54b7d5dd2e53757baf0a`
+and is read-only.
+
+| Area | Current Android implementation / rule evidence |
+| --- | --- |
+| Vocabulary/imports | Room DAOs/repositories; bilingual Paging/CRUD/archive/alternatives; strict web TXT/CSV/JSON, preview/edit/select/explicit append. `LOCAL_STORAGE.md`, `IMPORT_EXPORT.md` map source and cases. |
+| All three training modes | Flashcards, bidirectional typing, sentence translation/self-assessment, persisted snapshots/order/actions/recovery and duplicate guards. `FLASHCARDS.md`, `TYPING.md`, `SENTENCES.md`. |
+| Scheduling/statistics | Implemented: independent four-mode schedules, exact web intervals/categories/scopes and real persisted statistics. `REVIEW_AND_STATISTICS.md`, Java-verified fixtures and Kotlin tests. |
+| Pronunciation | Implemented with local Bulgarian TTS selection and reference visibility rules; physical offline voice/quality acceptance remains. `PRONUNCIATION.md`. |
+| Full backup/settings | Versioned Android JSON snapshot, whole-file staging validation, confirmed transactional replacement, IDs/history/schedules/defaults. `BACKUP_RESTORE.md`. CSV is content only. |
+| Personal releases | Same applicationId, committed versionCode 2, persistent-key workflow and final APK identity/permission/signature checks. `RELEASE_SIGNING.md`; actual release signing remains incomplete until owner configuration and a successful signed run. |
+
+The web's scoped typing imbalance is preserved and shown; unconstrained new
+queues are 15+15. Sentence-linked vocabulary selection/usage associations are
+not implemented or inferred. Device time replaces server time with UTC day
+definitions. These differences, automated evidence and unexecuted device
+acceptance are consolidated in `PERSONAL_USE_CHECKLIST.md`. `BUILD_REPORT.md`
+identifies actual executed revisions; workflow configuration alone establishes
+neither a successful build nor a runtime check.
+
+## Historical increments and original source audit
+
 > **Manual full backup increment:** a separate Android versioned JSON format
 > preserves all content, learning records and training defaults. It is not the
 > web-compatible CSV format and provides no automatic synchronization. See
@@ -38,8 +64,9 @@ no vocabulary/recognition/typing progress is awarded by sentence practice.
 
 [SENTENCES.md](SENTENCES.md) maps actual web source/tests, representative cases,
 non-destructive migration, CSV difficulty preflight and deliberate UI defect fixes.
-Scheduling, vocabulary links and pronunciation remain deferred; no AI or generation
-is added. Existing features and read-only reference commit are preserved.
+At that milestone scheduling, vocabulary links and pronunciation were deferred.
+Scheduling and pronunciation are now implemented; vocabulary links remain outside
+the Android model. No AI or generation is added. Existing work and reference are preserved.
 Executed verification belongs in BUILD_REPORT.md.
 
 ## Current Android typing increment
@@ -54,8 +81,9 @@ SavedStateHandle pointer; duplicate/conflicting submissions cannot double-count.
 
 [TYPING.md](TYPING.md) maps actual source/tests, representative cases, migration,
 recovery and deliberate deviations. Current web scheduler scopes can prevent its
-documented unconditional 15/15 balance; Android guarantees the requested balance
-and continues to defer review schedules as a separate integration. Existing
+documented unconditional 15/15 balance. That milestone guaranteed unconstrained
+balance; current scoped selection follows the actual web greedy planner and
+includes review scheduling, with explicit direction counts. Existing
 vocabulary/import/export/flashcard work is preserved. Latest actual verification
 is recorded in BUILD_REPORT.md.
 
@@ -69,10 +97,10 @@ position and status across process recreation. Additive migration 2→3 retains
 existing content; linked words are protected from hard deletion.
 
 [FLASHCARDS.md](FLASHCARDS.md) maps actual web/Android source and representative
-cases, recovery guarantees, tests and safety differences. Scheduling is deferred
-as requested: Android offers direction selection and all-active-word sampling,
-not NEW/DUE review scopes, intervals or mastery classification. Recognition
-counters are isolated from future typing/sentence modes; reveal/view awards none.
+cases, recovery guarantees, tests and safety differences. Scheduling was deferred
+at that milestone; current Android includes NEW/DUE/MIXED scopes, intervals and
+mastery classification. Recognition counters remain isolated from typing and
+sentence modes; reveal/view awards none.
 The original source audit and earlier milestone sections below remain historical
 context. Latest executed verification is at the top of BUILD_REPORT.md.
 
@@ -121,8 +149,8 @@ Android baseline: branch `main`, commit
 No applicationId, Gradle/AGP versions, Kotlin code, UI, tests, or damaged build
 files existed. This milestone introduces a minimal Kotlin/Compose/Material 3
 welcome screen with applicationId `com.danishbears.bulgariantrainer` and build
-tooling. **No training business rules are implemented in Android in this task.**
-The rules below describe implemented **web** behavior and future Android acceptance
+tooling. **That initial milestone implemented no Android training business rules.**
+The rules below describe implemented **web** behavior and Android acceptance
 criteria. Read them with the discrepancies and suspected defects below.
 
 Authenticated GitHub integration returned login `Danishbears` and repository
@@ -515,15 +543,15 @@ not added or executed. Preserve intended behavior; do not silently replicate the
 
 ## Proposed Android implementation stages
 
-0. **Completed foundation audit.** Kotlin/Compose/Material 3 welcome
+0. **Completed foundation audit (historical).** Kotlin/Compose/Material 3 welcome
    screen, pinned wrapper/AGP/SDK configuration, local Studio instructions, CI
-   build recipe, and this parity document. No training or persistence features.
+   build recipe, and this parity document. That milestone had no training/persistence.
    The debug build and lint passed on GitHub Actions; physical-device acceptance
    remains unverified. See BUILD_REPORT for the exact tested revision and artifact.
 1. **Local domain/storage.** Room/SQLite schema for words, translations, sentences,
    links, snapshots, sessions, attempts and independent schedules; foreign keys,
-   unique constraints and atomic writes. Vocabulary storage is implemented; later
-   learning tables remain deferred. Add normalization goldens, injected clock,
+   unique constraints and atomic writes. Content, learning and settings tables
+   are implemented in Room v7. Normalization goldens, injected clock,
    migration/reopen tests. H2/Flyway SQL is a contract reference, not executable
    Android migrations. No server or login. Decide backup/export separately.
 2. **Vocabulary and controlled imports.** Dashboard, Russian vocabulary UI,
@@ -537,11 +565,11 @@ not added or executed. Preserve intended behavior; do not silently replicate the
    early exit and no award for viewing. Keep answer/pronunciation visibility aligned.
 4. **Typing (implemented).** See TYPING.md: guaranteed balanced all-active
    selection, independent direction counters and durable feedback; scheduler
-   eligibility/priorities remain deferred. Original stage proposal: bidirectional
+   eligibility/priorities are implemented (including scoped imbalances). Original stage proposal: bidirectional
    selection, exact normalized matching, original answers, feedback acknowledgement,
    shorter-session consent, snapshots and replay. Test constrained DUE/NEW queues.
 5. **Sentence practice — implemented.** See SENTENCES.md. Approved sentence management/CSV, alternatives/explanations,
-   automatic exact matches and pending self-assessment. Resolve link-snapshot policy;
+   automatic exact matches and pending self-assessment. Vocabulary links remain deferred;
    verify partial/incorrect grading, pending early exit and isolated usage/progress.
 6. **Scheduling and statistics — implemented.** See REVIEW_AND_STATISTICS.md. Shared scheduler across modes,
    then derived dashboard using exact interval/category/UTC/rounding rules. Validate
@@ -554,7 +582,7 @@ not added or executed. Preserve intended behavior; do not silently replicate the
    debug APK; actual CI evidence is in BUILD_REPORT.md. Offline voice availability
    and quality still require the physical checks in PRONUNCIATION.md.
 
-## Verification status
+## Historical foundation verification status
 
 `node src/test/js/pronunciation.test.mjs`: **9 tests passed**. The documented
 `node --test src/test/js/pronunciation.test.mjs` command also exited 0; this
