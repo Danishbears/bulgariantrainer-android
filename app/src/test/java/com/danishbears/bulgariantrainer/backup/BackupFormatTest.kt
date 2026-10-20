@@ -34,6 +34,14 @@ class BackupFormatTest {
     @Test fun excessiveNestingIsRejectedBeforeTheJsonParserCanExhaustItsStack() {
         reject(("[".repeat(50_000)+"0"+"]".repeat(50_000)).toByteArray(),BackupError.INVALID_FORMAT)
     }
+    @Test fun unpairedUnicodeEscapeIsRejectedInsteadOfBeingReplacedDuringUtf8OrSqliteEncoding() {
+        val root=BackupFormat.decode(bytes())
+        val tables=root.getValue("tables").jsonObject
+        val changed=JsonObject(root+("tables" to JsonObject(tables+("words" to JsonArray(listOf(buildJsonObject{put("notes","\uD800")}))))))
+        val signed=JsonObject(changed+("sha256" to JsonPrimitive(BackupFormat.digest(changed))))
+        val raw=signed.toString().replace("\uD800","\\ud800").toByteArray()
+        reject(raw,BackupError.INVALID_FORMAT)
+    }
     @Test fun oversizedInputAndNonObjectFilesAreRejected() {
         reject(ByteArray(BackupFormat.MAX_BYTES+1),BackupError.TOO_LARGE)
         for(text in listOf("null","[]","123","\"backup\""))reject(text.toByteArray(),BackupError.INVALID_FORMAT)

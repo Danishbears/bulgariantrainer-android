@@ -43,11 +43,12 @@ internal object BackupFormat {
         if(bytes.size>MAX_BYTES) fail(BackupError.TOO_LARGE)
         try {
             val text=Charsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT).onUnmappableCharacter(CodingErrorAction.REPORT).decode(ByteBuffer.wrap(bytes)).toString().removePrefix("\uFEFF")
-            rejectDuplicateKeysAndDeepNesting(text)
+            checkJsonStructure(text)
             val root=Json.parseToJsonElement(text) as? JsonObject ?: fail(BackupError.INVALID_FORMAT)
             if(root.keys!=keys || root["format"]!=JsonPrimitive("bulgarian-trainer-full-backup")) fail(BackupError.INVALID_FORMAT)
             if(root["applicationId"]!=JsonPrimitive(APPLICATION)) fail(BackupError.WRONG_APPLICATION)
             if(root["formatVersion"]!=JsonPrimitive(VERSION) || root["schemaVersion"]!=JsonPrimitive(SCHEMA)) fail(BackupError.UNSUPPORTED_VERSION)
+            validateUnicode(root)
             val date=(root["createdAt"] as? JsonPrimitive)?.takeIf{it.isString}?.content ?: fail(BackupError.INVALID_FORMAT)
             Instant.parse(date)
             val tables=root["tables"] as? JsonObject ?: fail(BackupError.INVALID_FORMAT)
@@ -69,7 +70,24 @@ internal object BackupFormat {
             listOf("recognition_progress","typing_progress","sentence_progress").sumOf(::size),size("word_review_schedules")+size("sentence_review_schedules"),
             sessions.sumOf { table -> data.getValue(table).jsonArray.count { it.jsonObject["status"]==JsonPrimitive("IN_PROGRESS") } },size("trainer_preferences")>0)
     }
-    private fun rejectDuplicateKeysAndDeepNesting(text: String) {
+    fun validateUnicode(value: JsonElement) {
+        when(value) {
+            is JsonObject -> value.values.forEach(::validateUnicode)
+            is JsonArray -> value.forEach(::validateUnicode)
+            is JsonPrimitive -> if(value.isString) {
+                val text=value.content;var i=0
+                while(i<text.length) {
+                    val c=text[i]
+                    if(Character.isHighSurrogate(c)) {
+                        if(i+1>=text.length || !Character.isLowSurrogate(text[i+1])) fail(BackupError.INVALID_FORMAT)
+                        i++
+                    } else if(Character.isLowSurrogate(c)) fail(BackupError.INVALID_FORMAT)
+                    i++
+                }
+            }
+        }
+    }
+    fun checkJsonStructure(text: String) {
         data class Frame(val objectValue: Boolean, val keys: MutableSet<String> = mutableSetOf(), var expectingKey: Boolean = true)
         val stack=mutableListOf<Frame>();var i=0
         while(i<text.length) {

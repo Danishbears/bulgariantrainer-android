@@ -70,7 +70,8 @@ example. Actual column/type/nullability/PK/FK contracts are exported in
 `app/schemas/com.danishbears.bulgariantrainer.data.TrainerDatabase/7.json`.
 All tables are required, including empty arrays; every row must contain exactly its
 known columns. Unknown tables/columns, duplicate object keys, invalid UTF-8, trailing
-JSON, excessive nesting and unsupported versions are rejected. V1 currently accepts
+JSON, unpaired Unicode escapes, excessive nesting (including encoded answer JSON)
+and unsupported versions are rejected. V1 currently accepts
 only schema 7: later formats need an explicit implementation, not implicit coercion.
 
 `sequences` contains words, translations, sentences, sentence_alternatives,
@@ -102,7 +103,8 @@ Selecting a restore file performs bounded read/strict decoding/checksum validati
 then loads **all rows** into an isolated in-memory Room database. Exact column types,
 NOT NULL, PK/unique/FK constraints, ID high-water marks, booleans/enums/ranges,
 normalized content keys, approved-answer JSON and contiguous session queues are
-checked. Every session passes the actual repository graph-to-UI conversion; SQLite
+checked. Sentence alternative positions remain zero-based as stored by actual
+manual/import code; session-question positions are one-based. Every session passes the actual repository graph-to-UI conversion; SQLite
 foreign_key_check/integrity_check also run. Invalid data cannot delete live rows.
 
 Historical counts need not equal the number of surviving logs. Unknown legacy

@@ -15,8 +15,8 @@ release signing, CSV format or network/storage permission change. No automatic s
 
 Local checks executed: `git diff --check`, `sh -n gradlew`, Python XML/resource
 validation (353 resolved strings) and static count **253 @Test methods** (not an
-execution/pass). `python3 parity/verify_web_parity.py` executed separately; results
-below will record its actual outcome. Inspection initially requested a nonexistent
+execution/pass). `python3 parity/verify_web_parity.py` actually passed: 21 pinned Java scheduler
+histories and 20 literal statistics assertions verified. Inspection initially requested a nonexistent
 Entities.kt before reading actual VocabularyEntities.kt; no source was invented.
 
 Runtime `java -version` reports 21.0.12.1; no javac executable, gradle, sdkmanager
@@ -26,7 +26,31 @@ was not retried; GitHub integration is independently usable. Managed environment
 started pending then became ready; its current HTTP policy readiness was unknown,
 not assumed enforced. Android validation uses existing hosted JDK17/SDK35 CI.
 
-Hosted test/build/lint/schema results will be recorded after actual execution.
+### First hosted execution and actual schema capture
+
+Implementation `82687ebdc95593cfd0e0a779453943387a860a3e`,
+[run 39380448606](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/39380448606),
+job `118488123915`, compiled successfully and ran
+`./gradlew --no-daemon --stacktrace --console=plain testDebugUnitTest`:
+**253 tests, two failures, zero errors/skipped**, BUILD FAILED in 2m 29s.
+All 223 prior tests passed. The two new failing cases were the full four-mode
+round-trip and pending-sentence file reopen. Their traces identify the validator's
+`position >= 1` check: actual manual/import sentence alternatives use zero-based
+positions. Corrected validation to accept nonnegative alternative positions while
+keeping session questions one-based. No saved positions are rewritten.
+`assembleDebug` and `lintDebug` were skipped by this failed run, not reported passed.
+
+The pinned web guard passed. Schema guard verified versions 1–6, then failed
+because newly generated 7.json was not yet committed. Captured the exact Room/KSP
+file, identity **`f90419062fcaa4daf606ffc6b8de9558`**. Local JSON comparison confirms
+all 19 existing table contracts are identical; only trainer_preferences is new.
+Python/SQLite also executed the actual 6→7 CREATE TABLE SQL against exported v6
+and compared its PRAGMA table_info with the generated v7 contract: passed.
+
+Follow-up also rejects unpaired Unicode escapes and deeply nested encoded answer
+JSON before parsing/binding, adds a CSV-alternative/receipt round-trip, and captures
+the data epoch before asynchronous content-import preprocessing. Static test count
+is now **256**, not a pass. Final hosted results will be recorded after execution.
 Physical-device document providers, installation, process-death/low-storage,
 large-history memory and TalkBack checks remain unperformed.
 

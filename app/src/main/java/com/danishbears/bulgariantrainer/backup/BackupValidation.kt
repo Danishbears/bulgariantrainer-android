@@ -29,7 +29,7 @@ internal object BackupValidation {
                 if(name in flags[table].orEmpty()) check(value.jsonPrimitive.longOrNull?.let{it in 0L..1L}==true)
                 if(name in integers) check(value.jsonPrimitive.longOrNull?.let{it in 0..Int.MAX_VALUE.toLong()}==true)
                 if(name in setOf("word_id","sentence_id","session_id","question_id","card_id") || name=="id" && table!="import_receipts") check(value.jsonPrimitive.longOrNull?.let{it>0}==true)
-                if(name=="position") check(value.jsonPrimitive.longOrNull?.let{it in 1..Int.MAX_VALUE.toLong()}==true)
+                if(name=="position") check(value.jsonPrimitive.longOrNull?.let{it in (if(table=="sentence_alternatives")0 else 1)..Int.MAX_VALUE.toLong()}==true)
                 if(name=="difficulty" && value!=JsonNull) check(value.jsonPrimitive.longOrNull?.let{it in 1L..5L}==true)
             }
         }
@@ -46,7 +46,10 @@ internal object BackupValidation {
         for(table in listOf("flashcard_cards","typing_questions","sentence_questions")) for(row in rows(table)) {
             if(table!="sentence_questions") { check(row.text("direction") in directions);check(row.text("bulgarian_text").isNotBlank()) }
             else check(row.text("russian_text").isNotBlank())
-            val array=Json.parseToJsonElement(row.text(if(table=="sentence_questions") "accepted_json" else "russian_json")) as? JsonArray ?: BackupFormat.fail(BackupError.INVALID_DATA)
+            val snapshot=row.text(if(table=="sentence_questions") "accepted_json" else "russian_json")
+            BackupFormat.checkJsonStructure(snapshot)
+            val array=Json.parseToJsonElement(snapshot) as? JsonArray ?: BackupFormat.fail(BackupError.INVALID_DATA)
+            BackupFormat.validateUnicode(array)
             check(array.isNotEmpty() && array.size<=51 && array.all{it is JsonPrimitive && it.isString && it.content.isNotBlank() && it.content.length<=4000})
         }
         for(table in listOf("typing_attempts","sentence_attempts")) for(row in rows(table)) {

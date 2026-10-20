@@ -102,6 +102,22 @@ class BackupRepositoryTest {
         reject(change("recognition_progress"){JsonObject(it+("attempts" to JsonPrimitive(-1)))},BackupError.INVALID_DATA)
         reject(change("word_review_schedules"){JsonObject(it+("interval_days" to JsonPrimitive(366)))},BackupError.INVALID_DATA)
     }
+    @Test fun deeplyNestedEncodedAnswerJsonCannotBypassTheOuterDocumentDepthLimit()=runBlocking<Unit> {
+        word();FlashcardRepository(db,clock).start(request(),FlashcardSettings(1))
+        val deep="[".repeat(50_000)+"0"+"]".repeat(50_000)
+        reject(change("flashcard_cards"){JsonObject(it+("russian_json" to JsonPrimitive(deep)))},BackupError.INVALID_FORMAT)
+    }
+    @Test fun csvImportedSentenceZeroBasedAlternativePositionsAndSourceReceiptsRoundTripUnchanged()=runBlocking<Unit> {
+        val transfer=com.danishbears.bulgariantrainer.transfer.ContentTransferRepository(db,clock)
+        val csv="id,russian,bulgarian,alternativeTranslations,grammaticalExplanation,difficulty,topic\n1,Я здесь.,Тук съм.,\"[\"\"Аз съм тук.\"\"]\",Пояснение,2,Разговор"
+        val preview=transfer.preview(com.danishbears.bulgariantrainer.transfer.ContentKind.SENTENCES,"import.csv",csv.toByteArray())
+        transfer.confirm(preview.copy(rows=preview.rows.map{it.copy(selected=true)}))
+        val bytes=backup.snapshot();val prepared=backup.prepare(bytes)
+        val alternatives=prepared.document.getValue("tables").jsonObject.getValue("sentence_alternatives").jsonArray
+        assertEquals(0L,alternatives.single().jsonObject.getValue("position").jsonPrimitive.long)
+        assertEquals(1,prepared.document.getValue("tables").jsonObject.getValue("import_receipts").jsonArray.size)
+        backup.restore(prepared);assertArrayEquals(bytes,backup.snapshot())
+    }
     @Test fun invalidSessionEnumAndNonContiguousQueueAreRejected()=runBlocking<Unit> {
         word();FlashcardRepository(db,clock).start(request(),FlashcardSettings(1))
         reject(change("flashcard_sessions"){JsonObject(it+("status" to JsonPrimitive("INVALID")))},BackupError.INVALID_DATA)

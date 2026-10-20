@@ -54,7 +54,9 @@ class ContentTransferRepository internal constructor(private val database: Train
         })
     }
 
-    suspend fun confirm(preview: ImportPreview): ImportSummary = withContext(Dispatchers.Default) {
+    suspend fun confirm(preview: ImportPreview): ImportSummary {
+        val expectedEpoch = database.contentEpoch.get()
+        return withContext(Dispatchers.Default) {
         if (preview.rows.size > ContentParser.MAX_ENTRIES || preview.rows.map { it.rowId }.toSet().size != preview.rows.size ||
             preview.rows.none { it.selected && it.action != ImportAction.SKIP }) throw TransferException(TransferError.INVALID_SELECTION)
         for (row in preview.rows.filter { it.selected && it.action != ImportAction.SKIP }) {
@@ -65,6 +67,7 @@ class ContentTransferRepository internal constructor(private val database: Train
         }
         val fingerprint = fingerprint(preview)
         database.withTransaction {
+            check(expectedEpoch == database.contentEpoch.get()) { "Local data was replaced; reopen import" }
             val previous = content.receipt(preview.id)
             if (previous != null) {
                 if (previous.fingerprint != fingerprint) throw TransferException(TransferError.ALREADY_CONFIRMED)
@@ -110,6 +113,8 @@ class ContentTransferRepository internal constructor(private val database: Train
             content.insertReceipt(ImportReceiptEntity(preview.id, fingerprint, created, added, skipped, clock.millis()))
             ImportSummary(created, added, skipped)
         }
+    }
+
     }
 
     /** A consistent, bounded-memory snapshot. Caller owns and closes the Writer. No progress data exported. */
