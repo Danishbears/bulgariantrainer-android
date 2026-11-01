@@ -9,21 +9,25 @@ import kotlinx.serialization.json.*
 enum class BackupError { INVALID_FORMAT, UNSUPPORTED_VERSION, WRONG_APPLICATION, CHECKSUM_MISMATCH, INVALID_DATA, TOO_LARGE, READ_FAILED, WRITE_FAILED, RESTORE_FAILED }
 class BackupException(val code: BackupError) : IllegalArgumentException(code.name)
 data class BackupSummary(val createdAt: Instant, val words: Int, val translations: Int, val sentences: Int,
-    val alternatives: Int, val sessions: Int, val attempts: Int, val progress: Int, val schedules: Int, val activeSessions: Int, val preferences: Boolean)
+    val alternatives: Int, val sessions: Int, val attempts: Int, val progress: Int, val schedules: Int, val activeSessions: Int, val preferences: Boolean, val aspectPairs: Int = 0, val aspectDatasets: Int = 0)
 class PreparedBackup internal constructor(internal val document: JsonObject, val summary: BackupSummary)
 
 /** v1 is a logical relational snapshot, never an open database-file copy. */
 internal object BackupFormat {
-    const val VERSION = 1
-    const val SCHEMA = 7
+    const val VERSION = 2
+    const val SCHEMA = 8
     const val MAX_BYTES = 32 * 1024 * 1024
     const val MAX_ROWS = 250_000
     const val APPLICATION = "com.danishbears.bulgariantrainer"
-    val tables = listOf("words","translations","sentences","sentence_alternatives","import_receipts","trainer_preferences",
+    val legacyTables = listOf("words","translations","sentences","sentence_alternatives","import_receipts","trainer_preferences",
         "flashcard_sessions","flashcard_cards","flashcard_attempts","recognition_progress","typing_sessions","typing_questions","typing_attempts","typing_progress",
         "sentence_sessions","sentence_questions","sentence_attempts","sentence_progress","word_review_schedules","sentence_review_schedules")
-    val sequences = listOf("words","translations","sentences","sentence_alternatives","flashcard_sessions","flashcard_cards","flashcard_attempts",
+    val aspectTables = listOf("aspect_datasets","aspect_pairs","aspect_answers","aspect_receipts")
+    val tables = legacyTables + aspectTables
+    val legacySequences = listOf("words","translations","sentences","sentence_alternatives","flashcard_sessions","flashcard_cards","flashcard_attempts",
         "typing_sessions","typing_questions","typing_attempts","sentence_sessions","sentence_questions","sentence_attempts")
+    val aspectSequences = listOf("aspect_datasets","aspect_pairs","aspect_answers")
+    val sequences = legacySequences + aspectSequences
     private val keys = setOf("format","formatVersion","applicationId","schemaVersion","createdAt","tables","sequences","sha256")
     fun canonical(value: JsonElement): JsonElement = when(value) {
         is JsonObject -> JsonObject(value.toSortedMap().mapValues { canonical(it.value) })
@@ -47,16 +51,23 @@ internal object BackupFormat {
             val root=Json.parseToJsonElement(text) as? JsonObject ?: fail(BackupError.INVALID_FORMAT)
             if(root.keys!=keys || root["format"]!=JsonPrimitive("bulgarian-trainer-full-backup")) fail(BackupError.INVALID_FORMAT)
             if(root["applicationId"]!=JsonPrimitive(APPLICATION)) fail(BackupError.WRONG_APPLICATION)
-            if(root["formatVersion"]!=JsonPrimitive(VERSION) || root["schemaVersion"]!=JsonPrimitive(SCHEMA)) fail(BackupError.UNSUPPORTED_VERSION)
+            val legacy = root["formatVersion"]==JsonPrimitive(1) && root["schemaVersion"]==JsonPrimitive(7)
+            if(!legacy && (root["formatVersion"]!=JsonPrimitive(VERSION) || root["schemaVersion"]!=JsonPrimitive(SCHEMA))) fail(BackupError.UNSUPPORTED_VERSION)
             validateUnicode(root)
             val date=(root["createdAt"] as? JsonPrimitive)?.takeIf{it.isString}?.content ?: fail(BackupError.INVALID_FORMAT)
             Instant.parse(date)
             val tables=root["tables"] as? JsonObject ?: fail(BackupError.INVALID_FORMAT)
-            if(tables.keys!=this.tables.toSet() || tables.values.any { it !is JsonArray }) fail(BackupError.INVALID_FORMAT)
+            if(tables.keys!=(if(legacy)legacyTables else this.tables).toSet() || tables.values.any { it !is JsonArray }) fail(BackupError.INVALID_FORMAT)
             if(tables.values.sumOf { (it as JsonArray).size.toLong() }>MAX_ROWS) fail(BackupError.TOO_LARGE)
             val seq=root["sequences"] as? JsonObject ?: fail(BackupError.INVALID_FORMAT)
-            if(seq.keys!=sequences.toSet() || seq.values.any { it !is JsonPrimitive || it.isString || it.longOrNull==null || it.long<0 }) fail(BackupError.INVALID_FORMAT)
+            if(seq.keys!=(if(legacy)legacySequences else sequences).toSet() || seq.values.any { it !is JsonPrimitive || it.isString || it.longOrNull==null || it.long<0 }) fail(BackupError.INVALID_FORMAT)
             if(root["sha256"]!=JsonPrimitive(digest(root))) fail(BackupError.CHECKSUM_MISMATCH)
+            if(legacy) {
+                // Authenticate original v1 contract/checksum before expanding the isolated staging payload.
+                val expanded=JsonObject(tables + aspectTables.associateWith { JsonArray(emptyList()) })
+                val highWater=JsonObject(seq + aspectSequences.associateWith { JsonPrimitive(0) })
+                return decode(encode(Instant.parse(date),expanded,highWater))
+            }
             return root
         } catch(e: BackupException) { throw e }
         catch(_: Exception) { fail(BackupError.INVALID_FORMAT) }
@@ -68,7 +79,7 @@ internal object BackupFormat {
         return BackupSummary(Instant.parse(root.getValue("createdAt").jsonPrimitive.content),size("words"),size("translations"),size("sentences"),size("sentence_alternatives"),
             sessions.sumOf(::size),listOf("flashcard_attempts","typing_attempts","sentence_attempts").sumOf(::size),
             listOf("recognition_progress","typing_progress","sentence_progress").sumOf(::size),size("word_review_schedules")+size("sentence_review_schedules"),
-            sessions.sumOf { table -> data.getValue(table).jsonArray.count { it.jsonObject["status"]==JsonPrimitive("IN_PROGRESS") } },size("trainer_preferences")>0)
+            sessions.sumOf { table -> data.getValue(table).jsonArray.count { it.jsonObject["status"]==JsonPrimitive("IN_PROGRESS") } },size("trainer_preferences")>0,size("aspect_pairs"),size("aspect_datasets"))
     }
     fun validateUnicode(value: JsonElement) {
         when(value) {

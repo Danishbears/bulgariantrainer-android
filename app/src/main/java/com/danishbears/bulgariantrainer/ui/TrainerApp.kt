@@ -96,7 +96,8 @@ fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferReposi
                     onAdd = { controller.navigate("word/new") },
                     onSentences = { controller.navigate("sentences") { launchSingleTop = true } },
                     onStatistics = { controller.navigate("statistics") { launchSingleTop = true } },
-                    onBackup = { controller.navigate("backup") { launchSingleTop = true } })
+                    onBackup = { controller.navigate("backup") { launchSingleTop = true } },
+                    onAspects = { controller.navigate("aspects") { launchSingleTop = true } })
             }
             composable("vocabulary") {
                 VocabularyScreen(model, onAdd = { controller.navigate("word/new") },
@@ -142,6 +143,12 @@ fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferReposi
                     initializer { WordMistakesViewModel(statistics, requireNotNull(entry.arguments).getLong("wordId")) }
                 })
                 WordMistakesScreen(model, onBack = { controller.popBackStack() })
+            }
+            composable("aspects") {
+                val aspectModel: AspectViewModel = viewModel(factory = viewModelFactory {
+                    initializer { AspectViewModel(application.aspects, com.danishbears.bulgariantrainer.aspect.AspectDocuments(application), createSavedStateHandle()) }
+                })
+                AspectScreen(aspectModel)
             }
             composable("backup") { BackupScreen(backupModel) }
             composable("transfer") {

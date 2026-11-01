@@ -19,7 +19,7 @@ internal object BackupValidation {
     suspend fun validate(db: TrainerDatabase, document: JsonObject) {
         val tables=document.getValue("tables").jsonObject
         fun rows(name: String)=tables.getValue(name).jsonArray.map{it.jsonObject}
-        val flags=mapOf("words" to setOf("archived"),"translations" to setOf("is_primary"),"sentences" to setOf("archived","approved"),
+        val flags=mapOf("aspect_pairs" to setOf("archived"),"words" to setOf("archived"),"translations" to setOf("is_primary"),"sentences" to setOf("archived","approved"),
             "flashcard_attempts" to setOf("known"),"typing_sessions" to setOf("allow_shorter"),"typing_questions" to setOf("acknowledged"),
             "typing_attempts" to setOf("correct"),"sentence_questions" to setOf("acknowledged"),"sentence_attempts" to setOf("automatic_match"),
             "word_review_schedules" to setOf("inherited"),"sentence_review_schedules" to setOf("inherited"))
@@ -96,6 +96,7 @@ internal object BackupValidation {
                 }
             }
         }
+        com.danishbears.bulgariantrainer.aspect.AspectRepository(db).validateStored()
         db.openHelper.writableDatabase.query("PRAGMA integrity_check").use { check(it.moveToFirst() && it.getString(0)=="ok") }
     }
 }

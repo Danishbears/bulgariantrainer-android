@@ -29,8 +29,8 @@ class PreferencesMigrationTest {
             for(e in entities){val row=e.jsonObject;val table=row.getValue("tableName").jsonPrimitive.content;sql.execSQL(row.getValue("createSql").jsonPrimitive.content.replace("\${TABLE_NAME}",table));row["indices"]?.jsonArray?.forEach{sql.execSQL(it.jsonObject.getValue("createSql").jsonPrimitive.content.replace("\${TABLE_NAME}",table))}}
             sql.execSQL("INSERT INTO words(id,bulgarian_text,normalized_text,archived,created_at,updated_at) VALUES(7,'котка','котка',0,1000,1000)");sql.version=6
         }
-        val db=Room.databaseBuilder(context,TrainerDatabase::class.java,name).addMigrations(MIGRATION_6_7).build()
-        try {assertEquals(7,db.openHelper.writableDatabase.version);assertEquals(7L,VocabularyRepository(db).list().single().id);assertNull(db.preferencesDao().get());assertEquals(20,TrainerPreferencesRepository(db).get().flashcardSize)}
+        val db=Room.databaseBuilder(context,TrainerDatabase::class.java,name).addMigrations(MIGRATION_6_7, MIGRATION_7_8).build()
+        try {assertEquals(8,db.openHelper.writableDatabase.version);assertEquals(7L,VocabularyRepository(db).list().single().id);assertNull(db.preferencesDao().get());assertEquals(20,TrainerPreferencesRepository(db).get().flashcardSize)}
         finally {db.close();context.deleteDatabase(name)}
     }
 }
