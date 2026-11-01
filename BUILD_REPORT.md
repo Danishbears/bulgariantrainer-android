@@ -1,3 +1,145 @@
+# Aspect-pair content storage/import increment — 2026-11-01
+
+Target started at `3bdca012b2f4f53edfc1c4f9f0f6d69dc8512086`,
+branch `codex/android-foundation-parity` (existing PR #1), not the README-only
+default branch. Read-only web reference remains
+`be6a91ff2ae06b8b0eae2461d8c7a8bf910ce57a`; its actual source/tests/migrations,
+AGENTS and dataset from the preceding plan were used. Current web master merge
+`2792dc3e4cb5d4762783140729e2c37ccac95567` contains that same tree.
+No web files/refs or default branch were changed.
+
+The managed execution environment is failed/pending and `exec_command: pwd`
+returned **No usable execution environment is available** before running.
+Status/diagnostics confirmed no usable runtime or retained network evidence.
+This is not a socket-network denial and not missing GitHub authentication.
+GitHub integration reads/writes and hosted Actions work; code was edited through
+GitHub tree/commit tools on the existing feature branch. No local shell Gradle,
+lint, build, instrumentation or device result is claimed.
+
+## Implemented scope
+
+- Dedicated Room dataset/pair/ordered-answer/import-receipt entities, DAO and
+  repository. All learning fields/optional examples/root metadata/provenance are
+  retained; stable namespace/external ID separate from internal IDs. Manual editor
+  UUID persists in SavedStateHandle; identity cannot change on update.
+- Native Главная → Видовые пары: viewing, manual creation/editing, archive/restore,
+  bilingual/alternative search, exact filters and bounded25-row pagination;
+  lifecycle-aware ViewModel state, loading/error/empty states and background DB work.
+- Separate strict UTF-8/BOM aspect JSON v1 import via SAF/ContentResolver. Whole
+  document validation, filename/path errors, read-only preview, ADD/UNCHANGED/
+  UPDATE comparisons and explicit selection/confirmation. Changed content requires
+  selection; malformed documents cannot partially save. No automatic import.
+- One content transaction rechecks dataset/row versions and identity, commits
+  selected writes plus UUID receipt, preserves ID/archive/old-mode data, rejects
+  stale/changed confirmations and supports exact receipt replay after reopening.
+- One-namespace content-only export validates the same format before provider
+  writing; includes optional archive, approved arrays/examples/provenance/root
+  metadata. Empty/over-limit exports fail clearly; no sessions/progress advertised.
+  Per-pair source context and current root source definitions survive later imports;
+  conflicts fail rather than silently dropping/renaming historical sources.
+- Original100-pair material and explicit-preview asset both have exact reference
+  Git blob **c29cd6d9aac696b37593a4b8d2f0f4f1443b80f4**;100 entries/212 accepted
+  answers/16 paired examples, no independent linguistic proofreading claim.
+- Additive Room7→8 migration creates only **four content tables** (24 total), not
+  the plan's later practice tables. All20 existing exported entity contracts compare
+  identical. Exact KSP schema8 identity **d95bf57821f3deaaa805685debd120c9** committed.
+  No destructive fallback or rewrite of old content/history/settings/progress.
+- Full backup v2/schema8 includes all24 tables/16 sequences. Legacy v1/schema7
+  format/table/checksum is authenticated before isolated expansion/validation and
+  confirmed transactional replacement. Corrupt new content/receipts fail in staging.
+  Old-v1 restore contains no aspect content and replaces current data explicitly.
+- AppId `com.danishbears.bulgariantrainer`, Kotlin/Compose/Room/dependency/tool
+  versions unchanged; candidate versionCode **3**, versionName **0.3.0**.
+  No new practice mode, aspect scheduling/statistics/TTS, backend/account/AI/sync.
+
+Source map and operational limitations: ASPECT_PAIRS_ANDROID.md.
+ANDROID_ASPECT_PAIRS_PLAN.md now marks this partial storage implementation
+separately from its future practice/progress proposal.
+
+## Actual CI executions and corrections
+
+1. `4039a44e720f1a3a634005af4e8fb3664a888a40`,
+   [run41334326752](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/41334326752):
+   main code/KSP compiled, test-source syntax failed; **zero JVM tests executed**,
+   no APK/lint pass. Schema guard reported the newly generated8.json; captured exact
+   output and compared every old entity contract before committing it.
+2. `97988a7fc52c192e01b5c15b1964df8c06daa87e`,
+   [run41334707696](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/41334707696):
+   failed test compilation on two missing test imports; **zero JVM tests executed**,
+   APK/lint skipped. Committed schemas1–8 matched.
+3. `ec50586256edcb9af6d93c038e979db2aba3f591`,
+   [run41335363074](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/41335363074):
+   confirmed successful run. **276 JVM tests,
+   zero failures/errors/skipped**; debug/unsigned-release assembly, both lints, APK
+   identity/permission/signature checks and schemas1–8 passed. Times:2m24s JVM,
+   40s debug,50s debug lint,1m52s release/lint. Both variants had zero errors and
+   14 pre-existing SDK/dependency advisories, without suppression.
+4. Final candidate `9f2a320ca706c327cbebc3c30f5b8738524b609a` adds stricter
+   restored-receipt/source/example validation and its negative cases.
+   [Successful run41336164726](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/41336164726),
+   job124936333305, exact head SHA above: GitHub API confirmed completed/success.
+
+| Actually executed final command/check | Result |
+| --- | --- |
+| `python3 parity/verify_web_parity.py` | 21 pinned Java scheduler histories and20 web statistics assertions passed |
+| `python3 -m unittest discover -s scripts -p 'test_*.py' -v` | Five APK contract tests passed |
+| `./gradlew --no-daemon --stacktrace --console=plain testDebugUnitTest` | **276 tests, zero failures/errors/skipped**, BUILD SUCCESSFUL in2m57s |
+| `./gradlew --no-daemon --stacktrace --console=plain assembleDebug` | BUILD SUCCESSFUL in1m5s |
+| `./gradlew --no-daemon --stacktrace --console=plain lintDebug` | BUILD SUCCESSFUL in1m20s; zero fatal/errors,14 advisories |
+| `python3 scripts/verify_apk.py app/build/outputs/apk/debug/app-debug.apk --signing debug` | Actual ZIP, identity/version/minSdk/debuggable/permissions/signature passed |
+| `./gradlew --no-daemon --stacktrace --console=plain assembleRelease lintRelease` | BUILD SUCCESSFUL in2m57s; zero fatal/errors,14 advisories |
+| `python3 scripts/verify_apk.py app/build/outputs/apk/release/app-release-unsigned.apk --signing unsigned` | Valid unsigned release structure/identity/permission contract; not installable or release-signed |
+| Committed Room schema guard | Exports1–8 match committed files |
+
+All257 prior tests and19 new test methods passed. The new negative cases also
+reject malformed restored receipts and control characters in examples. Both lint
+variants retain only OldTargetApi(1) and GradleDependency(13), without suppression
+or unrelated upgrades. APK reports appId `com.danishbears.bulgariantrainer`,
+versionCode3/name0.3.0/minSdk26; no INTERNET or broad-storage permissions.
+Wrapper mode100755 and all original build/manifest/toolchain blobs are unchanged.
+
+[Debug APK ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/41336164726/artifacts/13095218180):
+artifact13095218180,11104176bytes, expires2026-11-15T18:29:44Z.
+Extract `app-debug.apk` and install on Android8/API26+, or use `adb install -r`
+when the installed signature matches. **Extracted APK SHA-256:**
+`ccce0213c977eef2df886b235a4fd2ca68c6d8cc897892e7b76405baf204d9b7`.
+Archive/ZIP digest (different from APK):
+`b6d8b2e455a858a2000d425a4839eed4f8e83f0342b22e1b5275c89615360ac8`.
+
+[JUnit/HTML/lint/schema reports](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/41336164726/artifacts/13095303189):
+artifact13095303189,181507bytes, expires2026-11-15T18:29:43Z.
+Sign in to GitHub if needed. Save trusted artifacts before expiry.
+
+Debug certificate SHA-256:
+`b30491eb812ec4a31fb5cfe67d67d03f00878654b9adacdb8ce50b79da7c5842`;
+the preceding hosted run used a different debug certificate. Before a signature
+transition, save/retain a verified full JSON backup; uninstalling erases local
+app-private data. For repeatable in-place updates keep applicationId, the same
+persistent release key and a greater versionCode; see RELEASE_SIGNING.md.
+No physical signed update or release-signing success is implied.
+
+Final follow-up changes only this report and ASPECT_PAIRS_ANDROID.md verification
+notes, skips redundant CI, and is compared against the tested source/tree.
+No APK/SDK/build output/credentials/private database/local.properties is tracked.
+
+Coverage includes actual data round-trip/reimport, explicit updates/archive/IDs,
+search/filter/pages/namespaces, stale previews, concurrent exactly-once confirm,
+durable receipt retry, malformed/unsupported/UTF-8/duplicate-key files,
+transaction rollback, sources retained across imports, schema7 upgrade comparing
+all20 legacy tables/high-water marks and resuming existing modes, v2 round-trip,
+authenticated v1 restore, stable editor UUID, ContentResolver preview/export and
+lost preview. Existing257 tests remain in the full suite; nineteen new test methods
+extend coverage (many have multiple input cases).
+
+No emulator/device was available. Actual SAF dialogs/providers/cancellation,
+keyboard/rotation/small screens/TalkBack, process force-stop, airplane mode and
+same-key APK-to-APK data preservation remain the manual checks in
+ASPECT_PAIRS_ANDROID.md. Mock ContentResolver/reopened native SQLite tests are not
+physical-device acceptance. Release signing has not run and no new credentials
+were generated; existing persistent-key setup requirements remain.
+
+---
+
 # Personal offline-use and release preparation — 2026-10-20
 
 Starting target checkout: `codex/android-foundation-parity` at

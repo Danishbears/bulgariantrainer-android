@@ -122,3 +122,13 @@ long content and Cyrillic keyboard, rotation/font scaling/320dp layouts/TalkBack
 actual process termination/editor recovery, airplane mode, old-v1 restore and
 same-key higher-version app update preserving all old data. No new training/audio
 mode is delivered or claimed in this storage increment.
+
+## Executed verification of this increment
+
+Candidate `9f2a320ca706c327cbebc3c30f5b8738524b609a`,
+[successful Actions run41336164726](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/41336164726):
+**276 JVM tests** (257 existing+19 new methods), zero failures/errors/skipped;
+debug and unsigned-release assembly, both lints, APK checks and exported schemas1–8
+passed. Fourteen existing SDK/dependency advisories remain per variant; no errors.
+This is actual hosted execution, not local/device testing. BUILD_REPORT.md records
+all commands, failed test-compilation corrections, artifact links and manual limits.
