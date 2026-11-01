@@ -82,7 +82,7 @@ fun AspectScreen(model:AspectViewModel){
                 }
                 state.preview!=null -> {
                     val preview=state.preview!!
-                    item{Text(preview.filename);Text(preview.namespace);Text(stringResource(R.string.aspect_preview_hint))}
+                    item{Text(preview.filename);Text(preview.namespace);Text(stringResource(R.string.aspect_preview_hint));(preview.metadata["editorialStatus"] as? JsonPrimitive)?.let{Text(it.content)}}
                     preview.issues.forEach{issue->item{Text(issue.path+": "+issue.message,color=MaterialTheme.colorScheme.error)}}
                     items(preview.changes.size,key={preview.changes[it].externalId}){i->
                         val row=preview.changes[i]

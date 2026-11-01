@@ -115,13 +115,24 @@ class AspectRepositoryTest{
         try{repo.confirm(p,setOf("first","second"));fail("expected SQL rollback")}catch(_:android.database.SQLException){}
         assertEquals(before,snapshot());assertTrue(repo.datasets().isEmpty())
     }
+    @Test fun concurrentConfirmationsCommitOneContentWriteAndOneReceipt()=runBlocking<Unit>{
+        val p=repo.preview("concurrent","one.json",json(added("one")))
+        val results=coroutineScope { listOf(async(Dispatchers.Default){repo.confirm(p,setOf("one"))},async(Dispatchers.Default){repo.confirm(p,setOf("one"))}).awaitAll() }
+        assertEquals(results[0],results[1]);assertEquals(1L,repo.list().total)
+        assertEquals(1,db.openHelper.readableDatabase.query("SELECT COUNT(*) FROM aspect_receipts").use{it.moveToFirst();it.getInt(0)})
+    }
     @Test fun sourcesFromOmittedOlderEntriesRemainExportableAfterLaterImports()=runBlocking<Unit>{
         val root=Json.parseToJsonElement(bytes().toString(Charsets.UTF_8)).jsonObject
         val old=JsonObject(root+("entries" to JsonArray(listOf(entry()))))
         val p=repo.preview("sources","a.json",old.toString().toByteArray());repo.confirm(p,setOf("bgasp-001"))
-        val next=repo.preview("sources","b.json",json(added("added")));repo.confirm(next,setOf("added"))
+        val nextDocument=AspectContent.document(buildJsonObject{
+            put("format",AspectContent.FORMAT);put("formatVersion",1)
+            put("sources",buildJsonArray{add(buildJsonObject{put("id","unused-source");put("title","Новый источник")})})
+        },listOf(added("added")))
+        val next=repo.preview("sources","b.json",nextDocument.toString().toByteArray());repo.confirm(next,setOf("added"))
         val export=AspectContent.parse(repo.export("sources"));assertTrue(export.issues.isEmpty());assertEquals(2,export.entries.size)
         assertTrue(export.metadata.getValue("sources").jsonArray.any{it.jsonObject["id"]==JsonPrimitive("lesson13")})
+        assertTrue(export.metadata.getValue("sources").jsonArray.any{it.jsonObject["id"]==JsonPrimitive("unused-source")})
     }
     @Test fun namespaceFiltersPaginationStableManualIdsAndSearchAreIndependent()=runBlocking<Unit>{
         for(i in 0..30)repo.create("mine",added("manual-$i"))

@@ -165,6 +165,10 @@ class AspectRepository internal constructor(private val db:TrainerDatabase,priva
             val rows=dao.export(d.id,includeArchived)
             if(rows.isEmpty()||rows.size>1000)throw AspectException("Для одного файла нужно 1–1000 записей. Измените выбор.")
             val sources=linkedMapOf<String,JsonElement>()
+            for(value in (AspectContent.strict(d.metadata).jsonObject["sources"] as? JsonArray).orEmpty()){
+                val source=value.jsonObject
+                sources[AspectContent.string(source,"id")]=source
+            }
             // Per-entry source contexts survive later imports which omit earlier source definitions.
             for(row in rows)for((id,value) in AspectContent.strict(row.pair.sourceContext).jsonObject){
                 if(sources[id]!=null&&sources[id]!=value)throw AspectException("Конфликт описаний источника "+id+". Экспорт отменён.")

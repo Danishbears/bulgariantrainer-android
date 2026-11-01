@@ -9,7 +9,6 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.danishbears.bulgariantrainer.data.*
 import com.danishbears.bulgariantrainer.ui.*
-import com.danishbears.bulgariantrainer.backup.FixtureDocuments
 import java.io.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
