@@ -80,8 +80,9 @@ class AspectViewModel(private val repository:AspectRepository,private val docume
         else repository.update(id,saved.get<Long>("aspectEditVersion")!!,e)
         saved["aspectEditing"]=false;mutable.update{it.copy(editing=false)};refresh()
     }
-    fun inspect(uri:Uri,namespace:String)=act{val (name,bytes)=documents.read(uri);preview(namespace,name,bytes)}
-    fun sample(namespace:String)=act{val(name,bytes)=documents.sample();preview(namespace,name,bytes)}
+    fun inspect(uri:Uri,namespace:String)=act{clearPreview();val (name,bytes)=documents.read(uri);preview(namespace,name,bytes)}
+    fun sample(namespace:String)=act{clearPreview();val(name,bytes)=documents.sample();preview(namespace,name,bytes)}
+    private fun clearPreview(){saved["aspectHadPreview"]=false;mutable.update{it.copy(preview=null,selected=emptySet(),summary=null)}}
     private suspend fun preview(namespace:String,name:String,bytes:ByteArray){
         val p=repository.preview(namespace,name,bytes)
         saved["aspectHadPreview"]=true

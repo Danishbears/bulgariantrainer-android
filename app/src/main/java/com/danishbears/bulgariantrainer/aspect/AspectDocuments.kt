@@ -28,6 +28,6 @@ class AspectDocuments(private val context:Context){
     }
     suspend fun write(uri:Uri,bytes:ByteArray)=withContext(Dispatchers.IO){
         val stream=context.contentResolver.openOutputStream(uri,"wt")?:throw AspectException("Не удалось создать документ.")
-        stream.use{it.write(bytes);it.flush()}
+        try{stream.use{it.write(bytes);it.flush()}}catch(e:kotlinx.coroutines.CancellationException){throw e}catch(_:Exception){throw AspectException("Записать файл полностью не удалось. Он может быть неполным; создайте новый документ.")}
     }
 }

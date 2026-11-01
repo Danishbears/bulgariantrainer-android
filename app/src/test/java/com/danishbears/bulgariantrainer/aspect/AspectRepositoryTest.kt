@@ -92,15 +92,17 @@ class AspectRepositoryTest{
     @Test fun malformedOrUnsupportedWholeDocumentCannotWriteEvenWithSelectedIds()=runBlocking<Unit>{
         imported();val before=snapshot()
         val root=Json.parseToJsonElement(bytes().toString(Charsets.UTF_8)).jsonObject
+        val badEntries=listOf(
+            JsonObject(added()+("acceptedPerfective" to JsonArray(emptyList()))),
+            JsonObject(added()+("studyStage" to JsonPrimitive(4))),
+            JsonObject(added()+("examples" to JsonPrimitive("bad"))),
+            JsonObject(added()+("relationType" to JsonPrimitive("unknown")))
+        )
         val variants=listOf(
             JsonObject(root+("formatVersion" to JsonPrimitive(2))),
             JsonObject(root+("format" to JsonPrimitive("wrong"))),
-            JsonObject(root+("entries" to JsonArray(listOf(added("duplicate"),added("duplicate"))))),
-            JsonObject(root+("entries" to JsonArray(listOf(JsonObject(added()+("acceptedPerfective" to JsonArray(emptyList()))))))),
-            JsonObject(root+("entries" to JsonArray(listOf(JsonObject(added()+("studyStage" to JsonPrimitive(4))))))),
-            JsonObject(root+("entries" to JsonArray(listOf(JsonObject(added()+("examples" to JsonPrimitive("bad"))))))),
-            JsonObject(root+("entries" to JsonArray(listOf(JsonObject(added()+("relationType" to JsonPrimitive("unknown"))))))))
-        )
+            JsonObject(root+("entries" to JsonArray(listOf(added("duplicate"),added("duplicate")))))
+        ) + badEntries.map { JsonObject(root+("entries" to JsonArray(listOf(it)))) }
         for(value in variants){val p=repo.preview(ns,"bad.json",value.toString().toByteArray());assertTrue(p.issues.isNotEmpty());rejected{repo.confirm(p,setOf("bgasp-001"))};assertEquals(before,snapshot())}
         for(raw in listOf("{","{} trailing","{\"format\":1,\"format\":1}"))rejected{repo.preview(ns,"bad.json",raw.toByteArray())}
         rejected{repo.preview(ns,"bad.json",byteArrayOf(0xd0.toByte()))}
