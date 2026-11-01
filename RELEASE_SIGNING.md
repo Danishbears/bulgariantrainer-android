@@ -1,8 +1,9 @@
 # Personal signed APKs and updates
 
 Application ID: **com.danishbears.bulgariantrainer** (unchanged).
-Minimum Android: 8.0/API 26. The current candidate is **0.3.0, versionCode 3**,
-incremented from 0.2.0/code 2 in `version.properties`. Room8 adds aspect content without recreating legacy data.
+Minimum Android: 8.0/API 26. The current candidate is **0.4.0, versionCode 4**,
+incremented from 0.3.0/code 3 in `version.properties`. Room9 adds aspect practice
+without recreating existing content or history.
 
 The [Personal signed release workflow](.github/workflows/release.yml) is ready,
 but a configured workflow is not evidence of a signed release. No release key or

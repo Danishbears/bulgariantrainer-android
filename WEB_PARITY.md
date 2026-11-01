@@ -21,7 +21,7 @@ and is read-only.
 | Scheduling/statistics | Implemented: independent four-mode schedules, exact web intervals/categories/scopes and real persisted statistics. `REVIEW_AND_STATISTICS.md`, Java-verified fixtures and Kotlin tests. |
 | Pronunciation | Implemented with local Bulgarian TTS selection and reference visibility rules; physical offline voice/quality acceptance remains. `PRONUNCIATION.md`. |
 | Full backup/settings | Versioned Android JSON snapshot, whole-file staging validation, confirmed transactional replacement, IDs/history/schedules/defaults. `BACKUP_RESTORE.md`. CSV is content only. |
-| Personal releases | Same applicationId, committed versionCode 2, persistent-key workflow and final APK identity/permission/signature checks. `RELEASE_SIGNING.md`; actual release signing remains incomplete until owner configuration and a successful signed run. |
+| Personal releases | Same applicationId, committed versionCode 4, persistent-key workflow and final APK identity/permission/signature checks. `RELEASE_SIGNING.md`; actual release signing remains incomplete until owner configuration and a successful signed run. |
 
 The web's scoped typing imbalance is preserved and shown; unconstrained new
 queues are 15+15. Sentence-linked vocabulary selection/usage associations are

@@ -84,28 +84,23 @@ its explicit-preview asset copy are byte-identical to reference Git blob
 ## Schema and full backup compatibility
 
 ApplicationId remains `com.danishbears.bulgariantrainer`, DB name remains
-`bulgariantrainer.db`. Room v8 adds **four content tables only**:
-aspect_datasets, aspect_pairs, aspect_answers, aspect_receipts. It does not
-pre-create the plan's later practice/progress/settings tables. Their future
-migration remains additive. Existing20 entity contracts/migrations/rows/sequence
-high-water marks stay unchanged. No destructive fallback. Exported schema8 is
-captured from Room/KSP rather than hand-inventing an identity hash.
+`bulgariantrainer.db`. Room v7→v8 added four content tables without changing the
+old20 contracts. Room v8→v9 now adds five practice tables; all24 existing contracts
+remain unchanged. Both compiler-exported schemas and additive migrations are
+committed. No destructive fallback is used.
 
-Full backups now use **v2/schema8**,24 tables and16 AUTOINCREMENT sequences.
-They include aspect content, source context, archive/version data and receipts.
-The original v1/schema7 exact-table/checksum contract is authenticated first;
-a legacy backup is expanded only in isolated staging with empty new tables/
-sequences, then all old/new semantic/FK checks run before replacement confirmation.
-Restoring an old full backup replaces local data and contains **zero aspect pairs**;
-it does not merge or keep current aspects. The preview displays aspect counts.
+Current full backup **v3/schema9** covers29tables/19sequences, including aspect
+content/source context/receipts and practice snapshots/attempts/progress/schedules.
+Original v1/schema7 and v2/schema8 contracts/checksums are authenticated before
+isolated staged expansion and complete validation. Confirmed restore replaces
+current data. v1 has no aspects; v2 has no aspect-practice history. Neither merges
+or fabricates missing history. See BACKUP_RESTORE.md and ASPECT_PRACTICE_ANDROID.md.
 
-Restore remains a consistent logical Room/WAL snapshot and transactional
-replacement, including rollback and old-command generation invalidation. Old apps
-reject v2 backups; save a pre-upgrade backup before updating. CSV/content JSON cannot
-replace a full backup. App candidate versionCode3/0.3.0 uses the existing signing
-workflow; keep the same persistent signing key for in-place personal updates.
-Cloud debug keys may differ; never uninstall valuable data before a verified full
-backup. Same-key APK update/data preservation still needs physical-device testing.
+Restore retains logical Room/WAL snapshot consistency, transactional replacement,
+rollback and old-command invalidation. Older apps reject v3; save a pre-upgrade
+backup. CSV/content JSON cannot replace a full backup. Candidate0.4.0/code4 uses
+the existing signing workflow; retain one persistent key for in-place updates.
+Cloud debug keys may differ. Actual device update/data preservation is unverified.
 
 ## Verification and limits
 
@@ -121,8 +116,9 @@ BUILD_REPORT.md, not this description of intended coverage.
 Manual device acceptance remains: SAF provider behavior/cancellation/write failure,
 long content and Cyrillic keyboard, rotation/font scaling/320dp layouts/TalkBack,
 actual process termination/editor recovery, airplane mode, old-v1 restore and
-same-key higher-version app update preserving all old data. No new training/audio
-mode is delivered or claimed in this storage increment.
+same-key higher-version app update preserving all old data. The historical
+storage-only verification below does not cover the later practice increment;
+see ASPECT_PRACTICE_ANDROID.md and the latest BUILD_REPORT.md for that scope.
 
 ## Executed verification of this increment
 

@@ -1,3 +1,146 @@
+# Typed aspect-pair practice increment — 2026-11-01
+
+Target starting checkout: `codex/android-foundation-parity` at
+`9b0d842620276b3f54eca63659e20aecadc3da03`. Existing management/import/export,
+all older learning modes, scheduling, statistics, TTS and logical backup were
+preserved. Read-only actual web source/AGENTS/tests/migrations/dataset were
+inspected at `be6a91ff2ae06b8b0eae2461d8c7a8bf910ce57a`; no web files/refs
+were modified. No Android AGENTS.md exists in the tracked tree or checked local
+ancestors. Default `main` remains unchanged; the existing feature PR is not merged.
+
+## Implementation
+
+- Native Compose typed practice in both directions/mixed; stage1 fresh default,
+  explicit advanced stages, size/topic/namespace and NEW/DUE/MIXED, no archive or
+  duplicate padding. Shortage requires explicit shorter-session consent.
+- Port of actual aspect bounded assignment planner; snapshots and appropriate
+  accepted arrays; exact NFC-first normalization preserving и/й/ѝ and particles.
+  Required mismatch text, no linguistic/fuzzy/AI judgement.
+- Durable Room queues/order/directions/snapshots/raw outcomes/reveal/position/status,
+  explicit Next/final feedback, early completion and mistake review. Atomic,
+  idempotent answers/reveals/progress/shared-scheduler changes; exact replay and
+  captured session/question IDs protect retries/double/stale actions.
+- Reveal is terminal REVEALED: no independent success, streak0, retry24hours;
+  excluded from typed accuracy. Separate pair/direction progress/schedules;
+  old mode tables/global statistics and scheduler algorithm unchanged.
+- Non-destructive8→9 migration, committed compiler schema29tables; all24 prior
+  entity contracts independently compared unchanged. Full backupv3/schema9,
+  19sequences, original v1/v2 staged compatibility, complete aspect graphs and
+  counters validated before restore. Content JSON remains content-only.
+- Candidate0.4.0/code4, applicationId and dependency versions unchanged. JDK21 is
+  added only to CI's frozen-web-Java parity harness; Gradle/Android targets remain17.
+  No keys, credentials, SDK files, APKs or local.properties committed.
+
+See ASPECT_PRACTICE_ANDROID.md for source/rule mapping, tests, timing differences
+and device checks; the plan remains historical. Separate aggregate aspect
+statistics and aspect TTS are outside this increment. The original guide file
+remains missing from both available web refs; no guide/linguistic certification.
+
+## Access and local checks actually executed
+
+| Capability | Actual result |
+| --- | --- |
+| GitHub integration | Authenticated reads of both repositories; target writes and Actions logs/artifacts work. |
+| Local checkout | Target hydrated from authenticated Git blobs after one failed clone; every blob/mode/tree and exact baseline commit verified. Target is a real local checkout. Web source inspected as actual pinned GitHub files, not a local web checkout or page summaries. |
+| Shell networking | Clone failed connecting to proxy port8080; Gradle wrapper download failed with `java.net.SocketException: Operation not permitted`. Not an authorization failure; no repeated blocked download attempts. |
+| Android build capability | Local Java21 compiler module works; SDK/adb/device/emulator and downloaded Gradle unavailable. Hosted Actions supplies JDK17, Android35/build-tools35.0.0 and wrapper Gradle8.11.1/AGP8.9.2. |
+
+Local commands/results:
+
+- `GRADLE_USER_HOME=/workspace/.gradle ./gradlew --no-daemon --console=plain testDebugUnitTest`:
+  wrapper download socket denied; **no Gradle task executed locally**.
+- `python3 parity/verify_web_parity.py`:21 actual scheduler histories and20
+  statistics assertions verified.
+- `python3 parity/verify_aspect_parity.py`: actual pinned Java methods executed;
+  14 normalizations and28 planner objectives verified. Current aspect-web
+  shared scheduler was also compared with the frozen older scheduler: only two
+  AspectProgress delegation overloads were added; shared policy is unchanged.
+- `python3 -m unittest discover -s scripts -p 'test_*.py' -v`:5 APK-contract
+  Python tests passed; this does not verify a newly built APK by itself.
+- `python3 /tmp/verify-aspect-migration.py`: Python SQLite migration DDL matches
+  the Room compiler schema's columns/FKs/indexes for all29 tables. Initial
+  diagnostic omitted optional `indices`; fixed diagnostic and reran successfully.
+- XML/resource-reference validation:438strings, no missing references/duplicate
+  names. `git diff --check` passed. `gradlew` remains Linux executable100755.
+
+## Hosted checks
+
+First run [41349568966](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/41349568966),
+head `30123169dd2123a8a2ffde42208dd6a9c6f79d53`: parity/Python checks passed;
+main Kotlin compiled, new test compilation failed on `currentPosition` instead of
+`position`. **Zero JVM tests and no APK/lint tasks executed.** Corrected the test.
+The schema guard also required generated9.json; captured the actual KSP export,
+verified unchanged prior24 contracts, committed it and reran on the updated head.
+
+Final candidate `3475fbf574c2d9a65f7c2b1bdd8f783b77196532`:
+[Actions run41349935032 — SUCCESS](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/41349935032).
+Actual executed commands and results:
+
+| Command/check | Result |
+| --- | --- |
+| `python3 parity/verify_web_parity.py` | PASS:21 scheduler histories,20 statistics assertions |
+| `python3 parity/verify_aspect_parity.py` | PASS:14 normalizations,28 planner objectives from actual frozen Java21 source |
+| `python3 -m unittest discover -s scripts -p 'test_*.py' -v` | PASS:5 tests |
+| `./gradlew --no-daemon --stacktrace --console=plain testDebugUnitTest` | PASS:**295 tests;0 failures/errors/skipped** (276 previous +19 new) |
+| `./gradlew --no-daemon --stacktrace --console=plain assembleDebug` | PASS:debug APK built |
+| `./gradlew --no-daemon --stacktrace --console=plain lintDebug` | PASS:0 errors/fatals;14 existing dependency/target advisories |
+| `python3 scripts/verify_apk.py app/build/outputs/apk/debug/app-debug.apk --signing debug` | PASS:identity/version/API/permissions/debug signature verified |
+| `./gradlew --no-daemon --stacktrace --console=plain assembleRelease lintRelease` | PASS:unsigned release built;lint0 errors/fatals,14 existing advisories |
+| `python3 scripts/verify_apk.py app/build/outputs/apk/release/app-release-unsigned.apk --signing unsigned` | PASS:unsigned contract/identity/version/permissions verified; not installable as a signed release |
+| Exported Room schema guard | PASS:all schemas1–9 match committed compiler contracts |
+
+New executed suites: AspectPlannerTest4, AspectPracticeRepositoryTest12,
+AspectPracticeViewModelTest3. They cover both directions/approved alternatives,
+required accepted/rejected forms, exact normalization, feasible balance/default
+stage/archive/shortage, concurrent/replayed/stale actions, reveal failure scheduling,
+independent directions/legacy isolation, raw snapshots after edits/Room reopen,
+SQL-trigger rollback, fresh ViewModel recovery/frozen retry,8→9 migration,
+active-session full backup, original-v2 restore, inconsistent backup rejection
+and backward device-clock correction without erasing/reinterpreting timestamps.
+The test reports contain every old and new suite. Lint advisories are retained,
+not suppressed or addressed by unrelated dependency/target upgrades.
+
+## APK, installation and remaining limits
+
+- [Download debug APK ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/41349935032/artifacts/13101382089),
+  artifact `bulgariantrainer-debug`, expires2026-11-15.
+- [Download JUnit/lint/Room reports](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/41349935032/artifacts/13101207440),
+  artifact `android-storage-test-reports`, expires2026-11-15.
+- Extracted `app-debug.apk` SHA-256:
+  `1fd3ac4a8fa1900459384e5d7649afa520e91cb7baba54bf7b9102413c3a9023`.
+- Debug signing certificate SHA-256:
+  `29051eaa362d7caa3f3100220209c80d03f4bedf07c18791f0df632ce32b8457`.
+
+Sign into GitHub if required, open the successful run → Artifacts, download and
+extract the ZIP, transfer/open `app-debug.apk` on Android8/API26+ and permit
+installation for that file manager/browser when Android asks. Open Главная →
+Видовые пары, explicitly import/create content, then Практика. Nothing imports
+automatically. APK binaries/build outputs are artifacts, not Git-tracked files.
+
+Make a **full** JSON backup before changing installed versions/signatures.
+In-place update needs the same applicationId, the same signing certificate and a
+higher versionCode; this candidate is0.4.0/code4. Different hosted runners can
+create different debug keys, so successive debug APKs are not guaranteed updates.
+Do not uninstall valuable data merely to bypass a signature mismatch. For regular
+personal updates configure the existing persistent-key workflow as documented
+in RELEASE_SIGNING.md. Its secrets/private signing/signed APK workflow were not
+executed or verified here; unsigned release success is not release signing.
+
+No emulator/physical device/adb is available, no androidTest runner is configured,
+and **no instrumentation or physical-device checks were executed**. Follow
+ASPECT_PRACTICE_ANDROID.md and PERSONAL_USE_CHECKLIST.md for actual force-stop
+recovery, IME/rapid taps, navigation/rotation/small screens/TalkBack, local import
+then airplane-mode practice, SAF backup/restore and same-key APK update/data
+preservation. Room reopen/fake adapters do not prove Android process lifecycle,
+keyboard, offline voice availability or pronunciation quality. Unsubmitted input
+and unsaved setup drafts are not guaranteed force-stop durability.
+
+The follow-up documentation commit records these actual results; application,
+resources, tests, fixtures, schemas, version and workflows remain byte-for-byte
+the tested candidate. Earlier reports below are historical, not newly rerun claims.
+
+---
+
 # Aspect-pair content storage/import increment — 2026-11-01
 
 Target started at `3bdca012b2f4f53edfc1c4f9f0f6d69dc8512086`,
