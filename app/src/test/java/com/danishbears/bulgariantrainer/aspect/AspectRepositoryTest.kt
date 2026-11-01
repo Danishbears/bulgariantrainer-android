@@ -150,6 +150,13 @@ class AspectRepositoryTest{
         assertEquals(100,prepared.summary.aspectPairs);assertEquals(1,prepared.summary.aspectDatasets)
         repo.create("mine",added());backup.restore(prepared);assertArrayEquals(bytes,backup.snapshot())
         val current=BackupFormat.decode(bytes)
+        val tables=current.getValue("tables").jsonObject
+        val receipts=tables.getValue("aspect_receipts").jsonArray.toMutableList()
+        receipts[0]=JsonObject(receipts[0].jsonObject+("summary" to JsonPrimitive("{\"created\":-1,\"updated\":0,\"unchanged\":0,\"deselected\":0}")))
+        val corrupt=JsonObject(current+("tables" to JsonObject(tables+("aspect_receipts" to JsonArray(receipts)))))
+        val signedCorrupt=JsonObject(corrupt+("sha256" to JsonPrimitive(BackupFormat.digest(corrupt)))).toString().toByteArray()
+        try{backup.prepare(signedCorrupt);fail("invalid receipt accepted")}catch(e:BackupException){assertEquals(BackupError.INVALID_DATA,e.code)}
+        assertArrayEquals(bytes,backup.snapshot())
         val legacy=JsonObject(current+mapOf("formatVersion" to JsonPrimitive(1),"schemaVersion" to JsonPrimitive(7),
             "tables" to JsonObject(current.getValue("tables").jsonObject.filterKeys{it in BackupFormat.legacyTables}),
             "sequences" to JsonObject(current.getValue("sequences").jsonObject.filterKeys{it in BackupFormat.legacySequences})))

@@ -36,5 +36,6 @@ import androidx.room.*
     @Query("DELETE FROM aspect_answers WHERE pairId=:id") suspend fun deleteAnswers(id:Long)
     @Insert suspend fun insertAnswers(value:List<AspectAnswerEntity>)
     @Query("SELECT * FROM aspect_receipts WHERE requestId=:id") suspend fun receipt(id:String):AspectReceiptEntity?
+    @Query("SELECT * FROM aspect_receipts") suspend fun receipts():List<AspectReceiptEntity>
     @Insert suspend fun insertReceipt(value:AspectReceiptEntity)
 }

@@ -109,7 +109,7 @@ object AspectContent {
             (p.keys-setOf("kind","sourceId","tableRow")).forEach{issue("provenance."+it,"Неизвестное поле.")}
             when(stringOrNull(p,"kind")){
                 "added" -> if(p["sourceId"]!=null&&p["sourceId"]!=JsonNull||p["tableRow"]!=null&&p["tableRow"]!=JsonNull)issue("provenance","У добавленной записи нет строки источника.")
-                "presentation" -> if(stringOrNull(p,"sourceId").isNullOrBlank()||(stringOrNull(p,"sourceId")?.length ?: 0)>100||!integer(p["tableRow"],1..Int.MAX_VALUE))issue("provenance","Нужны sourceId и положительный tableRow.")
+                "presentation" -> if(stringOrNull(p,"sourceId").isNullOrBlank()||(stringOrNull(p,"sourceId")?.length ?: 0)>100||stringOrNull(p,"sourceId")?.any{it.isISOControl()&&it !in "\n\r\t"}==true||!integer(p["tableRow"],1..Int.MAX_VALUE))issue("provenance","Нужны sourceId и положительный tableRow.")
                 else -> issue("provenance.kind","Выберите added или presentation.")
             }
         }
@@ -119,7 +119,7 @@ object AspectContent {
             if(ex==null||ex.keys!=setOf("imperfective","perfective"))issue("examples","Нужны оба вида.") else for(side in ex.keys){
                 val row=ex[side] as? JsonObject
                 if(row==null||row.keys!=setOf("bg","ru"))issue("examples."+side,"Нужны bg и ru.")
-                else for(f in listOf("bg","ru")){val s=stringOrNull(row,f);if(s==null||key(s).isEmpty()||s.length>4000)issue("examples."+side+"."+f,"Нужен текст до 4000 знаков.")}
+                else for(f in listOf("bg","ru")){val s=stringOrNull(row,f);if(s==null||key(s).isEmpty()||s.length>4000||s.any{it.isISOControl()&&it !in "\n\r\t"})issue("examples."+side+"."+f,"Нужен текст до 4000 знаков.")}
             }
         }
         return errors

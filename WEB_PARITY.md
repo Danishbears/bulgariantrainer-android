@@ -1,3 +1,13 @@
+> **Aspect content management increment:** source is separately pinned to
+> web `be6a91ff2ae06b8b0eae2461d8c7a8bf910ce57a`.
+> Native Room8 content/management/strict JSON import/export is implemented;
+> existing word/sentence/training rules keep their older parity pin unchanged.
+> ASPECT_PAIRS_ANDROID.md documents scope, identity, whole-file validation,
+> source-context preservation and v2/full-backup compatibility. Aspect practice,
+> independent progress/schedules/statistics remain future work; no such mode is
+> claimed by this content increment. Current Room8 has24 tables; the historical
+> sections below retain prior milestone/version descriptions.
+
 # Current Android parity status for personal use
 
 This is the authoritative current overview; the increment/foundation sections

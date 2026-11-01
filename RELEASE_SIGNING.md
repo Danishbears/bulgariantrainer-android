@@ -1,9 +1,8 @@
 # Personal signed APKs and updates
 
 Application ID: **com.danishbears.bulgariantrainer** (unchanged).
-Minimum Android: 8.0/API 26. The current candidate is **0.2.0, versionCode 2**,
-incremented from 0.1.0/code 1 in `version.properties`. Room remains v7; changing
-the application version does not recreate the database.
+Minimum Android: 8.0/API 26. The current candidate is **0.3.0, versionCode 3**,
+incremented from 0.2.0/code 2 in `version.properties`. Room8 adds aspect content without recreating legacy data.
 
 The [Personal signed release workflow](.github/workflows/release.yml) is ready,
 but a configured workflow is not evidence of a signed release. No release key or
@@ -156,8 +155,7 @@ afterward if desired. Or enable USB debugging, authorize your computer, run
 
 For an update, keep the same applicationId and certificate and use a greater
 versionCode. Install over the existing app **without uninstalling or clearing
-storage**. Room migrations preserve content/history; this candidate leaves the
-v7 schema unchanged. Make a **full JSON backup** through Главная → Полный бэкап
+storage**. Room migrations preserve content/history; this candidate adds aspect content via a non-destructive v7→v8 migration. Make a **full JSON backup** through Главная → Полный бэкап
 и восстановление before updating. CSV content export does not preserve progress.
 Verify counts, history, pending sessions and settings afterward using
 [PERSONAL_USE_CHECKLIST.md](PERSONAL_USE_CHECKLIST.md). A real signed APK-to-APK

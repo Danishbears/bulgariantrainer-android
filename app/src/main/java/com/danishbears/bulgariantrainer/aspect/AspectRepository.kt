@@ -193,6 +193,16 @@ class AspectRepository internal constructor(private val db:TrainerDatabase,priva
                 if(d.version<0)throw AspectException("Некорректная версия набора.")
                 d.revision?.let{if(!it.matches(Regex("[a-f0-9]{64}")))throw AspectException("Некорректная ревизия.")}
             }
+            for(receipt in dao.receipts()){
+                if(UUID.fromString(receipt.requestId).toString()!=receipt.requestId||UUID.fromString(receipt.previewId).toString()!=receipt.previewId)throw AspectException("Некорректная квитанция.")
+                if(!receipt.requestHash.matches(Regex("[a-f0-9]{64}"))||!receipt.fileHash.matches(Regex("[a-f0-9]{64}")))throw AspectException("Повреждена квитанция.")
+                val summary=AspectContent.strict(receipt.summary).jsonObject
+                if(summary.keys!=setOf("created","updated","unchanged","deselected"))throw AspectException("Повреждён итог импорта.")
+                val counts=summary.values.map{it.jsonPrimitive}
+                if(counts.any{it.isString||it.intOrNull==null||it.int !in 0..1000}||counts.sumOf{it.int}>1000||counts.sumOf{it.int}==0)throw AspectException("Некорректный итог импорта.")
+                val metadata=AspectContent.strict(receipt.metadata).jsonObject
+                if("entries" in metadata||AspectContent.parse(AspectContent.document(metadata,emptyList()).toString().toByteArray()).issues.any{it.path!="$.entries"})throw AspectException("Повреждены метаданные квитанции.")
+            }
             for(p in dao.all()){
                 val graph=dao.get(p.id)!!;val record=record(graph);requireEntry(record.entry)
                 if(p.version<0||p.id<=0||p.contentHash!=AspectContent.hash(record.entry))throw AspectException("Повреждённая запись пары.")

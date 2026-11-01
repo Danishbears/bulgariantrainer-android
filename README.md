@@ -1,5 +1,12 @@
+> **Видовые пары — управление и JSON:** Главная → Видовые пары. Ручное
+> создание/редактирование/архив, поиск/фильтры/страницы, строгий JSON-предпросмотр и
+> подтверждение, отдельный экспорт учебного содержания. Набор100 пар не импортируется
+> автоматически. См. [ASPECT_PAIRS_ANDROID.md](ASPECT_PAIRS_ANDROID.md).
+> Тренировка видовых пар и её прогресс ещё не реализованы этим этапом.
+> Кандидат **0.3.0/code3**, Room8; полный бэкап v2 с чтением старого v1/schema7.
+>
 > Personal installation/update instructions and persistent-key release setup:
-> [RELEASE_SIGNING.md](RELEASE_SIGNING.md). Current candidate: **0.2.0/code 2**;
+> [RELEASE_SIGNING.md](RELEASE_SIGNING.md). Current candidate: **0.3.0/code 3**;
 > release signing still requires owner configuration and a successful signed run.
 > [PERSONAL_USE_CHECKLIST.md](PERSONAL_USE_CHECKLIST.md) separates automated
 > coverage from physical-device checks. Latest executed checks/artifacts:

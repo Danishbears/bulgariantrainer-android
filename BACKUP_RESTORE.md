@@ -1,3 +1,12 @@
+> **Current aspect-content increment:** full backup now emits **v2/schema8**,
+> includes24 tables/16 sequences, aspect content/source context/receipts and the
+> existing content/history/settings. Old **v1/schema7** backups are authenticated
+> under their original exact-table/checksum contract before staged expansion and
+> validation. Their restore replaces current data and contains no aspect pairs.
+> Old application versions reject v2. See ASPECT_PAIRS_ANDROID.md and the latest
+> BUILD_REPORT.md. Format-v1 details below remain the historical contract; they are
+> still used to validate old files, not silently relabelled as the current format.
+
 # Manual full backup and restore
 
 Android automatic app-data backup is disabled with `allowBackup=false` and explicit

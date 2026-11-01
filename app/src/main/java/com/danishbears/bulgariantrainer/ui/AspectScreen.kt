@@ -73,7 +73,7 @@ fun AspectScreen(model:AspectViewModel){
                 }
                 state.viewed!=null -> {
                     val record=state.viewed!!
-                    item{AspectEntry(record.entry)}
+                    item{Text(record.namespace);AspectEntry(record.entry)}
                     item{
                         Button(enabled=!state.busy,onClick={model.beginEdit(record)}){Text(stringResource(R.string.aspect_edit))}
                         OutlinedButton(enabled=!state.busy,onClick={model.archive(record)}){Text(stringResource(if(record.archived)R.string.aspect_restore else R.string.aspect_archive))}

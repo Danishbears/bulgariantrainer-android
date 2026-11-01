@@ -1,3 +1,10 @@
+> **Storage increment status:** this implementation stage adds four content
+> tables to Room8, for24 total, rather than pre-creating the full ten-table practice
+> proposal below. Practice/progress/settings remain a future additive migration.
+> Full backup v2/schema8 covers these24 tables/16 sequences and validates/restores
+> legacy v1/schema7. See ASPECT_PAIRS_ANDROID.md and BUILD_REPORT.md for actual scope
+> and verification; later proposed stages below are not a claim of completion.
+
 # Android Verb Aspect Pairs implementation plan
 
 Planning date: 2026-11-01. **Documentation only; no application code, database,

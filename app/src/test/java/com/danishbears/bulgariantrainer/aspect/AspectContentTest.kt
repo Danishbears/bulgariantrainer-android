@@ -36,7 +36,8 @@ class AspectContentTest{
             JsonObject(entry+("acceptedImperfective" to JsonArray(listOf(JsonPrimitive("вземам"),JsonPrimitive(" ВЗЕМАМ "))))),
             JsonObject(entry+("acceptedPerfective" to JsonArray(listOf(JsonPrimitive(17))))),
             JsonObject(entry+("studyStage" to JsonPrimitive("1"))),
-            JsonObject(entry+("unexpected" to JsonPrimitive("never discard")))
+            JsonObject(entry+("unexpected" to JsonPrimitive("never discard"))),
+            JsonObject(entry+("examples" to buildJsonObject{for(side in listOf("imperfective","perfective"))put(side,buildJsonObject{put("bg","bad\u0001");put("ru","текст")})}))
         )
         for(e in variants)assertTrue(AspectContent.validate(JsonObject(e)).isNotEmpty())
     }
