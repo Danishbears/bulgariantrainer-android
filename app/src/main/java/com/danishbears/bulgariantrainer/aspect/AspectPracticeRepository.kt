@@ -138,32 +138,53 @@ class AspectPracticeRepository internal constructor(private val db:TrainerDataba
             if(status==AspectSessionStatus.IN_PROGRESS)emptyList() else queue.map{AspectReview(it.question.position,AspectDirection.valueOf(it.question.direction),prompt(it.question),feedback(it))})
     }
     internal suspend fun validateStored() {
+        val totals=mutableMapOf<Pair<Long,String>,IntArray>()
         for(id in dao.allIds()) {
             val g=graph(id);val s=g.session;val settings=AspectSettings.read(s.settings)
             require(UUID.fromString(s.requestId).toString()==s.requestId&&s.total in 1..settings.size&&s.position in 1..s.total+1&&s.revision>=0)
+            require(s.total==settings.size||s.allowShorter)
             val status=AspectSessionStatus.valueOf(s.status)
             require((s.completedAt==null)==(status==AspectSessionStatus.IN_PROGRESS))
             // Offline device-clock corrections may move time backwards; preserve original instants.
             require(g.questions.map{it.question.position}.sorted()==(1..s.total).toList())
+            val answered=g.questions.count{it.attempt!=null}
+            when(status) {
+                AspectSessionStatus.COMPLETED->require(answered==s.total&&s.position>=s.total)
+                AspectSessionStatus.ABANDONED->require(answered<s.total&&s.position==s.total+1)
+                AspectSessionStatus.IN_PROGRESS->require(s.position<=s.total&&answered<s.total)
+            }
+            val ordered=g.questions.sortedBy{it.question.position}
+            require(ordered.take(answered).all{it.attempt!=null}&&ordered.drop(answered).all{it.attempt==null})
             for(item in g.questions) {
                 val q=item.question;val e=snapshot(q)
                 require(q.direction in AspectDirection.entries.filter{it!=AspectDirection.MIXED}.map{it.name})
                 require(settings.direction==AspectDirection.MIXED||q.direction==settings.direction.name)
                 require(AspectContent.validate(e).isEmpty()&&q.contentHash==AspectContent.hash(e))
                 require(!q.acknowledged||item.attempt!=null)
+                require(q.acknowledged==(item.attempt!=null&&q.position<s.position))
+                require(e.getValue("studyStage").jsonPrimitive.int in settings.stages)
                 item.attempt?.let{a->
                     val outcome=AspectOutcome.valueOf(a.outcome)
+                    val counters=totals.getOrPut(q.pairId to q.direction){IntArray(3)}
+                    counters[0]++;if(outcome==AspectOutcome.CORRECT)counters[1]++;if(outcome==AspectOutcome.REVEALED)counters[2]++
                     if(outcome==AspectOutcome.REVEALED)require(a.submitted==null&&a.normalized==null&&q.revealedAt==a.createdAt)
                     else require(q.revealedAt==null&&a.submitted!=null&&a.submitted.length<=4000&&AspectContent.key(a.submitted).isNotEmpty()&&a.normalized==AspectContent.key(a.submitted))
                 }?:require(q.revealedAt==null)
             }
             state(g) // Validate every historical graph without regrading/replaying its saved outcomes.
         }
-        for(p in dao.progressRows())require(dao.schedule(p.pairId,p.direction)!=null)
+        val progress=dao.progressRows()
+        require(progress.map{it.pairId to it.direction}.toSet()==totals.keys)
+        for(p in progress) {
+            val counts=totals.getValue(p.pairId to p.direction)
+            require(p.attempts==counts[0]&&p.correct==counts[1]&&p.revealed==counts[2])
+            require(dao.schedule(p.pairId,p.direction)!=null)
+        }
         for(s in dao.schedules()) {
             val p=dao.progress(s.pairId,s.direction)?:error("Missing aspect progress")
             require(s.direction in AspectDirection.entries.filter{it!=AspectDirection.MIXED}.map{it.name}&&p.attempts>0&&p.correct>=0&&p.revealed>=0&&p.correct+p.revealed<=p.attempts)
             require(s.attempts==p.attempts&&s.successes==p.correct&&s.streak in 0..s.successes&&s.intervalDays in 1..365&&s.lastReview==p.lastReviewedAt)
+            require(s.nextReview==Instant.ofEpochMilli(s.lastReview).plus(java.time.Duration.ofDays(s.intervalDays.toLong())).toEpochMilli())
         }
     }
 }

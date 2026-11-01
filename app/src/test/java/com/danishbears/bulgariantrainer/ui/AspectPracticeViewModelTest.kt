@@ -42,7 +42,7 @@ class AspectPracticeViewModelTest {
         vm.submit(initial.id,q.id,"ошибка");vm.submit(initial.id,q.id,"ошибка")
         ready(vm){it.session?.question?.feedback!=null};assertEquals(1,count("aspect_attempts"))
         vm.next(initial.id,q.id);vm.next(initial.id,q.id)
-        val next=ready(vm){it.session?.currentPosition==2}.session!!
+        val next=ready(vm){it.session?.position==2}.session!!
         vm.reveal(initial.id,q.id);vm.submit(initial.id,q.id,"ошибка");ready(vm)
         assertEquals(next,vm.state.value.session);assertEquals(1,count("aspect_attempts"))
         vm.reveal(initial.id,next.question!!.id);ready(vm){it.session?.revealed==1}
@@ -58,7 +58,7 @@ class AspectPracticeViewModelTest {
         val feedback=ready(vm){it.session?.answered==1}.session!!
         store.clear();db.close();open();vm=model()
         assertEquals(feedback,ready(vm){it.session!=null}.session);assertEquals("  ОШИБКА  ",vm.input.value)
-        vm.next(s.id,feedback.question!!.id);val next=ready(vm){it.session?.currentPosition==2}.session!!
+        vm.next(s.id,feedback.question!!.id);val next=ready(vm){it.session?.position==2}.session!!
         vm.reveal(s.id,next.question!!.id);val revealed=ready(vm){it.session?.revealed==1}.session!!
         store.clear();db.close();open();vm=model()
         assertEquals(revealed,ready(vm){it.session!=null}.session)

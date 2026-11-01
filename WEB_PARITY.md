@@ -1,12 +1,11 @@
-> **Aspect content management increment:** source is separately pinned to
-> web `be6a91ff2ae06b8b0eae2461d8c7a8bf910ce57a`.
-> Native Room8 content/management/strict JSON import/export is implemented;
-> existing word/sentence/training rules keep their older parity pin unchanged.
-> ASPECT_PAIRS_ANDROID.md documents scope, identity, whole-file validation,
-> source-context preservation and v2/full-backup compatibility. Aspect practice,
-> independent progress/schedules/statistics remain future work; no such mode is
-> claimed by this content increment. Current Room8 has24 tables; the historical
-> sections below retain prior milestone/version descriptions.
+> **Aspect practice increment:** pinned web reference remains
+> `be6a91ff2ae06b8b0eae2461d8c7a8bf910ce57a`. Native typed practice now implements
+> both directions/mixed, bounded planner, exact NFC-first answers, terminal reveal,
+> durable snapshots/feedback/recovery and independent direction schedules. Room9
+> has29 tables; full backup v3 supports original v1/v2. See
+> ASPECT_PRACTICE_ANDROID.md and BUILD_REPORT.md for scope and actual checks.
+> A separate aggregate aspect-statistics screen remains future work; legacy
+> statistics and older parity pins are unchanged.
 
 # Current Android parity status for personal use
 

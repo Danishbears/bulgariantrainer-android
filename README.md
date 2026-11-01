@@ -1,12 +1,12 @@
-> **Видовые пары — управление и JSON:** Главная → Видовые пары. Ручное
-> создание/редактирование/архив, поиск/фильтры/страницы, строгий JSON-предпросмотр и
-> подтверждение, отдельный экспорт учебного содержания. Набор100 пар не импортируется
-> автоматически. См. [ASPECT_PAIRS_ANDROID.md](ASPECT_PAIRS_ANDROID.md).
-> Тренировка видовых пар и её прогресс ещё не реализованы этим этапом.
-> Кандидат **0.3.0/code3**, Room8; полный бэкап v2 с чтением старого v1/schema7.
->
+> **Видовые пары — офлайн-тренировка:** Главная → Видовые пары → Практика.
+> Оба направления и смешанная очередь, стадии/темы, точный ввод, явное раскрытие,
+> сохранённые ответы/результаты и восстановление сессии из Room.
+> [ASPECT_PRACTICE_ANDROID.md](ASPECT_PRACTICE_ANDROID.md) описывает правила и тесты.
+> Кандидат **0.4.0/code4**, Room9; полный бэкап **v3**, чтение v1/v2.
+> Сборки и фактически выполненные проверки: [BUILD_REPORT.md](BUILD_REPORT.md).
+
 > Personal installation/update instructions and persistent-key release setup:
-> [RELEASE_SIGNING.md](RELEASE_SIGNING.md). Current candidate: **0.3.0/code 3**;
+> [RELEASE_SIGNING.md](RELEASE_SIGNING.md). Current candidate: **0.4.0/code 4**;
 > release signing still requires owner configuration and a successful signed run.
 > [PERSONAL_USE_CHECKLIST.md](PERSONAL_USE_CHECKLIST.md) separates automated
 > coverage from physical-device checks. Latest executed checks/artifacts:

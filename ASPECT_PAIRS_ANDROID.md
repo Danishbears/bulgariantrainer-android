@@ -3,8 +3,9 @@
 Reference: read-only web `codex/aspect-pairs` at
 `be6a91ff2ae06b8b0eae2461d8c7a8bf910ce57a`. See
 ANDROID_ASPECT_PAIRS_PLAN.md for the source/test audit and missing original guide.
-This increment implements storage/management/content transfer only. Typed aspect
-practice, progress, scheduling and aspect statistics remain the next increment;
+Typed aspect practice and independent direction progress/scheduling are now
+implemented: see ASPECT_PRACTICE_ANDROID.md. Separate aggregate aspect statistics
+remain a later increment;
 existing vocabulary, flashcard, typing, sentence, scheduling, statistics and TTS
 features retain their own tables and behavior.
 

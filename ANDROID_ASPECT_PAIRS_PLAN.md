@@ -1,9 +1,10 @@
-> **Storage increment status:** this implementation stage adds four content
-> tables to Room8, for24 total, rather than pre-creating the full ten-table practice
-> proposal below. Practice/progress/settings remain a future additive migration.
-> Full backup v2/schema8 covers these24 tables/16 sequences and validates/restores
-> legacy v1/schema7. See ASPECT_PAIRS_ANDROID.md and BUILD_REPORT.md for actual scope
-> and verification; later proposed stages below are not a claim of completion.
+> **Current implementation status:** storage/management/import/export and typed
+> practice are implemented. Room9 adds five practice tables to existing24, for29;
+> full backup v3/schema9 includes19sequences and reads original v1/v2. The original
+> planning proposal below is historical; ASPECT_PRACTICE_ANDROID.md and
+> BUILD_REPORT.md document actual scope/checks. Separate aggregate aspect
+> statistics remain a later stage. Later user implementation instructions authorize
+> the application changes; the original planning-only scope below is historical.
 
 # Android Verb Aspect Pairs implementation plan
 

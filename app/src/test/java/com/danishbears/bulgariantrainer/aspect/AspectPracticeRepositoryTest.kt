@@ -164,4 +164,24 @@ class AspectPracticeRepositoryTest {
         assertEquals(beforeSeq,BackupFormat.decode(BackupRepository(context,db,clock).snapshot()).getValue("sequences").jsonObject.filterKeys{it !in BackupFormat.practiceSequences})
         assertEquals(1,start().total)
     }
+    @Test fun internallyInconsistentBackupIsRejectedBeforeChangingLivePractice()=runBlocking<Unit> {
+        seed(listOf("bgasp-057"));val s=start();repo.reveal(s.id,s.question!!.id)
+        val backup=BackupRepository(context,db,clock);val bytes=backup.snapshot();val root=BackupFormat.decode(bytes)
+        for((table,field,value)in listOf(Triple("aspect_sessions","position",20),Triple("aspect_progress","revealed",0),Triple("aspect_review_schedules","nextReview",0))) {
+            val tables=root.getValue("tables").jsonObject
+            val changed=JsonArray(tables.getValue(table).jsonArray.map{JsonObject(it.jsonObject+(field to JsonPrimitive(value)))})
+            val payload=JsonObject(root+("tables" to JsonObject(tables+(table to changed))))
+            val signed=JsonObject(payload+("sha256" to JsonPrimitive(BackupFormat.digest(payload)))).toString().toByteArray()
+            try{backup.prepare(signed);fail("expected invalid graph")}catch(_:BackupException){}
+            assertArrayEquals(bytes,backup.snapshot())
+        }
+    }
+    @Test fun offlineClockCorrectionPreservesOriginalInstantsAndBackupRemainsRestorable()=runBlocking<Unit> {
+        seed(listOf("bgasp-057"));val s=start();val started=at
+        at=at.minus(Duration.ofDays(2));repo.submit(s.id,s.question!!.id,"купя")
+        val saved=db.aspectPracticeDao().session(s.id)!!
+        assertTrue(saved.completedAt!!<saved.startedAt);assertEquals(started.toEpochMilli(),saved.startedAt)
+        val backup=BackupRepository(context,db,clock);val bytes=backup.snapshot();backup.restore(backup.prepare(bytes))
+        assertEquals(saved,db.aspectPracticeDao().session(s.id));assertArrayEquals(bytes,backup.snapshot())
+    }
 }
