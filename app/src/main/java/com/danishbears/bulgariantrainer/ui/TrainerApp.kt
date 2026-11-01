@@ -148,7 +148,11 @@ fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferReposi
                 val aspectModel: AspectViewModel = viewModel(factory = viewModelFactory {
                     initializer { AspectViewModel(application.aspects, com.danishbears.bulgariantrainer.aspect.AspectDocuments(application), createSavedStateHandle()) }
                 })
-                AspectScreen(aspectModel)
+                AspectScreen(aspectModel,onPractice={controller.navigate("aspect-practice"){launchSingleTop=true}})
+            }
+            composable("aspect-practice") {
+                val model:AspectPracticeViewModel=viewModel(factory=viewModelFactory {initializer {AspectPracticeViewModel(application.aspectPractice,createSavedStateHandle())}})
+                AspectPracticeScreen(model,onCollection={controller.navigate("aspects"){launchSingleTop=true}})
             }
             composable("backup") { BackupScreen(backupModel) }
             composable("transfer") {

@@ -1,0 +1,9 @@
+{
+  "repository": "Danishbears/bulgariantrainer",
+  "commit": "be6a91ff2ae06b8b0eae2461d8c7a8bf910ce57a",
+  "sha256": {
+    "AspectAnswerNormalizer.java": "c224b47ed432c45789a51ecf474bb3676c648881cb492442714938aae1f3e780",
+    "AspectDirection.java": "4fdda45997bc565e6e238ebf9a2f67013f6eee953443d3baaa9b1b8e3d53939f",
+    "AspectQuestionPlanner.java": "2e522ad224455644fb92ad87ca6fcf07b07bfc73f67412608d7319a48fbfe007"
+  }
+}

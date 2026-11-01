@@ -27,7 +27,7 @@ private val aspectFields=linkedMapOf(
     "example_imperfective_ru" to R.string.aspect_example_iru,"example_perfective_bg" to R.string.aspect_example_pbg,
     "example_perfective_ru" to R.string.aspect_example_pru)
 @Composable
-fun AspectScreen(model:AspectViewModel){
+fun AspectScreen(model:AspectViewModel,onPractice:()->Unit){
     val state by model.state.collectAsStateWithLifecycle()
     val filter by model.filter.collectAsStateWithLifecycle()
     val draft by model.draft.collectAsStateWithLifecycle()
@@ -51,7 +51,7 @@ fun AspectScreen(model:AspectViewModel){
     Column(Modifier.fillMaxSize().imePadding()){
         if(state.busy)LinearProgressIndicator(Modifier.fillMaxWidth())
         LazyColumn(contentPadding=PaddingValues(20.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
-            item{Text(stringResource(R.string.aspect_title),style=MaterialTheme.typography.headlineMedium)}
+            item{Text(stringResource(R.string.aspect_title),style=MaterialTheme.typography.headlineMedium);OutlinedButton(enabled=!state.busy,onClick=onPractice){Text(stringResource(R.string.ap_title))}}
             state.error?.let{item{FailureMessage(it)}}
             if(state.previewLost)item{Text(stringResource(R.string.aspect_preview_lost))}
             when{
@@ -136,7 +136,7 @@ fun AspectScreen(model:AspectViewModel){
         }
     }
 }
-@Composable private fun AspectEntry(entry:JsonObject){
+@Composable internal fun AspectEntry(entry:JsonObject){
     Column(verticalArrangement=Arrangement.spacedBy(6.dp)){
         for((key,value) in entry){
             val label=aspectFields[key]?.let{stringResource(it)}?:when(key){"provenance"->stringResource(R.string.aspect_provenance);else->stringResource(R.string.aspect_examples)}

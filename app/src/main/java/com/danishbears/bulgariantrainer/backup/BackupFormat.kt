@@ -14,8 +14,8 @@ class PreparedBackup internal constructor(internal val document: JsonObject, val
 
 /** v1 is a logical relational snapshot, never an open database-file copy. */
 internal object BackupFormat {
-    const val VERSION = 2
-    const val SCHEMA = 8
+    const val VERSION = 3
+    const val SCHEMA = 9
     const val MAX_BYTES = 32 * 1024 * 1024
     const val MAX_ROWS = 250_000
     const val APPLICATION = "com.danishbears.bulgariantrainer"
@@ -23,11 +23,13 @@ internal object BackupFormat {
         "flashcard_sessions","flashcard_cards","flashcard_attempts","recognition_progress","typing_sessions","typing_questions","typing_attempts","typing_progress",
         "sentence_sessions","sentence_questions","sentence_attempts","sentence_progress","word_review_schedules","sentence_review_schedules")
     val aspectTables = listOf("aspect_datasets","aspect_pairs","aspect_answers","aspect_receipts")
-    val tables = legacyTables + aspectTables
+    val practiceTables = listOf("aspect_sessions","aspect_questions","aspect_attempts","aspect_progress","aspect_review_schedules")
+    val tables = legacyTables + aspectTables + practiceTables
     val legacySequences = listOf("words","translations","sentences","sentence_alternatives","flashcard_sessions","flashcard_cards","flashcard_attempts",
         "typing_sessions","typing_questions","typing_attempts","sentence_sessions","sentence_questions","sentence_attempts")
     val aspectSequences = listOf("aspect_datasets","aspect_pairs","aspect_answers")
-    val sequences = legacySequences + aspectSequences
+    val practiceSequences = listOf("aspect_sessions","aspect_questions","aspect_attempts")
+    val sequences = legacySequences + aspectSequences + practiceSequences
     private val keys = setOf("format","formatVersion","applicationId","schemaVersion","createdAt","tables","sequences","sha256")
     fun canonical(value: JsonElement): JsonElement = when(value) {
         is JsonObject -> JsonObject(value.toSortedMap().mapValues { canonical(it.value) })
@@ -52,20 +54,21 @@ internal object BackupFormat {
             if(root.keys!=keys || root["format"]!=JsonPrimitive("bulgarian-trainer-full-backup")) fail(BackupError.INVALID_FORMAT)
             if(root["applicationId"]!=JsonPrimitive(APPLICATION)) fail(BackupError.WRONG_APPLICATION)
             val legacy = root["formatVersion"]==JsonPrimitive(1) && root["schemaVersion"]==JsonPrimitive(7)
-            if(!legacy && (root["formatVersion"]!=JsonPrimitive(VERSION) || root["schemaVersion"]!=JsonPrimitive(SCHEMA))) fail(BackupError.UNSUPPORTED_VERSION)
+            val contentOnly = root["formatVersion"]==JsonPrimitive(2) && root["schemaVersion"]==JsonPrimitive(8)
+            if(!legacy && !contentOnly && (root["formatVersion"]!=JsonPrimitive(VERSION) || root["schemaVersion"]!=JsonPrimitive(SCHEMA))) fail(BackupError.UNSUPPORTED_VERSION)
             validateUnicode(root)
             val date=(root["createdAt"] as? JsonPrimitive)?.takeIf{it.isString}?.content ?: fail(BackupError.INVALID_FORMAT)
             Instant.parse(date)
             val tables=root["tables"] as? JsonObject ?: fail(BackupError.INVALID_FORMAT)
-            if(tables.keys!=(if(legacy)legacyTables else this.tables).toSet() || tables.values.any { it !is JsonArray }) fail(BackupError.INVALID_FORMAT)
+            if(tables.keys!=(if(legacy)legacyTables else if(contentOnly)legacyTables+aspectTables else this.tables).toSet() || tables.values.any { it !is JsonArray }) fail(BackupError.INVALID_FORMAT)
             if(tables.values.sumOf { (it as JsonArray).size.toLong() }>MAX_ROWS) fail(BackupError.TOO_LARGE)
             val seq=root["sequences"] as? JsonObject ?: fail(BackupError.INVALID_FORMAT)
-            if(seq.keys!=(if(legacy)legacySequences else sequences).toSet() || seq.values.any { it !is JsonPrimitive || it.isString || it.longOrNull==null || it.long<0 }) fail(BackupError.INVALID_FORMAT)
+            if(seq.keys!=(if(legacy)legacySequences else if(contentOnly)legacySequences+aspectSequences else sequences).toSet() || seq.values.any { it !is JsonPrimitive || it.isString || it.longOrNull==null || it.long<0 }) fail(BackupError.INVALID_FORMAT)
             if(root["sha256"]!=JsonPrimitive(digest(root))) fail(BackupError.CHECKSUM_MISMATCH)
-            if(legacy) {
+            if(legacy||contentOnly) {
                 // Authenticate original v1 contract/checksum before expanding the isolated staging payload.
-                val expanded=JsonObject(tables + aspectTables.associateWith { JsonArray(emptyList()) })
-                val highWater=JsonObject(seq + aspectSequences.associateWith { JsonPrimitive(0) })
+                val expanded=JsonObject(tables + this.tables.filter{it !in tables}.associateWith { JsonArray(emptyList()) })
+                val highWater=JsonObject(seq + sequences.filter{it !in seq}.associateWith { JsonPrimitive(0) })
                 return decode(encode(Instant.parse(date),expanded,highWater))
             }
             return root
@@ -75,10 +78,10 @@ internal object BackupFormat {
     fun summary(root: JsonObject): BackupSummary {
         val data=root.getValue("tables").jsonObject
         fun size(name: String)=data.getValue(name).jsonArray.size
-        val sessions=listOf("flashcard_sessions","typing_sessions","sentence_sessions")
+        val sessions=listOf("flashcard_sessions","typing_sessions","sentence_sessions","aspect_sessions")
         return BackupSummary(Instant.parse(root.getValue("createdAt").jsonPrimitive.content),size("words"),size("translations"),size("sentences"),size("sentence_alternatives"),
-            sessions.sumOf(::size),listOf("flashcard_attempts","typing_attempts","sentence_attempts").sumOf(::size),
-            listOf("recognition_progress","typing_progress","sentence_progress").sumOf(::size),size("word_review_schedules")+size("sentence_review_schedules"),
+            sessions.sumOf(::size),listOf("flashcard_attempts","typing_attempts","sentence_attempts","aspect_attempts").sumOf(::size),
+            listOf("recognition_progress","typing_progress","sentence_progress","aspect_progress").sumOf(::size),size("word_review_schedules")+size("sentence_review_schedules")+size("aspect_review_schedules"),
             sessions.sumOf { table -> data.getValue(table).jsonArray.count { it.jsonObject["status"]==JsonPrimitive("IN_PROGRESS") } },size("trainer_preferences")>0,size("aspect_pairs"),size("aspect_datasets"))
     }
     fun validateUnicode(value: JsonElement) {

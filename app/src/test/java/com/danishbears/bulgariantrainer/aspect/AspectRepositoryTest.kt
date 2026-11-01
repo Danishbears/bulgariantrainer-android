@@ -33,7 +33,7 @@ class AspectRepositoryTest{
     private val clock=Clock.fixed(Instant.parse("2026-11-01T12:00:00Z"),ZoneOffset.UTC)
     private val ns="bulgarian-aspect-pairs-100"
     @Before fun setup(){context=ApplicationProvider.getApplicationContext();open()}
-    private fun open(){db=Room.databaseBuilder(context,TrainerDatabase::class.java,name).addMigrations(MIGRATION_7_8).build();repo=AspectRepository(db,clock)}
+    private fun open(){db=Room.databaseBuilder(context,TrainerDatabase::class.java,name).addMigrations(MIGRATION_7_8, MIGRATION_8_9).build();repo=AspectRepository(db,clock)}
     @After fun close(){db.close();context.deleteDatabase(name)}
     private fun bytes()=javaClass.classLoader!!.getResourceAsStream("bulgarian_aspect_pairs_100.json")!!.use{it.readBytes()}
     private fun entry()=AspectContent.parse(bytes()).entries.first()
@@ -190,7 +190,7 @@ class AspectRepositoryTest{
             sql.version=7
         }
         open()
-        assertEquals(8,db.openHelper.writableDatabase.version)
+        assertEquals(9,db.openHelper.writableDatabase.version)
         assertEquals(beforeSnapshot.getValue("tables").jsonObject.filterKeys{it in BackupFormat.legacyTables},legacyRows())
         val migrated=snapshot()
         assertEquals(beforeSnapshot.getValue("sequences").jsonObject.filterKeys{it in BackupFormat.legacySequences},migrated.getValue("sequences").jsonObject.filterKeys{it in BackupFormat.legacySequences})
