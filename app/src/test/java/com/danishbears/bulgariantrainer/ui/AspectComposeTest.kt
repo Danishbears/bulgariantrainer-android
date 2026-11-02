@@ -1,6 +1,8 @@
 package com.danishbears.bulgariantrainer.ui
 
 import android.app.Application
+import android.os.Looper
+import org.robolectric.Shadows.shadowOf
 import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.*
@@ -70,6 +72,13 @@ class AspectComposeTest {
             PronunciationBoundary(q.value.id)
             AspectQuestionCard(9,q.value,input,true,{},onSubmit,{}, {})
         }}
+    }
+    private fun awaitUi(timeout:Long=10_000,predicate:()->Boolean) {
+        compose.waitUntil(timeout) {
+            shadowOf(Looper.getMainLooper()).idle()
+            compose.waitForIdle()
+            predicate()
+        }
     }
     private fun lazyText(text:String):SemanticsNodeInteraction {
         compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText(text))
@@ -144,24 +153,24 @@ class AspectComposeTest {
         runBlocking{repo.create("fixture",entry("bgasp-057"))}
         val vm=AspectViewModel(repo,AspectDocuments(context),SavedStateHandle());store.put("management",vm)
         var back=0;show{AspectScreen(vm,{}, {back++},{})}
-        compose.waitUntil(10_000){vm.state.value.page?.total==1L&&!vm.state.value.busy}
+        awaitUi(){vm.state.value.page?.total==1L&&!vm.state.value.busy}
         lazyText(context.getString(R.string.aspect_search)).performTextInput("купить")
         compose.onNodeWithText(context.getString(R.string.aspect_search)).performImeAction()
-        compose.waitUntil(10_000){!vm.state.value.busy}
+        awaitUi(){!vm.state.value.busy}
         compose.runOnIdle{assertEquals("Search draft", "купить",vm.filter.value[1]);assertEquals("Search state: ${vm.state.value}",1L,vm.state.value.page?.total)}
         lazyText("купувам → купя").performClick()
-        compose.waitUntil(10_000){vm.state.value.viewed!=null&&!vm.state.value.busy}
+        awaitUi(){vm.state.value.viewed!=null&&!vm.state.value.busy}
         lazyText(context.getString(R.string.aspect_archive)).performClick()
-        compose.waitUntil(10_000){vm.state.value.page?.total==0L&&!vm.state.value.busy}
+        awaitUi(){vm.state.value.page?.total==0L&&!vm.state.value.busy}
         lazyText(context.getString(R.string.aspect_no_matches)).assertIsDisplayed()
         lazyText(context.getString(R.string.aspect_more_filters)).performClick()
         lazyText(context.getString(R.string.aspect_archived_only)).performClick()
         lazyText(context.getString(R.string.aspect_apply)).performClick()
-        compose.waitUntil(10_000){vm.state.value.page?.total==1L&&!vm.state.value.busy}
+        awaitUi(){vm.state.value.page?.total==1L&&!vm.state.value.busy}
         lazyText("купувам → купя").performClick()
-        compose.waitUntil(10_000){vm.state.value.viewed!=null&&!vm.state.value.busy}
+        awaitUi(){vm.state.value.viewed!=null&&!vm.state.value.busy}
         lazyText(context.getString(R.string.aspect_restore)).performClick()
-        compose.waitUntil(10_000){vm.state.value.page?.total==0L&&!vm.state.value.busy}
+        awaitUi(){vm.state.value.page?.total==0L&&!vm.state.value.busy}
         val activity=compose.activity
         compose.runOnIdle{activity.onBackPressedDispatcher.onBackPressed()}
         compose.runOnIdle{assertEquals(1,back)}
@@ -171,15 +180,15 @@ class AspectComposeTest {
         val database=Room.inMemoryDatabaseBuilder(context,TrainerDatabase::class.java).build();db=database
         val repo=AspectRepository(database);val vm=AspectViewModel(repo,AspectDocuments(context),SavedStateHandle());store.put("preview",vm)
         show{AspectScreen(vm,{}, {},{})}
-        compose.waitUntil(10_000){vm.state.value.page!=null&&!vm.state.value.busy}
+        awaitUi(){vm.state.value.page!=null&&!vm.state.value.busy}
         lazyText(context.getString(R.string.aspect_sample)).performClick()
-        compose.waitUntil(10_000){vm.state.value.preview!=null&&!vm.state.value.busy}
+        awaitUi(){vm.state.value.preview!=null&&!vm.state.value.busy}
         assertEquals(0L,runBlocking{repo.list().total})
         lazyText(context.getString(R.string.aspect_confirm)).performClick()
         compose.onNodeWithText(context.getString(R.string.aspect_confirm_hint)).assertIsDisplayed()
         assertEquals(0L,runBlocking{repo.list().total})
         compose.onNodeWithText(context.getString(R.string.aspect_save_selected)).performClick()
-        compose.waitUntil(20_000){vm.state.value.summary!=null&&!vm.state.value.busy}
+        awaitUi(20_000){vm.state.value.summary!=null&&!vm.state.value.busy}
         assertEquals(100L,runBlocking{repo.list().total})
     }
     @Test fun helpUsesNativeScrollableTextAndLabelsStagesAsStudyOrder() {
@@ -194,7 +203,7 @@ class AspectComposeTest {
         val database=Room.inMemoryDatabaseBuilder(context,TrainerDatabase::class.java).build();db=database
         val repo=AspectRepository(database);val vm=AspectViewModel(repo,AspectDocuments(context),SavedStateHandle());store.put("editor",vm)
         show{AspectScreen(vm,{}, {},{})}
-        compose.waitUntil(10_000){vm.state.value.page!=null&&!vm.state.value.busy}
+        awaitUi(){vm.state.value.page!=null&&!vm.state.value.busy}
         lazyText(context.getString(R.string.aspect_new)).performClick()
         for((label,value)in listOf(R.string.aspect_imperfective to "чета",R.string.aspect_perfective to "прочета",
             R.string.aspect_ru_imperfective to "читать",R.string.aspect_ru_perfective to "прочитать",
@@ -202,11 +211,11 @@ class AspectComposeTest {
             lazyText(context.getString(label)).performTextInput(value)
         }
         lazyText(context.getString(R.string.aspect_save)).performClick()
-        compose.waitUntil(10_000){!vm.state.value.editing&&!vm.state.value.busy}
+        awaitUi(){!vm.state.value.editing&&!vm.state.value.busy}
         val record=runBlocking{repo.list().rows.single()}
         assertEquals(listOf("чета","прочитам"),AspectContent.answers(record.entry,"acceptedImperfective"))
         lazyText("чета → прочета").performClick()
-        compose.waitUntil(10_000){vm.state.value.viewed!=null&&!vm.state.value.busy}
+        awaitUi(){vm.state.value.viewed!=null&&!vm.state.value.busy}
         lazyText(context.getString(R.string.aspect_edit)).performClick()
         lazyText(context.getString(R.string.aspect_note)).performTextInput("Мой черновик")
         val activity=compose.activity

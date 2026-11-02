@@ -32,6 +32,7 @@ class AspectNavigationComposeTest {
                 TrainerApp(app.vocabulary,app.transfer,app.flashcards,app.typing,app.sentences,app.sentencePractice,app.statistics)
             }}}
             compose.onNodeWithText(app.getString(R.string.home)).assertExists()
+            compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText(app.getString(R.string.aspect_title)))
             compose.onNodeWithText(app.getString(R.string.aspect_title)).performScrollTo().performClick()
             compose.onNodeWithText(app.getString(R.string.aspect_search)).assertExists()
             compose.onNodeWithText(app.getString(R.string.home)).assertDoesNotExist()
