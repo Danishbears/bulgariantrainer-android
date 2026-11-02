@@ -4,8 +4,7 @@ Reference: read-only web `codex/aspect-pairs` at
 `be6a91ff2ae06b8b0eae2461d8c7a8bf910ce57a`. See
 ANDROID_ASPECT_PAIRS_PLAN.md for the source/test audit and missing original guide.
 Typed aspect practice and independent direction progress/scheduling are now
-implemented: see ASPECT_PRACTICE_ANDROID.md. Separate aggregate aspect statistics
-remain a later increment;
+implemented: see ASPECT_PRACTICE_ANDROID.md. Separate aspect statistics are now implemented; see ASPECT_INTEGRATION.md;
 existing vocabulary, flashcard, typing, sentence, scheduling, statistics and TTS
 features retain their own tables and behavior.
 
@@ -98,7 +97,7 @@ or fabricates missing history. See BACKUP_RESTORE.md and ASPECT_PRACTICE_ANDROID
 
 Restore retains logical Room/WAL snapshot consistency, transactional replacement,
 rollback and old-command invalidation. Older apps reject v3; save a pre-upgrade
-backup. CSV/content JSON cannot replace a full backup. Candidate0.4.1/code5 uses
+backup. CSV/content JSON cannot replace a full backup. Candidate0.5.0/code6 uses
 the existing signing workflow; retain one persistent key for in-place updates.
 Cloud debug keys may differ. Actual device update/data preservation is unverified.
 

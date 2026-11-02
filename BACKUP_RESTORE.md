@@ -1,3 +1,9 @@
+> **Compatibility preview:** the validated original version now appears in both
+> preview and replacement confirmation. v1 removes current aspect content/history;
+> v2 restores its aspect content and removes current aspect-practice history. Both
+> require explicit replacement consent. Current full format remains v3/schema9.
+> See ASPECT_INTEGRATION.md for the complete29-table contract and verification.
+
 > **Current format: v3/schema9**,29tables/19sequences. It includes the four
 > aspect-content tables and five aspect-practice tables, with durable queues,
 > snapshots, raw outcomes/reveals, position/status, progress and schedules.

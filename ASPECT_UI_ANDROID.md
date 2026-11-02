@@ -1,6 +1,6 @@
 # Native Compose aspect-pair interface
 
-Current UI candidate:0.4.1/code5. Kotlin/Compose/Material3, existing applicationId
+Current UI candidate:0.5.0/code6. Kotlin/Compose/Material3, existing applicationId
 `com.danishbears.bulgariantrainer`; no WebView, JavaScript, server or account.
 This increment preserves Room9, all schema1–9 migrations, full-backupv3 and the
 existing typed-recall rules. It adds no learning mode or database migration.

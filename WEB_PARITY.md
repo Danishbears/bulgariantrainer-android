@@ -1,3 +1,8 @@
+> **Aspect statistics/integration (0.5.0/code6):** separate real-record metrics
+> now follow pinned AspectStatisticsService definitions. Full-backupv3 retains
+> all aspect content/history/settings; original v1/v2 replacement behavior is
+> explicit in preview/dialog. See ASPECT_INTEGRATION.md and BUILD_REPORT.md.
+
 > **Native aspect UI increment (0.4.1/code5):** ASPECT_UI_ANDROID.md maps the
 > Compose management/forms/preview/practice/help and accessibility checks. Explicit
 > source/approved-target TTS is a requested native extension to the web aspect UI.
@@ -26,7 +31,7 @@ and is read-only.
 | Scheduling/statistics | Implemented: independent four-mode schedules, exact web intervals/categories/scopes and real persisted statistics. `REVIEW_AND_STATISTICS.md`, Java-verified fixtures and Kotlin tests. |
 | Pronunciation | Implemented with local Bulgarian TTS selection and reference visibility rules; physical offline voice/quality acceptance remains. `PRONUNCIATION.md`. |
 | Full backup/settings | Versioned Android JSON snapshot, whole-file staging validation, confirmed transactional replacement, IDs/history/schedules/defaults. `BACKUP_RESTORE.md`. CSV is content only. |
-| Personal releases | Same applicationId, committed versionCode 5, persistent-key workflow and final APK identity/permission/signature checks. `RELEASE_SIGNING.md`; actual release signing remains incomplete until owner configuration and a successful signed run. |
+| Personal releases | Same applicationId, committed versionCode 6, persistent-key workflow and final APK identity/permission/signature checks. `RELEASE_SIGNING.md`; actual release signing remains incomplete until owner configuration and a successful signed run. |
 
 The web's scoped typing imbalance is preserved and shown; unconstrained new
 queues are 15+15. Sentence-linked vocabulary selection/usage associations are

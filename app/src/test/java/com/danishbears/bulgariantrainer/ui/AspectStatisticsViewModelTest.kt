@@ -48,7 +48,11 @@ class AspectStatisticsViewModelTest {
     }
     @Test fun loadingFailureDoesNotReplaceLastConfirmedCountsWithFabricatedZeros()=runBlocking<Unit>{
         seed();val vm=model();ready(vm){it.value!=null}
-        val old=vm.state.value.value!!;db.close();vm.reload()
+        val old=vm.state.value.value!!
+        db.openHelper.writableDatabase.execSQL("ALTER TABLE aspect_attempts RENAME TO unavailable_attempts")
+        vm.reload()
         val error=ready(vm){it.error!=null};assertEquals(old,error.value)
+        db.openHelper.writableDatabase.execSQL("ALTER TABLE unavailable_attempts RENAME TO aspect_attempts")
+        vm.reload();assertEquals(old,ready(vm){it.value!=null&&it.error==null}.value)
     }
 }

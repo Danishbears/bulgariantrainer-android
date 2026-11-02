@@ -1,8 +1,8 @@
 # Personal signed APKs and updates
 
 Application ID: **com.danishbears.bulgariantrainer** (unchanged).
-Minimum Android: 8.0/API 26. The current candidate is **0.4.1, versionCode 5**,
-incremented from 0.4.0/code 4 in `version.properties`. The native aspect UI uses
+Minimum Android: 8.0/API 26. The current candidate is **0.5.0, versionCode 6**,
+incremented from 0.4.1/code 5 in `version.properties`. The native aspect UI uses
 the existing Room9 schema without recreating content or history.
 
 The [Personal signed release workflow](.github/workflows/release.yml) is ready,
@@ -11,6 +11,18 @@ password has been generated for this repository. The GitHub integration cannot
 inspect repository Secrets; signing is **incomplete/unverified until the owner
 configures the values below and a real signed run passes**. Unsigned release
 build checks and debug APKs do not establish release signing.
+
+## Workflow availability before merging
+
+This feature remains unmerged. The read-only check of `.github/workflows/release.yml`
+on default `main` returned404; its current file is on the implementation branch.
+GitHub requires a workflow_dispatch workflow to exist on the default branch before
+manual dispatch is available. After owner review, the workflow must be present
+on default before using the existing Personal signed release action. No merge is
+performed automatically. The available integration also has no dispatch command;
+no private-key release run is claimed. Existing Secrets cannot be inspected here,
+so absence of a signed run does not establish that owner Secrets are missing.
+The debug workflow and unsigned release checks remain executable through this PR.
 
 ## Create one key on a trusted computer
 

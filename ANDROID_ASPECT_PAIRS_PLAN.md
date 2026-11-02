@@ -1,9 +1,13 @@
+> **Integration status:** separate statistics and backup compatibility review are
+> now implemented; ASPECT_INTEGRATION.md supersedes the original future-stage
+> proposal below. Room9/full-backupv3 remain compatible and unchanged in shape.
+
 > **Current implementation status:** storage/management/import/export and typed
 > practice are implemented. Room9 adds five practice tables to existing24, for29;
 > full backup v3/schema9 includes19sequences and reads original v1/v2. The original
 > planning proposal below is historical; ASPECT_PRACTICE_ANDROID.md and
 > BUILD_REPORT.md document actual scope/checks. Separate aggregate aspect
-> statistics remain a later stage. Later user implementation instructions authorize
+> statistics are implemented; see ASPECT_INTEGRATION.md. Later instructions authorize
 > the application changes; the original planning-only scope below is historical.
 
 # Android Verb Aspect Pairs implementation plan
