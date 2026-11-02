@@ -30,7 +30,12 @@ class AspectViewModel(private val repository:AspectRepository,private val docume
         viewModelScope.launch{try{block()}catch(e:CancellationException){throw e}catch(e:AspectException){mutable.update{it.copy(error=e.message)}}catch(_:Exception){mutable.update{it.copy(error="Не удалось выполнить операцию. Данные не подтверждены; повторите после проверки.")}}
             finally{mutable.update{it.copy(busy=false)}}}
     }
-    private suspend fun refresh(offset:Int=0){val result=repository.list(currentFilter(),offset);mutable.update{it.copy(page=result)}}
+    private suspend fun refresh(offset:Int=0){
+        val f=currentFilter();val result=repository.list(f,offset)
+        val last=if(result.total==0L)0 else minOf(offset.toLong(),((result.total-1)/25)*25).toInt()
+        val page=if(last!=offset)repository.list(f,last) else result
+        mutable.update{it.copy(page=page)}
+    }
     fun reload(offset:Int=0)=act{refresh(offset)}
     fun view(id:Long)=act{val pair=repository.get(id);saved["aspectViewId"]=id;mutable.update{it.copy(viewed=pair)}}
     fun closeView(){if(!mutable.value.busy){saved["aspectViewId"]=null;mutable.update{it.copy(viewed=null)}}}
@@ -82,7 +87,7 @@ class AspectViewModel(private val repository:AspectRepository,private val docume
         val e=try{entry(fields)}catch(e:AspectException){mutable.update{it.copy(error=e.message)};return}
         val issues=AspectContent.validate(e).associate{issue->
             val path=issue.path.removePrefix("entry.").substringBefore('[')
-            val key=if(path.startsWith("examples."))"example_"+path.removePrefix("examples.").replace('.','_') else path.removePrefix("provenance.")
+            val key=if(path.startsWith("examples."))"example_"+path.removePrefix("examples.").replace('.','_') else if(path=="provenance")"kind" else path.removePrefix("provenance.")
             key to issue.message
         }.toMutableMap()
         try{AspectContent.namespace(fields.getValue("namespace").jsonPrimitive.content)}catch(e:AspectException){issues["namespace"]=e.message.orEmpty()}

@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.*
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.danishbears.bulgariantrainer.R
 import com.danishbears.bulgariantrainer.aspect.AspectContent
@@ -19,7 +20,7 @@ import kotlinx.serialization.json.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable internal fun AspectTopBar(title:String,onBack:()->Unit,onHelp:(()->Unit)?=null,enabled:Boolean=true) {
-    TopAppBar(title={Text(title)},windowInsets=WindowInsets(0,0,0,0),navigationIcon={
+    TopAppBar(title={Text(title,maxLines=1,overflow=TextOverflow.Ellipsis,modifier=Modifier.semantics{heading()})},windowInsets=WindowInsets(0,0,0,0),navigationIcon={
         IconButton(onClick=onBack,enabled=enabled){Icon(Icons.AutoMirrored.Filled.ArrowBack,stringResource(R.string.back))}
     },actions={onHelp?.let{IconButton(onClick=it,enabled=enabled){Icon(Icons.Default.Info,stringResource(R.string.aspect_help_title))}}})
 }

@@ -56,7 +56,7 @@ class AspectComposeTest {
         return AspectQuestion(1,1,if(reverse)AspectDirection.PERFECTIVE_TO_IMPERFECTIVE else AspectDirection.IMPERFECTIVE_TO_PERFECTIVE,
             AspectPrompt(AspectContent.string(e,if(reverse)"perfective" else "imperfective"),AspectContent.string(e,if(reverse)"russianPerfective" else "russianImperfective"),AspectContent.string(e,if(reverse)"russianImperfective" else "russianPerfective")),null)
     }
-    private fun show(font:Float=1f,content:@Composable()->Unit) {
+    private fun show(font:Float=1f,content:@Composable () -> Unit) {
         compose.setContent {
             val density=LocalDensity.current
             CompositionLocalProvider(LocalPronunciation provides speech,LocalDensity provides Density(density.density,font)) {
@@ -182,5 +182,33 @@ class AspectComposeTest {
         compose.onNodeWithText(context.getString(R.string.aspect_help_offline)).performScrollTo().assertIsDisplayed()
         compose.onNodeWithContentDescription(context.getString(R.string.back)).performClick()
         compose.runOnIdle{assertEquals(1,back);assertTrue(fake.spoken.isEmpty())}
+    }
+    @Test fun nativeEditorAcceptsMultipleAnswersAndSystemBackAsksBeforeDiscardingADraft() {
+        val database=Room.inMemoryDatabaseBuilder(context,TrainerDatabase::class.java).build();db=database
+        val repo=AspectRepository(database);val vm=AspectViewModel(repo,AspectDocuments(context),SavedStateHandle());store.put("editor",vm)
+        show{AspectScreen(vm,{}, {},{})}
+        compose.waitUntil(10_000){vm.state.value.page!=null&&!vm.state.value.busy}
+        compose.onNodeWithText(context.getString(R.string.aspect_new)).performScrollTo().performClick()
+        for((label,value)in listOf(R.string.aspect_imperfective to "чета",R.string.aspect_perfective to "прочета",
+            R.string.aspect_ru_imperfective to "читать",R.string.aspect_ru_perfective to "прочитать",
+            R.string.aspect_accepted_imperfective to "чета\nпрочитам",R.string.aspect_accepted_perfective to "прочета",R.string.aspect_topic to "Учёба")) {
+            compose.onNodeWithText(context.getString(label)).performScrollTo().performTextInput(value)
+        }
+        compose.onNodeWithText(context.getString(R.string.aspect_save)).performScrollTo().performClick()
+        compose.waitUntil(10_000){!vm.state.value.editing&&!vm.state.value.busy}
+        val record=runBlocking{repo.list().rows.single()}
+        assertEquals(listOf("чета","прочитам"),AspectContent.answers(record.entry,"acceptedImperfective"))
+        compose.onNodeWithText("чета → прочета").performScrollTo().performClick()
+        compose.waitUntil(10_000){vm.state.value.viewed!=null&&!vm.state.value.busy}
+        compose.onNodeWithText(context.getString(R.string.aspect_edit)).performScrollTo().performClick()
+        compose.onNodeWithText(context.getString(R.string.aspect_note)).performScrollTo().performTextInput("Мой черновик")
+        val activity=compose.activity
+        compose.runOnIdle{activity.onBackPressedDispatcher.onBackPressed()}
+        compose.onNodeWithText(context.getString(R.string.aspect_discard)).assertIsDisplayed()
+        compose.onNodeWithText(context.getString(R.string.flash_continue)).performClick()
+        compose.onNodeWithText("Мой черновик").assertExists()
+        compose.runOnIdle{activity.onBackPressedDispatcher.onBackPressed()}
+        compose.onNodeWithText(context.getString(R.string.cancel_edit)).performClick()
+        assertEquals(record,runBlocking{repo.get(record.id)})
     }
 }
