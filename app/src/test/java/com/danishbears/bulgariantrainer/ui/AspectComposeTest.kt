@@ -184,6 +184,7 @@ class AspectComposeTest {
         lazyText(context.getString(R.string.aspect_sample)).performClick()
         awaitUi(){vm.state.value.preview!=null&&!vm.state.value.busy}
         assertEquals(0L,runBlocking{repo.list().total})
+        lazyText(vm.state.value.preview!!.metadata.getValue("editorialStatus").jsonPrimitive.content).assertIsDisplayed()
         lazyText(context.getString(R.string.aspect_confirm)).performClick()
         compose.onNodeWithText(context.getString(R.string.aspect_confirm_hint)).assertIsDisplayed()
         assertEquals(0L,runBlocking{repo.list().total})

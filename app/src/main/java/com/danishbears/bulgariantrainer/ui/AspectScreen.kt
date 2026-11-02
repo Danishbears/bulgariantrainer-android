@@ -116,6 +116,7 @@ private val aspectFields=linkedMapOf(
                         val preview=state.preview!!
                         item{
                             Text(preview.filename);Text(preview.namespace);Text(stringResource(R.string.aspect_preview_hint))
+                            (preview.metadata["editorialStatus"] as? JsonPrimitive)?.takeIf{it.isString}?.let{AspectNotice(it.content)}
                             AspectNotice(stringResource(R.string.aspect_preview_selection,state.selected.size,preview.changes.count{it.kind=="ADD"},preview.changes.count{it.kind=="UPDATE"},preview.changes.count{it.kind=="UNCHANGED"}))
                             Button(enabled=!state.busy&&preview.issues.isEmpty()&&state.selected.isNotEmpty(),onClick={confirm=true},modifier=Modifier.fillMaxWidth()){Text(stringResource(R.string.aspect_confirm))}
                             TextButton(enabled=!state.busy,onClick=model::closePreview){Text(stringResource(R.string.aspect_back))}
