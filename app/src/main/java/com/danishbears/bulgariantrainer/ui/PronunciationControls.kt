@@ -9,6 +9,8 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -26,7 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.danishbears.bulgariantrainer.R
 import com.danishbears.bulgariantrainer.pronunciation.*
 
-private val LocalPronunciation = staticCompositionLocalOf<BulgarianPronunciation> { error("PronunciationHost required") }
+internal val LocalPronunciation = staticCompositionLocalOf<BulgarianPronunciation> { error("PronunciationHost required") }
 
 @Composable
 fun PronunciationHost(content: @Composable () -> Unit) {
@@ -55,6 +57,7 @@ internal fun PronunciationBoundary(key: Any?) {
 }
 
 @Composable
+@OptIn(ExperimentalLayoutApi::class)
 internal fun PronunciationPlayback(target: PronunciationTarget?) {
     if (target == null) return
     val speech = LocalPronunciation.current
@@ -68,7 +71,7 @@ internal fun PronunciationPlayback(target: PronunciationTarget?) {
     val normalLabel = stringResource(R.string.pronunciation_listen_label, target.text)
     val slowLabel = stringResource(R.string.pronunciation_slow_label, target.text)
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(enabled = available, onClick = { speech.speak(target.owner) }, modifier = Modifier.semantics { contentDescription = normalLabel }) {
                 Text(stringResource(R.string.pronunciation_listen))
             }

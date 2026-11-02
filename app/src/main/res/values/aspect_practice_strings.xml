@@ -3,7 +3,7 @@
     <string name="ap_title">Практика видовых пар</string>
     <string name="ap_settings_hint">Восстановите пару по памяти. По умолчанию выбрана только стадия 1. В смешанной очереди направления распределяются максимально равномерно с учётом доступности.</string>
     <string name="ap_size">Размер занятия: 1–100</string>
-    <string name="ap_stages">Учебные стадии (не уровни CEFR)</string>
+    <string name="ap_stages">Учебные стадии</string>
     <string name="ap_stage">Стадия %1$d</string>
     <string name="ap_forward">Несовершенный → совершенный</string>
     <string name="ap_reverse">Совершенный → несовершенный</string>

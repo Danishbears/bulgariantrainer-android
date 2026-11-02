@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="aspect_help_title">Как заниматься</string>
+    <string name="aspect_help_aspect_title">Вид — не время</string>
+    <string name="aspect_help_aspect">Несовершенный вид описывает процесс, повторение или действие без указания на завершённость. Совершенный вид представляет действие как целое, результат или ограниченное действие. Здесь тренируется связь двух форм для конкретного значения, а не спряжение по лицам.</string>
+    <string name="aspect_help_forms_title">Словарные формы</string>
+    <string name="aspect_help_forms">В болгарских словарях глаголы обычно даны в форме первого лица единственного числа настоящего времени. Вводите учебную форму карточки: не русское слово, не предложение и не форму другого лица.</string>
+    <string name="aspect_help_particles_title">Не пропускайте се и си</string>
+    <string name="aspect_help_particles">Се и си — значимые части формы. Сохраняйте их, если они входят в ответ карточки. И, й и ѝ различаются. Регистр и лишние пробелы не мешают проверке, но сходное написание само по себе не считается правильным ответом.</string>
+    <string name="aspect_help_meaning_title">Читайте требуемое значение</string>
+    <string name="aspect_help_meaning">У одного глагола бывают разные связи в разных значениях. Для значения «говорить» карточка может просить «поговорить», а не любое завершённое действие. Смотрите русское значение запрашиваемого ответа. Несовпадение со списком карточки не означает, что такого слова нет в болгарском.</string>
+    <string name="aspect_help_stages">Начните со стадии 1. Стадии 2 и 3 включайте отдельно: они требуют внимания к результату или ограничению действия. Это порядок изучения материала, а не уровни владения языком CEFR.</string>
+    <string name="aspect_help_reveal_title">Ответ, раскрытие и повторение</string>
+    <string name="aspect_help_offline_title">Без интернета и без обязательного звука</string>
+    <string name="aspect_help_offline">После создания или импорта пар все занятия и результаты хранятся на устройстве и работают в авиарежиме. Озвучивание запускается только кнопкой и требует установленного локального болгарского голоса. Если голоса нет, продолжайте без звука. Учебный JSON содержит пары; для истории занятий используйте полный бэкап.</string>
+    <string name="aspect_relation_core">Основная видовая пара</string>
+    <string name="aspect_relation_resultative">Результат действия</string>
+    <string name="aspect_relation_bounded">Ограниченное действие</string>
+    <string name="aspect_origin_added">Происхождение: добавленная учебная запись</string>
+    <string name="aspect_origin_presentation">Происхождение: учебный источник</string>
+    <string name="aspect_source_context">Источник: %1$s; строка: %2$d.</string>
+    <string name="aspect_more_filters">Фильтры набора, стадии и архива</string>
+    <string name="aspect_less_filters">Скрыть дополнительные фильтры</string>
+    <string name="aspect_clear_filters">Сбросить фильтры</string>
+    <string name="aspect_all_stages">Все стадии</string>
+    <string name="aspect_all_relations">Все связи</string>
+    <string name="aspect_no_matches">По этим фильтрам ничего не найдено. Измените поиск или сбросьте фильтры.</string>
+    <string name="aspect_identifiers">Идентификаторы и источник</string>
+    <string name="aspect_optional_examples">Необязательные примеры</string>
+    <string name="aspect_show_details">Показать все поля</string>
+    <string name="aspect_hide_details">Скрыть подробности</string>
+    <string name="aspect_preview_selection">Выбрано: %1$d; новых: %2$d; обновлений: %3$d; без изменений: %4$d.</string>
+    <string name="aspect_select_record">%1$s · %2$s</string>
+    <string name="aspect_edit_title">Редактор видовой пары</string>
+    <string name="aspect_preview_title">Предпросмотр JSON</string>
+    <string name="aspect_view_title">Учебная пара</string>
+    <string name="aspect_source_kind_title">Происхождение записи</string>
+    <string name="aspect_loading">Загружаем видовые пары…</string>
+    <string name="aspect_resume_notice">Занятие восстановлено с сохранённой позиции.</string>
+    <string name="ap_answer">Ответ на болгарском</string>
+    <string name="ap_prompt_form">%1$s — %2$s</string>
+    <string name="ap_instruction_perfective">Напиши совершенный вид со значением «%1$s».</string>
+    <string name="ap_instruction_imperfective">Напиши несовершенный вид со значением «%1$s».</string>
+    <string name="ap_next">Дальше</string>
+    <string name="ap_revealed_no_submission">Ответ был раскрыт без отправки самостоятельного ответа.</string>
+</resources>

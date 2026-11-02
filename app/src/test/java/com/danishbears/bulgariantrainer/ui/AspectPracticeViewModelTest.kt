@@ -31,7 +31,7 @@ class AspectPracticeViewModelTest {
     @Before fun setup(){Dispatchers.setMain(UnconfinedTestDispatcher());context=ApplicationProvider.getApplicationContext();open()}
     private fun open(){db=Room.databaseBuilder(context,TrainerDatabase::class.java,filename).addMigrations(MIGRATION_8_9).build();repo=AspectPracticeRepository(db)}
     @After fun teardown(){store.clear();db.close();context.deleteDatabase(filename);Dispatchers.resetMain()}
-    private fun model()=AspectPracticeViewModel(repo,SavedStateHandle()).also{store.put("aspect${number++}",it)}
+    private fun model(handle:SavedStateHandle=SavedStateHandle())=AspectPracticeViewModel(repo,handle).also{store.put("aspect${number++}",it)}
     private suspend fun ready(vm:AspectPracticeViewModel,predicate:(AspectPracticeUi)->Boolean={true})=withTimeout(10_000){vm.state.first{!it.loading&&!it.busy&&predicate(it)}}
     private fun count(table:String)=db.openHelper.readableDatabase.query("SELECT COUNT(*) FROM $table").use{it.moveToFirst();it.getInt(0)}
     private suspend fun seed(){val bytes=javaClass.classLoader!!.getResourceAsStream("bulgarian_aspect_pairs_100.json")!!.readBytes();val content=AspectRepository(db);val p=content.preview("fixture","fixture.json",bytes);content.confirm(p,p.changes.map{it.externalId}.toSet())}
@@ -75,5 +75,13 @@ class AspectPracticeViewModelTest {
         db.openHelper.writableDatabase.execSQL("DROP TRIGGER fail_aspect_vm")
         vm.retry();val result=ready(vm){it.session?.answered==1}
         assertNull(result.pending);assertEquals(" ОШИБКА ",result.session!!.question!!.feedback!!.submitted);assertEquals(1,count("aspect_attempts"))
+    }
+    @Test fun unsentDraftSurvivesSavedStateReconstructionWithoutGrading()=runBlocking<Unit>{
+        seed();val saved=SavedStateHandle();var vm=model(saved);ready(vm);vm.setSize("2");vm.start()
+        val original=ready(vm){it.session!=null}.session!!;vm.setInput("черновик се")
+        val copied=SavedStateHandle(saved.keys().associateWith{saved.get<Any?>(it)})
+        store.clear();vm=model(copied);val restored=ready(vm){it.session!=null}
+        assertEquals(original,restored.session);assertTrue(restored.restored);assertEquals("черновик се",vm.input.value)
+        assertEquals(0,count("aspect_attempts"));assertEquals(0,count("aspect_progress"))
     }
 }

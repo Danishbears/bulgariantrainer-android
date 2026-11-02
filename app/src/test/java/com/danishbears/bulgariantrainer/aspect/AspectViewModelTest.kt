@@ -53,7 +53,8 @@ class AspectViewModelTest{
         vm.confirm();vm.confirm();ready(vm){it.summary!=null}
         assertEquals(100L,repo.list().total)
         val output=ByteArrayOutputStream();val uri=Uri.parse("content://aspect-documents/export.json");resolver.registerOutputStream(uri,output)
-        vm.export(uri,"fixture",false);ready(vm){it.error?.contains("сохранён")==true}
+        vm.export(uri,"fixture",false);val exported=ready(vm){it.notice?.contains("сохранён")==true}
+        assertNull(exported.error)
         assertEquals(100,AspectContent.parse(output.toByteArray()).entries.size)
     }
     @Test fun unsavedEditorIdentifierSurvivesViewModelRecreationAndCanBeCancelled()=runBlocking<Unit>{
@@ -72,5 +73,21 @@ class AspectViewModelTest{
         vm.inspect(input("{\"format\":\"unsupported\"}".toByteArray()),"fixture")
         assertTrue(ready(vm){it.preview!=null}.preview!!.issues.isNotEmpty())
         vm.confirm();ready(vm){it.error!=null};assertEquals(0L,repo.list().total)
+    }
+    @Test fun editorShowsFieldValidationAndKeepsMultipleAnswersAndOptionalExamples()=runBlocking<Unit>{
+        val vm=vm();ready(vm);vm.beginEdit();vm.save()
+        assertTrue(vm.state.value.fieldErrors.containsKey("imperfective"));assertEquals(0L,repo.list().total)
+        vm.draftField("imperfective","чета");assertFalse(vm.state.value.fieldErrors.containsKey("imperfective"))
+        for((key,value)in mapOf("perfective" to "прочета","russianImperfective" to "читать","russianPerfective" to "прочитать", "topic" to "Книги",
+            "acceptedImperfective" to "чета\nпрочитам","acceptedPerfective" to "прочета", "example_imperfective_bg" to "Чета книга.","example_imperfective_ru" to "Читаю книгу.",
+            "example_perfective_bg" to "Ще прочета книгата.","example_perfective_ru" to "Прочитаю книгу."))vm.draftField(key,value)
+        vm.save();ready(vm){!it.editing};val pair=repo.list().rows.single()
+        assertEquals(listOf("чета","прочитам"),AspectContent.answers(pair.entry,"acceptedImperfective"));assertTrue("examples" in pair.entry)
+    }
+    @Test fun viewingPairAndItsDraftCanReturnAfterSavedStateReconstruction()=runBlocking<Unit>{
+        val p=repo.preview("fixture","source.json",bytes());repo.confirm(p,setOf(p.changes.first().externalId))
+        val record=repo.list().rows.single();val handle=SavedStateHandle();var vm=vm(handle);ready(vm);vm.view(record.id);ready(vm){it.viewed!=null}
+        store.clear();vm=vm(SavedStateHandle(handle.keys().associateWith{handle.get<Any?>(it)}));assertEquals(record,ready(vm){it.viewed!=null}.viewed)
+        vm.beginEdit(record);vm.draftField("acceptedImperfective","не сохранено");vm.cancelEdit();assertEquals(record,repo.get(record.id))
     }
 }

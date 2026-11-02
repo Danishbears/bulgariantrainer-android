@@ -1,0 +1,186 @@
+package com.danishbears.bulgariantrainer.ui
+
+import android.app.Application
+import android.content.Context
+import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModelStore
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
+import com.danishbears.bulgariantrainer.R
+import com.danishbears.bulgariantrainer.aspect.*
+import com.danishbears.bulgariantrainer.data.TrainerDatabase
+import com.danishbears.bulgariantrainer.pronunciation.*
+import kotlinx.coroutines.*
+import kotlinx.serialization.json.*
+import org.junit.*
+import org.junit.Assert.*
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
+import org.robolectric.annotation.LooperMode
+import org.robolectric.annotation.SQLiteMode
+
+/** Real Compose trees and semantics on Robolectric; no real keyboard, TalkBack or voice claim. */
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk=[28],application=Application::class,qualifiers="ru-rRU-w320dp-h640dp")
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+@LooperMode(LooperMode.Mode.PAUSED)
+@SQLiteMode(SQLiteMode.Mode.NATIVE)
+class AspectComposeTest {
+    @get:Rule val compose=createAndroidComposeRule<ComponentActivity>()
+    private val scope=CoroutineScope(SupervisorJob()+Dispatchers.Main.immediate)
+    private val fake=FakeTtsAdapter()
+    private lateinit var speech:BulgarianPronunciation
+    private val store=ViewModelStore()
+    private var db:TrainerDatabase?=null
+    private val context get()=ApplicationProvider.getApplicationContext<Context>()
+    @Before fun setup(){speech=BulgarianPronunciation(scope,{fake});speech.initialize();fake.initialized!!(true)}
+    @After fun close(){store.clear();db?.close();speech.close();scope.cancel()}
+    private fun entry(id:String):JsonObject=Json.parseToJsonElement(javaClass.classLoader!!.getResourceAsStream("bulgarian_aspect_pairs_100.json")!!.bufferedReader().use{it.readText()})
+        .jsonObject.getValue("entries").jsonArray.single{it.jsonObject["id"]==JsonPrimitive(id)}.jsonObject
+    private fun question(id:String="bgasp-057",reverse:Boolean=false):AspectQuestion {
+        val e=entry(id)
+        return AspectQuestion(1,1,if(reverse)AspectDirection.PERFECTIVE_TO_IMPERFECTIVE else AspectDirection.IMPERFECTIVE_TO_PERFECTIVE,
+            AspectPrompt(AspectContent.string(e,if(reverse)"perfective" else "imperfective"),AspectContent.string(e,if(reverse)"russianPerfective" else "russianImperfective"),AspectContent.string(e,if(reverse)"russianImperfective" else "russianPerfective")),null)
+    }
+    private fun show(font:Float=1f,content:@Composable()->Unit) {
+        compose.setContent {
+            val density=LocalDensity.current
+            CompositionLocalProvider(LocalPronunciation provides speech,LocalDensity provides Density(density.density,font)) {
+                MaterialTheme{Box(Modifier.width(320.dp).fillMaxHeight()){content()}}
+            }
+        }
+    }
+    private fun listen(text:String)=context.getString(R.string.pronunciation_listen_label,text)
+    private fun card(q:State<AspectQuestion>,input:String="",onSubmit:()->Unit={}) {
+        show{Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())){
+            PronunciationBoundary(q.value.id)
+            AspectQuestionCard(9,q.value,input,true,{},onSubmit,{}, {})
+        }}
+    }
+    @Test fun hiddenTargetAndExamplesAreAbsentFromUnmergedSemanticsAndAudioUntilSubmission() {
+        val q=mutableStateOf(question());card(q)
+        compose.onNodeWithText("купувам — покупать").assertIsDisplayed()
+        compose.onNodeWithText("Напиши совершенный вид со значением «купить».").assertIsDisplayed()
+        val before=compose.onRoot(useUnmergedTree=true).printToString()
+        assertFalse(before.contains("купя"));assertFalse(before.contains("Обикновено купувам хляб"));assertTrue(fake.spoken.isEmpty())
+        compose.onNodeWithContentDescription(listen("купувам")).performScrollTo().performClick()
+        compose.runOnIdle{assertEquals(listOf("купувам"),fake.spoken.map{it.text})}
+        compose.runOnIdle{q.value=q.value.copy(feedback=AspectFeedback(AspectOutcome.INCORRECT,"НЕВЕРНЫЙ ОТВЕТ",listOf("купя"),entry("bgasp-057")))}
+        compose.onNodeWithText("Не совпало с ответами этой карточки").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Ваш ответ: НЕВЕРНЫЙ ОТВЕТ").assertExists()
+        compose.onNodeWithText("купя — купить").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Утре ще купя хляб сутринта.").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithContentDescription(listen("купя")).performScrollTo().performClick()
+        compose.runOnIdle{assertEquals("купя",fake.spoken.last().text);assertTrue(fake.spoken.none{it.text=="НЕВЕРНЫЙ ОТВЕТ"})}
+        compose.onNodeWithText("Дальше").performScrollTo().assertIsDisplayed()
+        val stopped=fake.stopCount
+        compose.runOnIdle{q.value=question("bgasp-028").copy(id=2)}
+        compose.runOnIdle{assertTrue(fake.stopCount>stopped);assertFalse(speech.speak("aspect-9-1-accepted-0"))}
+    }
+    @Test fun reverseRevealShowsAllApprovedAlternativesWithoutAnEditableOrFictitiousSubmission() {
+        val q=mutableStateOf(question("bgasp-043",true));card(q)
+        compose.onNodeWithText("прочета — прочитать").assertIsDisplayed()
+        compose.onNodeWithText("Напиши несовершенный вид со значением «читать».").assertIsDisplayed()
+        assertFalse(compose.onRoot(useUnmergedTree=true).printToString().contains("прочитам"))
+        compose.runOnIdle{q.value=q.value.copy(feedback=AspectFeedback(AspectOutcome.REVEALED,null,listOf("чета","прочитам"),entry("bgasp-043")))}
+        compose.onAllNodesWithText("прочитам").onFirst().performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText(context.getString(R.string.ap_revealed_no_submission)).assertExists()
+        compose.onAllNodes(hasSetTextAction()).assertCountEquals(0)
+        compose.onNodeWithContentDescription(listen("прочитам")).performScrollTo().performClick()
+        compose.runOnIdle{assertEquals("прочитам",fake.spoken.last().text)}
+    }
+    @Test fun contextualMeaningIsExplicitAndTargetIsStillHidden() {
+        card(mutableStateOf(question("bgasp-028")))
+        compose.onNodeWithText("Напиши совершенный вид со значением «поговорить».").assertIsDisplayed()
+        val tree=compose.onRoot(useUnmergedTree=true).printToString()
+        assertFalse(tree.contains("поговоря"));assertFalse(tree.contains("След работа"));assertFalse(tree.contains("Не эквивалент"))
+    }
+    @Test fun imeSubmissionRemainsAvailableWithoutBulgarianVoicesAndBusyDisablesFurtherActions() {
+        fake.available=emptyList();fake.availability=LanguageAvailability.UNSUPPORTED;speech.initialize();fake.initialized!!(true)
+        var input by mutableStateOf("");var enabled by mutableStateOf(true);var submitted=0
+        show{Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())){
+            AspectQuestionCard(1,question(),input,enabled,{input=it},{submitted++;enabled=false},{},{})
+        }}
+        compose.onNodeWithContentDescription(listen("купувам")).assertIsNotEnabled()
+        compose.onNode(hasSetTextAction()).performScrollTo().performTextInput("купя").performImeAction()
+        compose.runOnIdle{assertEquals(1,submitted);assertEquals("купя",input);assertTrue(fake.spoken.isEmpty())}
+        compose.onNodeWithText(context.getString(R.string.typing_submit)).assertIsNotEnabled()
+        compose.onNodeWithText(context.getString(R.string.flash_reveal)).assertIsNotEnabled()
+    }
+    @Test fun twoTimesFontAndNarrowLayoutKeepCheckboxLabelsAndPlaybackInsideWidthAndScrollable() {
+        var checked by mutableStateOf(false)
+        show(2f){Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())){
+            AspectCheckbox("Стадия 3 — ограниченное действие",checked){checked=it}
+            AspectQuestionCard(1,question("bgasp-028"),"",true,{},{},{},{})
+        }}
+        compose.onNodeWithText("Стадия 3 — ограниченное действие").performClick().assertIsOn()
+        compose.onNodeWithContentDescription(listen("говоря")).performScrollTo().assertIsDisplayed()
+        val width=compose.onRoot().fetchSemanticsNode().boundsInRoot.right
+        for(node in compose.onAllNodes(hasClickAction()).fetchSemanticsNodes())assertTrue("click control overflows 320dp",node.boundsInRoot.right<=width+1)
+        compose.onNodeWithText(context.getString(R.string.flash_reveal)).performScrollTo().assertIsDisplayed()
+    }
+    @Test fun managementSearchArchiveAndRestoreUseRealRepositoryWithoutExtraNavigationItems() {
+        val database=Room.inMemoryDatabaseBuilder(context,TrainerDatabase::class.java).build();db=database
+        val repo=AspectRepository(database)
+        runBlocking{repo.create("fixture",entry("bgasp-057"))}
+        val vm=AspectViewModel(repo,AspectDocuments(context),SavedStateHandle());store.put("management",vm)
+        var back=0;show{AspectScreen(vm,{}, {back++},{})}
+        compose.waitUntil(10_000){vm.state.value.page?.total==1L&&!vm.state.value.busy}
+        compose.onNodeWithText(context.getString(R.string.aspect_search)).performScrollTo().performTextInput("купить").performImeAction()
+        compose.waitUntil(10_000){vm.state.value.page?.total==1L&&!vm.state.value.busy}
+        compose.onNodeWithText("купувам → купя").performScrollTo().performClick()
+        compose.waitUntil(10_000){vm.state.value.viewed!=null&&!vm.state.value.busy}
+        compose.onNodeWithText(context.getString(R.string.aspect_archive)).performScrollTo().performClick()
+        compose.waitUntil(10_000){vm.state.value.page?.total==0L&&!vm.state.value.busy}
+        compose.onNodeWithText(context.getString(R.string.aspect_no_matches)).performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText(context.getString(R.string.aspect_more_filters)).performScrollTo().performClick()
+        compose.onNodeWithText(context.getString(R.string.aspect_archived_only)).performScrollTo().performClick()
+        compose.onNodeWithText(context.getString(R.string.aspect_apply)).performScrollTo().performClick()
+        compose.waitUntil(10_000){vm.state.value.page?.total==1L&&!vm.state.value.busy}
+        compose.onNodeWithText("купувам → купя").performScrollTo().performClick()
+        compose.waitUntil(10_000){vm.state.value.viewed!=null&&!vm.state.value.busy}
+        compose.onNodeWithText(context.getString(R.string.aspect_restore)).performScrollTo().performClick()
+        compose.waitUntil(10_000){vm.state.value.page?.total==0L&&!vm.state.value.busy}
+        val activity=compose.activity
+        compose.runOnIdle{activity.onBackPressedDispatcher.onBackPressed()}
+        compose.runOnIdle{assertEquals(1,back)}
+        assertEquals(1L,runBlocking{repo.list().total})
+    }
+    @Test fun jsonPreviewCannotWriteUntilNativeConfirmationDialogIsAccepted() {
+        val database=Room.inMemoryDatabaseBuilder(context,TrainerDatabase::class.java).build();db=database
+        val repo=AspectRepository(database);val vm=AspectViewModel(repo,AspectDocuments(context),SavedStateHandle());store.put("preview",vm)
+        show{AspectScreen(vm,{}, {},{})}
+        compose.waitUntil(10_000){vm.state.value.page!=null&&!vm.state.value.busy}
+        compose.onNodeWithText(context.getString(R.string.aspect_sample)).performScrollTo().performClick()
+        compose.waitUntil(10_000){vm.state.value.preview!=null&&!vm.state.value.busy}
+        assertEquals(0L,runBlocking{repo.list().total})
+        compose.onNodeWithText(context.getString(R.string.aspect_confirm)).performScrollTo().performClick()
+        compose.onNodeWithText(context.getString(R.string.aspect_confirm_hint)).assertIsDisplayed()
+        assertEquals(0L,runBlocking{repo.list().total})
+        compose.onNodeWithText(context.getString(R.string.aspect_save_selected)).performClick()
+        compose.waitUntil(20_000){vm.state.value.summary!=null&&!vm.state.value.busy}
+        assertEquals(100L,runBlocking{repo.list().total})
+    }
+    @Test fun helpUsesNativeScrollableTextAndLabelsStagesAsStudyOrder() {
+        var back=0;show(1.8f){AspectHelpScreen{back++}}
+        compose.onNodeWithText(context.getString(R.string.aspect_help_aspect_title)).assertIsDisplayed()
+        compose.onNodeWithText(context.getString(R.string.aspect_help_stages)).performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText(context.getString(R.string.aspect_help_offline)).performScrollTo().assertIsDisplayed()
+        compose.onNodeWithContentDescription(context.getString(R.string.back)).performClick()
+        compose.runOnIdle{assertEquals(1,back);assertTrue(fake.spoken.isEmpty())}
+    }
+}

@@ -20,7 +20,7 @@ sealed interface AspectAction {
     data class Complete(val session:Long):AspectAction
 }
 data class AspectPracticeUi(val loading:Boolean=true,val busy:Boolean=false,val session:AspectPracticeState?=null,
-    val pending:AspectAction?=null,val error:String?=null,val hasHistory:Boolean=false)
+    val pending:AspectAction?=null,val error:String?=null,val hasHistory:Boolean=false,val restored:Boolean=false)
 @OptIn(ExperimentalCoroutinesApi::class)
 class AspectPracticeViewModel(private val repository:AspectPracticeRepository,private val saved:SavedStateHandle):ViewModel() {
     private val mutable=MutableStateFlow(AspectPracticeUi())
@@ -62,7 +62,7 @@ class AspectPracticeViewModel(private val repository:AspectPracticeRepository,pr
         viewModelScope.launch {
             try {
                 val found=repository.restore(saved.get<Long>("session"))
-                if(found!=null&&(force||saved.get<Boolean>("setup")!=true||found.active))accept(found)
+                if(found!=null&&(force||saved.get<Boolean>("setup")!=true||found.active)){accept(found);mutable.update{it.copy(restored=true)}}
                 else mutable.update{it.copy(loading=false,session=null,pending=null,hasHistory=found!=null)}
             }catch(e:CancellationException){throw e}catch(_:Exception){mutable.update{it.copy(loading=false,error="Не удалось восстановить занятие.")}}
             finally{mutable.update{it.copy(busy=false)}}
@@ -71,7 +71,7 @@ class AspectPracticeViewModel(private val repository:AspectPracticeRepository,pr
     fun newSession() {
         if(!enabled()||mutable.value.session?.let{it.active||it.question!=null}==true)return
         observer?.cancel();observing=null;saved["session"]=null;saved["setup"]=true
-        mutable.update{it.copy(session=null,error=null)}
+        mutable.update{it.copy(session=null,error=null,restored=false)}
     }
     fun start(shorter:Boolean=false) {
         if(!enabled()||mutable.value.session?.let{it.active||it.question!=null}==true)return
@@ -90,7 +90,7 @@ class AspectPracticeViewModel(private val repository:AspectPracticeRepository,pr
             val question=when(action){is AspectAction.Submit->action.question;is AspectAction.Reveal->action.question;is AspectAction.Next->action.question;else->null}
             if(old.session?.id!=session||question!=null&&old.session?.question?.id!=question)return
         }
-        mutable.update{it.copy(busy=true,pending=action,error=null)}
+        mutable.update{it.copy(busy=true,pending=action,error=null,restored=if(action is AspectAction.Start)false else it.restored)}
         viewModelScope.launch {
             try {
                 accept(when(action){

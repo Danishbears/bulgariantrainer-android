@@ -73,7 +73,7 @@ fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferReposi
     Scaffold(
         snackbarHost = { SnackbarHost(snackbar) },
         bottomBar = {
-            if (!route.startsWith("word/") && !route.startsWith("sentence/")) NavigationBar {
+            if (!route.startsWith("word/") && !route.startsWith("sentence/") && !route.startsWith("aspect")) NavigationBar {
                 listOf("home" to R.string.home, "vocabulary" to R.string.dictionary, "flashcards" to R.string.flashcards, "typing" to R.string.typing, "transfer" to R.string.transfer).forEach { (target, label) ->
                     NavigationBarItem(enabled = !backupState.busy && !backupState.restored, selected = route == target,
                         onClick = { controller.navigate(target) {
@@ -148,12 +148,16 @@ fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferReposi
                 val aspectModel: AspectViewModel = viewModel(factory = viewModelFactory {
                     initializer { AspectViewModel(application.aspects, com.danishbears.bulgariantrainer.aspect.AspectDocuments(application), createSavedStateHandle()) }
                 })
-                AspectScreen(aspectModel,onPractice={controller.navigate("aspect-practice"){launchSingleTop=true}})
+                AspectScreen(aspectModel,onPractice={controller.navigate("aspect-practice"){launchSingleTop=true;restoreState=true}},
+                    onBack={controller.popBackStack()},onHelp={controller.navigate("aspect-help"){launchSingleTop=true}})
             }
             composable("aspect-practice") {
                 val model:AspectPracticeViewModel=viewModel(factory=viewModelFactory {initializer {AspectPracticeViewModel(application.aspectPractice,createSavedStateHandle())}})
-                AspectPracticeScreen(model,onCollection={controller.navigate("aspects"){launchSingleTop=true}})
+                AspectPracticeScreen(model,onCollection={
+                    if(!controller.popBackStack("aspects",false,saveState=true))controller.navigate("aspects"){popUpTo("home");launchSingleTop=true}
+                },onHelp={controller.navigate("aspect-help"){launchSingleTop=true}})
             }
+            composable("aspect-help") { AspectHelpScreen(onBack={controller.popBackStack()}) }
             composable("backup") { BackupScreen(backupModel) }
             composable("transfer") {
                 val context = LocalContext.current.applicationContext
