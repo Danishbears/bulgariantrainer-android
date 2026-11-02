@@ -43,6 +43,6 @@ class AspectNavigationComposeTest {
             compose.runOnIdle{activity.onBackPressedDispatcher.onBackPressed()}
             compose.onNodeWithText(app.getString(R.string.home)).assertExists()
             compose.onNodeWithText(app.getString(R.string.dictionary)).assertExists()
-        } finally {speech.close();scope.cancel();app.database.close()}
+        } finally {speech.close();scope.cancel()}
     }
 }

@@ -27,8 +27,10 @@ planner, not the older greedy word-typing planner.
 The prompt shows Bulgarian source, source Russian meaning and target Russian
 meaning. Target forms, accepted answers, notes, examples and provenance remain
 absent from practice UI state until submission/reveal. The local single-user
-content editor remains accessible. No aspect audio is added: the web feature has
-none, and hidden targets must not leak through TTS/accessibility.
+content editor remains accessible. The current native UI adds explicit Bulgarian source audio and approved-answer
+audio after feedback, reusing the existing TTS component. This user-requested
+extension is absent from the pinned web aspect browser; see ASPECT_UI_ANDROID.md.
+Hidden targets must not leak through TTS/accessibility.
 
 ## Answers and reveal policy
 

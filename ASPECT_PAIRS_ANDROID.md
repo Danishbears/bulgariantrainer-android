@@ -98,7 +98,7 @@ or fabricates missing history. See BACKUP_RESTORE.md and ASPECT_PRACTICE_ANDROID
 
 Restore retains logical Room/WAL snapshot consistency, transactional replacement,
 rollback and old-command invalidation. Older apps reject v3; save a pre-upgrade
-backup. CSV/content JSON cannot replace a full backup. Candidate0.4.0/code4 uses
+backup. CSV/content JSON cannot replace a full backup. Candidate0.4.1/code5 uses
 the existing signing workflow; retain one persistent key for in-place updates.
 Cloud debug keys may differ. Actual device update/data preservation is unverified.
 

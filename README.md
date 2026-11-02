@@ -1,12 +1,16 @@
+> **Нативный интерфейс видовых пар:** поиск, формы, архив, JSON-предпросмотр,
+> практика, справка и явное болгарское озвучивание. Подробности и границы
+> автоматической проверки: [ASPECT_UI_ANDROID.md](ASPECT_UI_ANDROID.md).
+
 > **Видовые пары — офлайн-тренировка:** Главная → Видовые пары → Практика.
 > Оба направления и смешанная очередь, стадии/темы, точный ввод, явное раскрытие,
 > сохранённые ответы/результаты и восстановление сессии из Room.
 > [ASPECT_PRACTICE_ANDROID.md](ASPECT_PRACTICE_ANDROID.md) описывает правила и тесты.
-> Кандидат **0.4.0/code4**, Room9; полный бэкап **v3**, чтение v1/v2.
+> Кандидат **0.4.1/code5**, Room9; полный бэкап **v3**, чтение v1/v2.
 > Сборки и фактически выполненные проверки: [BUILD_REPORT.md](BUILD_REPORT.md).
 
 > Personal installation/update instructions and persistent-key release setup:
-> [RELEASE_SIGNING.md](RELEASE_SIGNING.md). Current candidate: **0.4.0/code 4**;
+> [RELEASE_SIGNING.md](RELEASE_SIGNING.md). Current candidate: **0.4.1/code 5**;
 > release signing still requires owner configuration and a successful signed run.
 > [PERSONAL_USE_CHECKLIST.md](PERSONAL_USE_CHECKLIST.md) separates automated
 > coverage from physical-device checks. Latest executed checks/artifacts:
