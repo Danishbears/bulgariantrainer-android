@@ -71,6 +71,10 @@ class AspectComposeTest {
             AspectQuestionCard(9,q.value,input,true,{},onSubmit,{}, {})
         }}
     }
+    private fun lazyText(text:String):SemanticsNodeInteraction {
+        compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText(text))
+        return compose.onNodeWithText(text).performScrollTo()
+    }
     @Test fun hiddenTargetAndExamplesAreAbsentFromUnmergedSemanticsAndAudioUntilSubmission() {
         val q=mutableStateOf(question());card(q)
         compose.onNodeWithText("купувам — покупать").assertIsDisplayed()
@@ -141,21 +145,22 @@ class AspectComposeTest {
         val vm=AspectViewModel(repo,AspectDocuments(context),SavedStateHandle());store.put("management",vm)
         var back=0;show{AspectScreen(vm,{}, {back++},{})}
         compose.waitUntil(10_000){vm.state.value.page?.total==1L&&!vm.state.value.busy}
-        compose.onNodeWithText(context.getString(R.string.aspect_search)).performScrollTo().performTextInput("купить")
+        lazyText(context.getString(R.string.aspect_search)).performTextInput("купить")
         compose.onNodeWithText(context.getString(R.string.aspect_search)).performImeAction()
-        compose.waitUntil(10_000){vm.state.value.page?.total==1L&&!vm.state.value.busy}
-        compose.onNodeWithText("купувам → купя").performScrollTo().performClick()
+        compose.waitUntil(10_000){!vm.state.value.busy}
+        compose.runOnIdle{assertEquals("Search draft", "купить",vm.filter.value[1]);assertEquals("Search state: ${vm.state.value}",1L,vm.state.value.page?.total)}
+        lazyText("купувам → купя").performClick()
         compose.waitUntil(10_000){vm.state.value.viewed!=null&&!vm.state.value.busy}
-        compose.onNodeWithText(context.getString(R.string.aspect_archive)).performScrollTo().performClick()
+        lazyText(context.getString(R.string.aspect_archive)).performClick()
         compose.waitUntil(10_000){vm.state.value.page?.total==0L&&!vm.state.value.busy}
-        compose.onNodeWithText(context.getString(R.string.aspect_no_matches)).performScrollTo().assertIsDisplayed()
-        compose.onNodeWithText(context.getString(R.string.aspect_more_filters)).performScrollTo().performClick()
-        compose.onNodeWithText(context.getString(R.string.aspect_archived_only)).performScrollTo().performClick()
-        compose.onNodeWithText(context.getString(R.string.aspect_apply)).performScrollTo().performClick()
+        lazyText(context.getString(R.string.aspect_no_matches)).assertIsDisplayed()
+        lazyText(context.getString(R.string.aspect_more_filters)).performClick()
+        lazyText(context.getString(R.string.aspect_archived_only)).performClick()
+        lazyText(context.getString(R.string.aspect_apply)).performClick()
         compose.waitUntil(10_000){vm.state.value.page?.total==1L&&!vm.state.value.busy}
-        compose.onNodeWithText("купувам → купя").performScrollTo().performClick()
+        lazyText("купувам → купя").performClick()
         compose.waitUntil(10_000){vm.state.value.viewed!=null&&!vm.state.value.busy}
-        compose.onNodeWithText(context.getString(R.string.aspect_restore)).performScrollTo().performClick()
+        lazyText(context.getString(R.string.aspect_restore)).performClick()
         compose.waitUntil(10_000){vm.state.value.page?.total==0L&&!vm.state.value.busy}
         val activity=compose.activity
         compose.runOnIdle{activity.onBackPressedDispatcher.onBackPressed()}
@@ -167,10 +172,10 @@ class AspectComposeTest {
         val repo=AspectRepository(database);val vm=AspectViewModel(repo,AspectDocuments(context),SavedStateHandle());store.put("preview",vm)
         show{AspectScreen(vm,{}, {},{})}
         compose.waitUntil(10_000){vm.state.value.page!=null&&!vm.state.value.busy}
-        compose.onNodeWithText(context.getString(R.string.aspect_sample)).performScrollTo().performClick()
+        lazyText(context.getString(R.string.aspect_sample)).performClick()
         compose.waitUntil(10_000){vm.state.value.preview!=null&&!vm.state.value.busy}
         assertEquals(0L,runBlocking{repo.list().total})
-        compose.onNodeWithText(context.getString(R.string.aspect_confirm)).performScrollTo().performClick()
+        lazyText(context.getString(R.string.aspect_confirm)).performClick()
         compose.onNodeWithText(context.getString(R.string.aspect_confirm_hint)).assertIsDisplayed()
         assertEquals(0L,runBlocking{repo.list().total})
         compose.onNodeWithText(context.getString(R.string.aspect_save_selected)).performClick()
@@ -180,8 +185,8 @@ class AspectComposeTest {
     @Test fun helpUsesNativeScrollableTextAndLabelsStagesAsStudyOrder() {
         var back=0;show(1.8f){AspectHelpScreen{back++}}
         compose.onNodeWithText(context.getString(R.string.aspect_help_aspect_title)).assertIsDisplayed()
-        compose.onNodeWithText(context.getString(R.string.aspect_help_stages)).performScrollTo().assertIsDisplayed()
-        compose.onNodeWithText(context.getString(R.string.aspect_help_offline)).performScrollTo().assertIsDisplayed()
+        lazyText(context.getString(R.string.aspect_help_stages)).assertIsDisplayed()
+        lazyText(context.getString(R.string.aspect_help_offline)).assertIsDisplayed()
         compose.onNodeWithContentDescription(context.getString(R.string.back)).performClick()
         compose.runOnIdle{assertEquals(1,back);assertTrue(fake.spoken.isEmpty())}
     }
@@ -190,20 +195,20 @@ class AspectComposeTest {
         val repo=AspectRepository(database);val vm=AspectViewModel(repo,AspectDocuments(context),SavedStateHandle());store.put("editor",vm)
         show{AspectScreen(vm,{}, {},{})}
         compose.waitUntil(10_000){vm.state.value.page!=null&&!vm.state.value.busy}
-        compose.onNodeWithText(context.getString(R.string.aspect_new)).performScrollTo().performClick()
+        lazyText(context.getString(R.string.aspect_new)).performClick()
         for((label,value)in listOf(R.string.aspect_imperfective to "чета",R.string.aspect_perfective to "прочета",
             R.string.aspect_ru_imperfective to "читать",R.string.aspect_ru_perfective to "прочитать",
             R.string.aspect_accepted_imperfective to "чета\nпрочитам",R.string.aspect_accepted_perfective to "прочета",R.string.aspect_topic to "Учёба")) {
-            compose.onNodeWithText(context.getString(label)).performScrollTo().performTextInput(value)
+            lazyText(context.getString(label)).performTextInput(value)
         }
-        compose.onNodeWithText(context.getString(R.string.aspect_save)).performScrollTo().performClick()
+        lazyText(context.getString(R.string.aspect_save)).performClick()
         compose.waitUntil(10_000){!vm.state.value.editing&&!vm.state.value.busy}
         val record=runBlocking{repo.list().rows.single()}
         assertEquals(listOf("чета","прочитам"),AspectContent.answers(record.entry,"acceptedImperfective"))
-        compose.onNodeWithText("чета → прочета").performScrollTo().performClick()
+        lazyText("чета → прочета").performClick()
         compose.waitUntil(10_000){vm.state.value.viewed!=null&&!vm.state.value.busy}
-        compose.onNodeWithText(context.getString(R.string.aspect_edit)).performScrollTo().performClick()
-        compose.onNodeWithText(context.getString(R.string.aspect_note)).performScrollTo().performTextInput("Мой черновик")
+        lazyText(context.getString(R.string.aspect_edit)).performClick()
+        lazyText(context.getString(R.string.aspect_note)).performTextInput("Мой черновик")
         val activity=compose.activity
         compose.runOnIdle{activity.onBackPressedDispatcher.onBackPressed()}
         compose.onNodeWithText(context.getString(R.string.aspect_discard)).assertIsDisplayed()
