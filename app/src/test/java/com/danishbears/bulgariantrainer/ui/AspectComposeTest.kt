@@ -228,4 +228,14 @@ class AspectComposeTest {
         compose.onNodeWithText(context.getString(R.string.cancel_edit)).performClick()
         assertEquals(record,runBlocking{repo.get(record.id)})
     }
+    @Test fun legacyBackupCompatibilityWarningsNameWhatWillBeReplaced() {
+        var version by mutableStateOf(1)
+        show{Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())){BackupAspectCompatibility(version)}}
+        compose.onNodeWithText(context.getString(R.string.backup_legacy_no_aspects)).assertIsDisplayed()
+        compose.runOnIdle{version=2}
+        compose.onNodeWithText(context.getString(R.string.backup_legacy_no_aspect_practice)).assertIsDisplayed()
+        compose.onNodeWithText(context.getString(R.string.backup_legacy_no_aspects)).assertDoesNotExist()
+        compose.runOnIdle{version=3}
+        compose.onNodeWithText(context.getString(R.string.backup_legacy_no_aspect_practice)).assertDoesNotExist()
+    }
 }

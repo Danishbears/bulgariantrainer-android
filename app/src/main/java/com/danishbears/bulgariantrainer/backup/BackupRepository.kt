@@ -48,11 +48,11 @@ class BackupRepository internal constructor(context: Context, private val databa
     }
     /** Opaque preview retains validated content, never reopens a mutable provider URI at confirmation. */
     suspend fun prepare(bytes: ByteArray): PreparedBackup = withContext(Dispatchers.IO) {
-        val root=BackupFormat.decode(bytes)
+        val decoded=BackupFormat.decodeVersioned(bytes);val root=decoded.document
         val staging=Room.inMemoryDatabaseBuilder(application,TrainerDatabase::class.java).build()
         try {
             staging.withTransaction { install(staging.openHelper.writableDatabase,root); BackupValidation.validate(staging,root) }
-            PreparedBackup(root,BackupFormat.summary(root))
+            PreparedBackup(root,BackupFormat.summary(root).copy(sourceFormatVersion=decoded.sourceFormatVersion))
         } catch(e: CancellationException) { throw e }
         catch(e: BackupException) { throw e }
         catch(_: Exception) { BackupFormat.fail(BackupError.INVALID_DATA) }

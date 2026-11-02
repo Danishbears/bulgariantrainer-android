@@ -10,10 +10,8 @@
     <string name="aspect_accepted_imperfective">Принимаемые НСВ: по одному в строке</string>
     <string name="aspect_accepted_perfective">Принимаемые СВ: по одному в строке</string>
     <string name="aspect_topic">Тема</string>
-    <string name="aspect_stage">Учебная стадия: 1–3</string>
     <string name="aspect_relation">Связь: core / resultative / bounded</string>
     <string name="aspect_note">Примечание</string>
-    <string name="aspect_provenance_kind">Происхождение: added / presentation</string>
     <string name="aspect_source_id">ID источника (для presentation)</string>
     <string name="aspect_table_row">Строка источника (для presentation)</string>
     <string name="aspect_example_ibg">Пример НСВ, болгарский (необязательно)</string>
@@ -37,12 +35,9 @@
     <string name="aspect_before">Было</string>
     <string name="aspect_after">Будет</string>
     <string name="aspect_summary">Создано: %1$d; обновлено: %2$d; без изменений: %3$d; не выбрано: %4$d.</string>
-    <string name="aspect_filter">Поиск и фильтры</string>
     <string name="aspect_namespace_filter">Набор (пусто — все)</string>
     <string name="aspect_search">Поиск по-болгарски или по-русски</string>
-    <string name="aspect_stage_filter">Стадия: 1–3 (пусто — все)</string>
     <string name="aspect_topic_filter">Точная тема (пусто — все)</string>
-    <string name="aspect_relation_filter">Тип: core / resultative / bounded (пусто — все)</string>
     <string name="aspect_archived_only">Только архив</string>
     <string name="aspect_apply">Применить фильтры</string>
     <string name="aspect_new">Добавить пару</string>
@@ -56,7 +51,6 @@
     <string name="aspect_sample">Предпросмотр набора из 100 пар</string>
     <string name="aspect_include_archived">Включить архив в экспорт</string>
     <string name="aspect_export">Создать JSON экспорта</string>
-    <string name="aspect_provenance">Происхождение</string>
     <string name="aspect_examples">Примеры</string>
     <string name="aspect_backup_count">Видовых пар: %1$d; наборов: %2$d.</string>
     <string name="aspect_save">Сохранить пару</string>

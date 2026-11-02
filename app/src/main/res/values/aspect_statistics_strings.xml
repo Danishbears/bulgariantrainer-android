@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="aspect_statistics_title">Статистика видовых пар</string>
+    <string name="aspect_statistics_scope">Только видовые пары. Результаты слов, карточек и предложений сюда не входят.</string>
+    <string name="aspect_statistics_all">Все локальные наборы</string>
+    <string name="aspect_statistics_namespace">Набор: %1$s</string>
+    <string name="aspect_statistics_answered">Самостоятельных ответов</string>
+    <string name="aspect_statistics_correct">Верно</string>
+    <string name="aspect_statistics_incorrect">Не совпало с ответами карточки</string>
+    <string name="aspect_statistics_due">Пар к повторению сейчас</string>
+    <string name="aspect_statistics_loading">Считаем сохранённые результаты…</string>
+    <string name="aspect_statistics_revealed">Раскрыто без самостоятельного ответа: %1$d.</string>
+    <string name="aspect_statistics_due_directions">Направлений к повторению: %1$d.</string>
+    <string name="aspect_statistics_direction_counts">Ответов: %1$d; верно: %2$d; не совпало: %3$d; раскрыто: %4$d; направлений к повторению: %5$d.</string>
+    <string name="aspect_statistics_explanation">История включает сохранённые попытки из активных, завершённых и досрочно закрытых занятий, в том числе по архивным парам. Раскрытия и пропуски не входят в самостоятельные ответы. К повторению считаются только активные пары с наступившим сроком; два направления одной пары дают одну пару.</string>
+    <string name="backup_format_version">Версия полного бэкапа: %1$d.</string>
+    <string name="backup_legacy_no_aspects">Это полный бэкап v1: в нём нет видовых пар и их истории. Восстановление заменит все локальные данные и удалит текущие видовые пары, занятия, попытки и расписания. Перед заменой сохраните текущий полный бэкап v3.</string>
+    <string name="backup_legacy_no_aspect_practice">Это полный бэкап v2: пары берутся из этого файла, но истории практики видовых пар в нём нет. Восстановление заменит все локальные данные и удалит текущие попытки и расписания видовых пар. Перед заменой сохраните текущий полный бэкап v3.</string>
+</resources>

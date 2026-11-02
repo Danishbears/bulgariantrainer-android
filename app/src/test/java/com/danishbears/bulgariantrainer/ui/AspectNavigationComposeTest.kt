@@ -37,6 +37,11 @@ class AspectNavigationComposeTest {
             compose.onNodeWithText(app.getString(R.string.aspect_search)).assertExists()
             compose.onNodeWithText(app.getString(R.string.home)).assertDoesNotExist()
             compose.onNodeWithText(app.getString(R.string.dictionary)).assertDoesNotExist()
+            compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText(app.getString(R.string.aspect_statistics_title)))
+            compose.onNodeWithText(app.getString(R.string.aspect_statistics_title)).performScrollTo().performClick()
+            compose.onNodeWithText(app.getString(R.string.aspect_statistics_scope)).assertExists()
+            compose.onNodeWithText(app.getString(R.string.home)).assertDoesNotExist()
+            compose.runOnIdle{activity.onBackPressedDispatcher.onBackPressed()}
             compose.onNodeWithContentDescription(app.getString(R.string.aspect_help_title)).performClick()
             compose.onNodeWithText(app.getString(R.string.aspect_help_aspect_title)).assertIsDisplayed()
             compose.runOnIdle{activity.onBackPressedDispatcher.onBackPressed()}

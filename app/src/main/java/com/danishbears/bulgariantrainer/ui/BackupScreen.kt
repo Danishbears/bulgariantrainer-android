@@ -26,7 +26,10 @@ fun BackupScreen(model: BackupViewModel) {
     val open=rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri -> if(uri!=null)model.inspect(uri) }
     BackHandler(state.busy || state.restored) { /* Replacement cannot be interrupted by navigation. */ }
     if(confirm!=null && state.previewId==confirm && !state.busy) AlertDialog(onDismissRequest={confirm=null},
-        title={Text(stringResource(R.string.backup_confirm_title))},text={Text(stringResource(R.string.backup_confirm_text))},
+        title={Text(stringResource(R.string.backup_confirm_title))},text={Column(verticalArrangement=Arrangement.spacedBy(12.dp)){
+            Text(stringResource(R.string.backup_confirm_text))
+            state.summary?.let{BackupAspectCompatibility(it.sourceFormatVersion)}
+        }},
         confirmButton={TextButton(onClick={ val id=confirm;confirm=null;if(id!=null)model.restoreConfirmed(id) }) { Text(stringResource(R.string.backup_replace)) }},
         dismissButton={TextButton(onClick={confirm=null}) { Text(stringResource(R.string.cancel_edit)) }})
     LazyColumn(contentPadding=PaddingValues(20.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
@@ -49,6 +52,8 @@ fun BackupScreen(model: BackupViewModel) {
             state.summary?.let { summary -> item {
                 Text(stringResource(R.string.backup_preview),style=MaterialTheme.typography.titleLarge)
                 Text(stringResource(R.string.backup_date,summary.createdAt.toString()))
+                Text(stringResource(R.string.backup_format_version,summary.sourceFormatVersion))
+                BackupAspectCompatibility(summary.sourceFormatVersion)
                 Text(stringResource(R.string.backup_content_counts,summary.words,summary.translations,summary.sentences,summary.alternatives))
                 Text(stringResource(R.string.aspect_backup_count,summary.aspectPairs,summary.aspectDatasets))
                 Text(stringResource(R.string.backup_learning_counts,summary.sessions,summary.activeSessions,summary.attempts,summary.progress,summary.schedules))
@@ -59,6 +64,9 @@ fun BackupScreen(model: BackupViewModel) {
             } }
         }
     }
+}
+@Composable internal fun BackupAspectCompatibility(sourceVersion:Int) {
+    if(sourceVersion<3)AspectNotice(stringResource(if(sourceVersion==1)R.string.backup_legacy_no_aspects else R.string.backup_legacy_no_aspect_practice),error=true)
 }
 @Composable private fun backupErrorLabel(error: BackupError) = stringResource(when(error) {
     BackupError.UNSUPPORTED_VERSION -> R.string.backup_unsupported

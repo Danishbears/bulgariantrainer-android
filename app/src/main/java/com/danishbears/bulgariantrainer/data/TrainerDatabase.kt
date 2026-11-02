@@ -9,6 +9,7 @@ import androidx.room.RoomDatabase
 internal abstract class TrainerDatabase : RoomDatabase() {
     internal val contentEpoch = java.util.concurrent.atomic.AtomicLong()
     abstract fun aspectPracticeDao(): AspectPracticeDao
+    abstract fun aspectStatisticsDao(): AspectStatisticsDao
     abstract fun aspectDao(): AspectDao
     abstract fun preferencesDao(): TrainerPreferencesDao
     abstract fun vocabularyDao(): VocabularyDao

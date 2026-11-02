@@ -9,10 +9,12 @@ import kotlinx.serialization.json.*
 enum class BackupError { INVALID_FORMAT, UNSUPPORTED_VERSION, WRONG_APPLICATION, CHECKSUM_MISMATCH, INVALID_DATA, TOO_LARGE, READ_FAILED, WRITE_FAILED, RESTORE_FAILED }
 class BackupException(val code: BackupError) : IllegalArgumentException(code.name)
 data class BackupSummary(val createdAt: Instant, val words: Int, val translations: Int, val sentences: Int,
-    val alternatives: Int, val sessions: Int, val attempts: Int, val progress: Int, val schedules: Int, val activeSessions: Int, val preferences: Boolean, val aspectPairs: Int = 0, val aspectDatasets: Int = 0)
+    val alternatives: Int, val sessions: Int, val attempts: Int, val progress: Int, val schedules: Int, val activeSessions: Int, val preferences: Boolean, val aspectPairs: Int = 0, val aspectDatasets: Int = 0,
+    val sourceFormatVersion:Int=3)
 class PreparedBackup internal constructor(internal val document: JsonObject, val summary: BackupSummary)
+internal data class DecodedBackup(val document:JsonObject,val sourceFormatVersion:Int)
 
-/** v1 is a logical relational snapshot, never an open database-file copy. */
+/** Explicit v3 logical snapshot; original v1/v2 contracts are authenticated before expansion. */
 internal object BackupFormat {
     const val VERSION = 3
     const val SCHEMA = 9
@@ -45,33 +47,36 @@ internal object BackupFormat {
         val root=JsonObject(base+ ("sha256" to JsonPrimitive(digest(base))))
         return canonical(root).toString().toByteArray(Charsets.UTF_8).also { if(it.size>MAX_BYTES) fail(BackupError.TOO_LARGE) }
     }
-    fun decode(bytes: ByteArray): JsonObject {
+    fun decode(bytes: ByteArray): JsonObject=decodeVersioned(bytes).document
+    fun decodeVersioned(bytes:ByteArray):DecodedBackup {
         if(bytes.size>MAX_BYTES) fail(BackupError.TOO_LARGE)
         try {
             val text=Charsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT).onUnmappableCharacter(CodingErrorAction.REPORT).decode(ByteBuffer.wrap(bytes)).toString().removePrefix("\uFEFF")
             checkJsonStructure(text)
             val root=Json.parseToJsonElement(text) as? JsonObject ?: fail(BackupError.INVALID_FORMAT)
-            if(root.keys!=keys || root["format"]!=JsonPrimitive("bulgarian-trainer-full-backup")) fail(BackupError.INVALID_FORMAT)
+            if(root["format"]!=JsonPrimitive("bulgarian-trainer-full-backup")) fail(BackupError.INVALID_FORMAT)
             if(root["applicationId"]!=JsonPrimitive(APPLICATION)) fail(BackupError.WRONG_APPLICATION)
             val legacy = root["formatVersion"]==JsonPrimitive(1) && root["schemaVersion"]==JsonPrimitive(7)
-            val contentOnly = root["formatVersion"]==JsonPrimitive(2) && root["schemaVersion"]==JsonPrimitive(8)
-            if(!legacy && !contentOnly && (root["formatVersion"]!=JsonPrimitive(VERSION) || root["schemaVersion"]!=JsonPrimitive(SCHEMA))) fail(BackupError.UNSUPPORTED_VERSION)
+            val withoutAspectPractice = root["formatVersion"]==JsonPrimitive(2) && root["schemaVersion"]==JsonPrimitive(8)
+            if(!legacy && !withoutAspectPractice && (root["formatVersion"]!=JsonPrimitive(VERSION) || root["schemaVersion"]!=JsonPrimitive(SCHEMA))) fail(BackupError.UNSUPPORTED_VERSION)
+            if(root.keys!=keys)fail(BackupError.INVALID_FORMAT)
             validateUnicode(root)
             val date=(root["createdAt"] as? JsonPrimitive)?.takeIf{it.isString}?.content ?: fail(BackupError.INVALID_FORMAT)
             Instant.parse(date)
             val tables=root["tables"] as? JsonObject ?: fail(BackupError.INVALID_FORMAT)
-            if(tables.keys!=(if(legacy)legacyTables else if(contentOnly)legacyTables+aspectTables else this.tables).toSet() || tables.values.any { it !is JsonArray }) fail(BackupError.INVALID_FORMAT)
+            if(tables.keys!=(if(legacy)legacyTables else if(withoutAspectPractice)legacyTables+aspectTables else this.tables).toSet() || tables.values.any { it !is JsonArray }) fail(BackupError.INVALID_FORMAT)
             if(tables.values.sumOf { (it as JsonArray).size.toLong() }>MAX_ROWS) fail(BackupError.TOO_LARGE)
             val seq=root["sequences"] as? JsonObject ?: fail(BackupError.INVALID_FORMAT)
-            if(seq.keys!=(if(legacy)legacySequences else if(contentOnly)legacySequences+aspectSequences else sequences).toSet() || seq.values.any { it !is JsonPrimitive || it.isString || it.longOrNull==null || it.long<0 }) fail(BackupError.INVALID_FORMAT)
+            if(seq.keys!=(if(legacy)legacySequences else if(withoutAspectPractice)legacySequences+aspectSequences else sequences).toSet() || seq.values.any { it !is JsonPrimitive || it.isString || it.longOrNull==null || it.long<0 }) fail(BackupError.INVALID_FORMAT)
             if(root["sha256"]!=JsonPrimitive(digest(root))) fail(BackupError.CHECKSUM_MISMATCH)
-            if(legacy||contentOnly) {
+            val sourceVersion=root.getValue("formatVersion").jsonPrimitive.int
+            if(legacy||withoutAspectPractice) {
                 // Authenticate original v1 contract/checksum before expanding the isolated staging payload.
                 val expanded=JsonObject(tables + this.tables.filter{it !in tables}.associateWith { JsonArray(emptyList()) })
                 val highWater=JsonObject(seq + sequences.filter{it !in seq}.associateWith { JsonPrimitive(0) })
-                return decode(encode(Instant.parse(date),expanded,highWater))
+                return DecodedBackup(decode(encode(Instant.parse(date),expanded,highWater)),sourceVersion)
             }
-            return root
+            return DecodedBackup(root,sourceVersion)
         } catch(e: BackupException) { throw e }
         catch(_: Exception) { fail(BackupError.INVALID_FORMAT) }
     }

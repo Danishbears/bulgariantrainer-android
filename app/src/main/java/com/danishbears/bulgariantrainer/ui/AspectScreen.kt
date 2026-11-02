@@ -32,7 +32,7 @@ private val aspectFields=linkedMapOf(
     "example_imperfective_bg" to R.string.aspect_example_ibg,"example_imperfective_ru" to R.string.aspect_example_iru,
     "example_perfective_bg" to R.string.aspect_example_pbg,"example_perfective_ru" to R.string.aspect_example_pru)
 
-@Composable fun AspectScreen(model:AspectViewModel,onPractice:()->Unit,onBack:()->Unit,onHelp:()->Unit) {
+@Composable fun AspectScreen(model:AspectViewModel,onPractice:()->Unit,onBack:()->Unit,onHelp:()->Unit,onStatistics:()->Unit={}) {
     val state by model.state.collectAsStateWithLifecycle()
     val filter by model.filter.collectAsStateWithLifecycle()
     val draft by model.draft.collectAsStateWithLifecycle()
@@ -141,6 +141,7 @@ private val aspectFields=linkedMapOf(
                     else->{
                         item{
                             Button(enabled=!state.busy,onClick=onPractice,modifier=Modifier.fillMaxWidth()){Text(stringResource(R.string.ap_title))}
+                            OutlinedButton(enabled=!state.busy,onClick=onStatistics,modifier=Modifier.fillMaxWidth()){Text(stringResource(R.string.aspect_statistics_title))}
                             OutlinedButton(enabled=!state.busy,onClick={model.beginEdit()},modifier=Modifier.fillMaxWidth()){Text(stringResource(R.string.aspect_new))}
                             PronunciationSettings()
                         }

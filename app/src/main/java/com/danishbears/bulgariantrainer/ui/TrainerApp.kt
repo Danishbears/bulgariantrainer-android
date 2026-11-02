@@ -149,7 +149,8 @@ fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferReposi
                     initializer { AspectViewModel(application.aspects, com.danishbears.bulgariantrainer.aspect.AspectDocuments(application), createSavedStateHandle()) }
                 })
                 AspectScreen(aspectModel,onPractice={controller.navigate("aspect-practice"){launchSingleTop=true;restoreState=true}},
-                    onBack={controller.popBackStack()},onHelp={controller.navigate("aspect-help"){launchSingleTop=true}})
+                    onBack={controller.popBackStack()},onHelp={controller.navigate("aspect-help"){launchSingleTop=true}},
+                    onStatistics={controller.navigate("aspect-statistics"){launchSingleTop=true}})
             }
             composable("aspect-practice") {
                 val model:AspectPracticeViewModel=viewModel(factory=viewModelFactory {initializer {AspectPracticeViewModel(application.aspectPractice,createSavedStateHandle())}})
@@ -158,6 +159,10 @@ fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferReposi
                 },onHelp={controller.navigate("aspect-help"){launchSingleTop=true}})
             }
             composable("aspect-help") { AspectHelpScreen(onBack={controller.popBackStack()}) }
+            composable("aspect-statistics") {
+                val model:AspectStatisticsViewModel=viewModel(factory=viewModelFactory {initializer{AspectStatisticsViewModel(application.aspectStatistics,createSavedStateHandle())}})
+                AspectStatisticsScreen(model,onBack={controller.popBackStack()})
+            }
             composable("backup") { BackupScreen(backupModel) }
             composable("transfer") {
                 val context = LocalContext.current.applicationContext

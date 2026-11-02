@@ -13,10 +13,6 @@
     <string name="ap_shorter">Доступно короткое занятие из %1$d разных пар. Повторов для заполнения не будет.</string>
     <string name="ap_start_short">Подтверждаю короткое занятие</string>
     <string name="ap_position">Карточка %1$d из %2$d; ответов: %3$d; раскрыто: %4$d.</string>
-    <string name="ap_source_meaning">Исходное значение: %1$s</string>
-    <string name="ap_target_meaning">Нужно значение: %1$s</string>
-    <string name="ap_ask_perfective">Напиши совершенный вид</string>
-    <string name="ap_ask_imperfective">Напиши несовершенный вид</string>
     <string name="ap_mismatch">Не совпало с ответами этой карточки</string>
     <string name="ap_revealed">Ответ раскрыт. Самостоятельное воспроизведение не засчитано.</string>
     <string name="ap_reveal_hint">Раскрытие завершает эту попытку без самостоятельного ответа: серия успехов сбрасывается, повтор — через один день. Позже ответить на эту карточку с зачётом уже нельзя.</string>
