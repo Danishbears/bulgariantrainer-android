@@ -116,7 +116,8 @@ class AspectComposeTest {
             AspectQuestionCard(1,question(),input,enabled,{input=it},{submitted++;enabled=false},{},{})
         }}
         compose.onNodeWithContentDescription(listen("купувам")).assertIsNotEnabled()
-        compose.onNode(hasSetTextAction()).performScrollTo().performTextInput("купя").performImeAction()
+        compose.onNode(hasSetTextAction()).performScrollTo().performTextInput("купя")
+        compose.onNode(hasSetTextAction()).performImeAction()
         compose.runOnIdle{assertEquals(1,submitted);assertEquals("купя",input);assertTrue(fake.spoken.isEmpty())}
         compose.onNodeWithText(context.getString(R.string.typing_submit)).assertIsNotEnabled()
         compose.onNodeWithText(context.getString(R.string.flash_reveal)).assertIsNotEnabled()
@@ -140,7 +141,8 @@ class AspectComposeTest {
         val vm=AspectViewModel(repo,AspectDocuments(context),SavedStateHandle());store.put("management",vm)
         var back=0;show{AspectScreen(vm,{}, {back++},{})}
         compose.waitUntil(10_000){vm.state.value.page?.total==1L&&!vm.state.value.busy}
-        compose.onNodeWithText(context.getString(R.string.aspect_search)).performScrollTo().performTextInput("купить").performImeAction()
+        compose.onNodeWithText(context.getString(R.string.aspect_search)).performScrollTo().performTextInput("купить")
+        compose.onNodeWithText(context.getString(R.string.aspect_search)).performImeAction()
         compose.waitUntil(10_000){vm.state.value.page?.total==1L&&!vm.state.value.busy}
         compose.onNodeWithText("купувам → купя").performScrollTo().performClick()
         compose.waitUntil(10_000){vm.state.value.viewed!=null&&!vm.state.value.busy}
