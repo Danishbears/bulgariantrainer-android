@@ -90,9 +90,8 @@ operations queued behind full replacement; restore also opens a fresh Activity.
 
 Progress/schedules use `(pairId, actualDirection)`; MIXED is never a progress
 bucket. Existing word recognition, both word-typing directions and sentence
-history/schedules/global statistics are untouched. This increment supplies real
-per-session results, not the separate aggregate aspect-statistics screen proposed
-for a later stage.
+history/schedules/global statistics are untouched. Per-session results and
+the separate aspect aggregate screen read real records; see ASPECT_INTEGRATION.md.
 
 The existing `ReviewScheduler` is reused unchanged: success intervals
 1,3,7,14,28,56,112,224,365days capped; failure/reveal1day and streak0;

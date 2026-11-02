@@ -14,8 +14,8 @@
 > durable snapshots/feedback/recovery and independent direction schedules. Room9
 > has29 tables; full backup v3 supports original v1/v2. See
 > ASPECT_PRACTICE_ANDROID.md and BUILD_REPORT.md for scope and actual checks.
-> A separate aggregate aspect-statistics screen remains future work; legacy
-> statistics and older parity pins are unchanged.
+> Separate aggregate aspect statistics are now implemented; see
+> ASPECT_INTEGRATION.md. Legacy statistics and older parity pins are unchanged.
 
 # Current Android parity status for personal use
 

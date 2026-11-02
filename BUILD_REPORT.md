@@ -1,3 +1,184 @@
+# Final aspect integration and verification — 2026-11-02
+
+Starting target: `codex/android-foundation-parity` at
+`2c8abdf798b64aadfb2e8af6329ddffb97b31f53`. The working checkout was clean;
+existing content management/import/export, typed practice, TTS, Room9 and full
+backupv3 were retained. No Android/ancestor AGENTS.md is present. Web AGENTS and
+actual statistics service/repository/integration test source were read at
+`be6a91ff2ae06b8b0eae2461d8c7a8bf910ce57a`; no web files were modified.
+
+## Completed changes
+
+- Separate read-only SQLite/Room aggregates/repository/ViewModel/Compose screen
+  under Видовые пары → Статистика видовых пар. Answered=CORRECT+INCORRECT;
+  correct/incorrect/revealed distinct; skipped excluded; due counts distinct
+  active pairs, with per-direction due details and optional namespace. Saved
+  history includes archived/active/completed/abandoned items. Same injectable
+  device Clock, one consistent read transaction, minute/resume/manual/Room refresh.
+- Existing mode statistics/DAOs/review algorithm unchanged. Real-record tests
+  seed old-mode attempts and verify that aspect results never change old totals.
+  Error/retry preserves last confirmed scoped counts rather than fabricated zeros.
+- Full-backupv3/schema9 already includes all29 tables/19sequences, aspect content/
+  metadata/examples/accepted answers, sessions/settings/snapshots/raw attempts,
+  independent progress and schedules. This exact compatible serialized format
+  remains; no unnecessary schema/format bump or destructive fallback.
+- Validated runtime previews now retain original v1/v2 source version and show
+  explicit replacement/data-loss warnings in preview and confirmation dialog.
+  v1 removes current aspects/history; v2 uses its content but removes current
+  aspect-practice history; neither silently merges/retains newer local records.
+  Original supported checksums/table/column contracts are validated before staged
+  expansion. Unsupported future/relabelled/extra data is rejected before writes.
+- Consistent logical Room/WAL snapshot, isolated complete prepare validation,
+  frozen preview, explicit consent, ID/FK/high-water preservation and transactional
+  rollback remain. New tests cover100entries/reimport/content round-trip, complete
+  aspect graphs/progress/settings/metadata/examples/restore/reopen, old formats,
+  malformed/future files, late schedule-insert rollback and concurrent WAL writes.
+- Removed10 obsolete label strings reported by previous lint. Runtime dependency,
+  SDK/AGP/Gradle/JDK versions and applicationId are preserved. Candidate0.5.0/code6,
+  greater than starting code5. No private key, credential, SDK path, local.properties,
+  APK, database or build output committed. ASPECT_INTEGRATION.md is the current
+  contract and import/practice/device checklist.
+
+## Access and checks actually executed locally
+
+| Capability | Actual observation |
+| --- | --- |
+| GitHub integration | Authenticated target branch/PR and actual pinned web files accessible; target-only source writes/hosted checks available. |
+| Local checkout | Existing target checkout preserved; branch and baseline SHA above. No clone attempted. |
+| Shell network | Wrapper download failed with `java.net.SocketException: Operation not permitted`; not a GitHub-authentication failure. No repeated shell download attempts. |
+| Local Android capability | Java21 available; adb/sdkmanager/emulator absent; no Android device or instrumentation runner/sources available. Hosted Actions supplies JDK17/SDK35/build-tools35.0.0. |
+
+Actual local commands/results:
+
+- `GRADLE_USER_HOME=/workspace/.gradle ./gradlew --offline --no-daemon --console=plain testDebugUnitTest`:
+  wrapper tried distribution download before Gradle received --offline; socket
+  denied. **No local Gradle test/lint/APK task executed.**
+- `python3 parity/verify_aspect_parity.py`: PASS14 actual Java normalizations/
+  28planner objectives.
+- `python3 parity/verify_web_parity.py`: PASS21 scheduler histories/20statistics
+  assertions. `python3 -m unittest discover -s scripts -p 'test_*.py' -v`:5 passed.
+- XML/reference validation:487strings, all source/test references resolve, no
+  duplicate names. `git diff --check` passed; gradlew remains0755.
+- Git comparison: all schemas, old StatisticsRepository/StatisticsDao, scheduler,
+  release workflow and Android manifest are unchanged from the baseline. New DAO
+  projections do not alter Room9 entity/schema contracts.
+
+## Executed hosted verification history
+
+Initial candidate723ff2e8896cd2c176d9d5a899146325dde1fd73,
+[run41507921769](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/41507921769):
+325tests executed,324passed,1new failure-injection test timed out. All requested
+migration/import/practice/backup/statistics cases passed. Closing Room did not
+reliably simulate a failing query. Replaced that test action with temporary table
+unavailability, verified last-good counts, restored the table and explicitly
+retried. No production query/validation assertion was weakened. APK/lint steps
+were skipped in the failed run; it is not passing-build evidence.
+
+## Final verified candidate — SUCCESS
+
+Tested head **dce74762dbd8b6192090e9949c583ad8e0c8a452**,
+[Actions run41508990852](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/41508990852).
+
+| Command/check actually executed on hosted runner | Result |
+| --- | --- |
+| `python3 parity/verify_web_parity.py` | PASS:21 scheduler histories/20 statistics assertions |
+| `python3 parity/verify_aspect_parity.py` | PASS:14 normalizations/28 planner objectives from frozen actual Java |
+| `python3 -m unittest discover -s scripts -p 'test_*.py' -v` | PASS:5 tests |
+| `./gradlew --no-daemon --stacktrace --console=plain testDebugUnitTest` | PASS:**325 tests,0 failures/errors/skipped** |
+| `./gradlew --no-daemon --stacktrace --console=plain assembleDebug` | PASS:installable debug APK0.5.0/code6 |
+| `./gradlew --no-daemon --stacktrace --console=plain lintDebug` | PASS:0 errors/fatals;14 existing target/dependency warnings |
+| `python3 scripts/verify_apk.py app/build/outputs/apk/debug/app-debug.apk --signing debug` | PASS:actual applicationId/versionCode/versionName/API/permissions/debug signature |
+| `./gradlew --no-daemon --stacktrace --console=plain assembleRelease lintRelease` | PASS:unsigned release build;lint0 errors/fatals,14 warnings |
+| `python3 scripts/verify_apk.py app/build/outputs/apk/release/app-release-unsigned.apk --signing unsigned` | PASS:unsigned contract, not an installable signed release |
+| Committed Room schema guard | PASS:all compiler schemas1–9 match |
+
+All311 previous methods remain, plus14 new (4 AspectStatisticsRepositoryTest,
+7 AspectBackupIntegrationTest,2 AspectStatisticsViewModelTest,1 Compose legacy
+warning test). Existing navigation test now visits the statistics route. The11
+Compose tests and all legacy learning-mode/migration tests passed. Source-only
+web inspection/parity harness execution is not a Spring/Maven/server/browser run.
+
+Verification requested for this integration, actually executed:
+
+- Non-destructive schema7→9/content and schema8→9/practice migration fixtures,
+  legacy mode migration/history tests and exported schema contracts.
+- All100 entries, repeated import without duplicate IDs/content, canonical
+  import/export round-trip including metadata/approved answers/examples; no
+  progress in content exports and no progress overwrite on reimport.
+- Fullv3 round-trip of100pairs/29tables/19sequences, metadata/examples/source
+  context, archive/version data, confirmed session settings, queues/snapshots/raw
+  correct/incorrect/revealed outcomes, attempts/progress/schedules and preferences.
+  Physical SQLite close/reopen and exact snapshot/content/statistics equality.
+- Original v1/v2 version/checksum handling and explicit empty-aspect/empty-practice
+  replacement; unsupported future fields/version/schema, relabelled v3 tables,
+  malformed snapshots/FKs and checksum tampering leave live data intact.
+- Late aspect-schedule insert failure rolls back every prior deletion/insertion,
+  including settings/sequences. WAL snapshot waits for a complete related write
+  and validates both content and its hash from the committed state.
+- Forward/reverse/mixed planning and persisted directions/order; alternatives,
+  NFC/stress/case/whitespace, particles се/си and distinct и/й/ѝ; reveal cannot
+  receive later correct credit; retries/races create one attempt/schedule update.
+- Saved sessions/feedback/Next/status after Room reopening, edited-content
+  snapshots, independent pair/direction schedules and unchanged old-mode metrics.
+- Actual web statistics fixture:4answered/3correct/1incorrect/1revealed/
+  1due pair/2due directions; archive affects due only, namespaces isolate counts,
+  exact due boundaries/backward clock corrections and last-good/error/retry UI.
+- Fake-TTS/Compose/keyboard-action/large-font/hidden-semantics/native Back/
+  confirmation cases from the existing feature remain passing.
+
+## APK, installation and signing status
+
+- [Verified build run](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/41508990852).
+- [Download debug APK ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/41508990852/artifacts/13171838505),
+  `bulgariantrainer-debug`, expires2026-11-16.
+- [JUnit/lint/schema reports](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/41508990852/artifacts/13171044852),
+  `android-storage-test-reports`, expires2026-11-16.
+- Extracted app-debug.apk SHA-256:
+  `a6c9674e26406f8a4a5095e680eb5abb6ebde736c0ce7a29d39330e0408665ac`.
+- Debug certificate SHA-256:
+  `6ec43afcdf98791266dab69a38cae5b0f01f15b0ceb1698976390e435d9c6a58`.
+
+Sign into GitHub if required, download/extract the artifact and open
+app-debug.apk on Android8/API26+. Save a verified **full JSON backup** of the
+existing app before any update/signature change. In-place updates require the
+same applicationId, same certificate and higher versionCode. Hosted debug keys
+may differ; do not uninstall valuable data merely to bypass a signature mismatch.
+
+The existing Personal signed release workflow is preserved, but **no persistent-key
+signed release was produced or verified**. The actual read of
+`.github/workflows/release.yml` on default main returned404; it exists only on the
+unmerged feature branch. GitHub requires a workflow_dispatch workflow on default
+before manual dispatch. The integration has no workflow-dispatch command and
+cannot inspect owner Secrets. These are not evidence that credentials are missing;
+no replacement key, keytool/signing command or secret read was attempted.
+RELEASE_SIGNING.md documents the owner setup/review prerequisite and existing
+four Secrets plus public fingerprint variable. No merge was performed.
+Unsigned release and debug success are separate from a verified signed release.
+
+## How to use and device limits
+
+Главная → Видовые пары → select JSON or Предпросмотр набора из100пар → inspect/
+select → confirm. Then Практика → settings (fresh stage1, explicit stage2/3,
+direction/size/topic/queue) → start or resume → answer/reveal → Дальше. The same
+section opens separate statistics. Главная → Полный бэкап и восстановление saves
+or validates/previews/confirms full replacement; aspect JSON is content only.
+
+No connected device/emulator/adb/instrumentation runner is available. **No
+instrumentation, real TalkBack/IME/airplane-mode/voice-quality/rotation/process-kill
+or same-key update install was executed.** Follow ASPECT_INTEGRATION.md and
+ASPECT_UI_ANDROID.md for local SAF providers, airplane mode after import, real
+process recovery and duplicate taps, separate due queues/clock changes, full
+restore/confirmation, keyboard/fonts/insets/accessibility, missing/local Bulgarian
+voices and update data preservation. Unsubmitted drafts depend on Android saved
+state and are not guaranteed across force-stop. Data/WAL reopening/fake adapters/
+Robolectric are narrower evidence, not a physical-device pass.
+
+Final documentation follow-up changes no app/resources/build/workflow/tests/
+fixtures/schemas/version files from the tested candidate. PR remains unmerged;
+main and web are unchanged. Earlier reports below are historical.
+
+---
+
 # Native Compose aspect interface — 2026-11-02
 
 Target baseline: existing `codex/android-foundation-parity` checkout at

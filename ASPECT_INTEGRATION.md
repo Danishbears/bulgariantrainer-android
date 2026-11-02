@@ -129,8 +129,10 @@ rewriting web progress deadlines. The original external guide remains unavailabl
 | Unsupported/relabelled/malformed files and original legacy checksum | AspectBackupIntegrationTest, BackupFormatTest |
 | Explicit confirmation/old-version warnings/native routes | BackupViewModelTest, AspectComposeTest, AspectNavigationComposeTest |
 
-Coverage descriptions are not execution claims; BUILD_REPORT.md records actual
-commands, run SHAs, failures/corrections and results. Room9 entities/migrations are
+Executed on `dce74762dbd8b6192090e9949c583ad8e0c8a452`: Actions run41508990852
+passed all325 JVM tests, both lints (0errors/14warnings each), debug and unsigned
+release assembly, APK contracts and schemas1–9. BUILD_REPORT.md records exact
+commands, corrected failure, artifact links and remaining device checks. Room9 entities/migrations are
 unchanged: the new DAO/projections have no schema changes. All migration suites
 and committed compiler schema checks remain required; no destructive fallback.
 
