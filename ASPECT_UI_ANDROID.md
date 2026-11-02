@@ -118,8 +118,10 @@ multiple-answer editing/discard, help and actual NavHost/System-Back transitions
 Additional ViewModel tests reconstruct SavedStateHandle to verify unsent drafts,
 selected records and validation; fake-TTS integration verifies that listening
 neither grades nor schedules and that only approved alternatives are spoken.
-**Coverage descriptions are not pass claims:** BUILD_REPORT.md records which
-commands and tests actually executed, failed/corrected runs and final results.
+Executed on `40a7995c01f54d9a800f6fd6b50bd996210df806`: all10 Compose tests
+and all311 JVM tests passed in Actions run41502766949; debug/unsigned release
+assembly and both lints passed (0 errors,24 warnings each). BUILD_REPORT.md records
+commands, corrected failures, APK/report links and exact warning categories.
 
 No physical device/emulator is available in this workspace. Before personal use:
 

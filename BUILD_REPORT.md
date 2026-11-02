@@ -1,3 +1,177 @@
+# Native Compose aspect interface — 2026-11-02
+
+Target baseline: existing `codex/android-foundation-parity` checkout at
+`ed5031924e69458078074fefa6fd075bba2255c1`, with management/import/export,
+Room9 durable practice, schedules and backupv3 already implemented. No target
+AGENTS.md is tracked or present in checked ancestors. Read-only web AGENTS and
+actual browser source were inspected at
+`be6a91ff2ae06b8b0eae2461d8c7a8bf910ce57a`:
+`src/main/resources/static/aspect-pairs.html`, `static/js/aspect-practice.js`,
+`aspect-management.js`, `aspect-import.js`. The original missing guide remains
+unavailable. No web changes/default-branch merge were performed.
+
+## Implemented UI
+
+- Existing Russian Material3 theme and app architecture retained. The section
+  remains under Главная; the same five bottom destinations are preserved and
+  hidden inside aspect routes. Labelled Back/help routes, saved practice nav entry,
+  explicit editor discard, preview cancellation, no implicit session abandonment.
+- Search/IME Search, expandable namespace/topic/stage/relation/archive filters,
+  reset,25-row pages, view/create/edit/archive/restore, valid-page recovery.
+  Forms support multiline accepted arrays, field errors, stage/relation choices,
+  optional examples and advanced stable identity/source fields.
+- Native JSON preview counts/selections/errors, expandable before/after fields and
+  separate confirmation dialog; existing SAF/ContentResolver transactional import
+  and content-only export retained. Success notices no longer appear as errors.
+- Source Bulgarian and Russian meaning combined; requested aspect explicitly names
+  the target Russian meaning, including contextual «поговорить». Conditional
+  feedback displays original answer, both forms/translations, accepted alternatives,
+  notes and structured examples; explicit Дальше, durable resume/results/mistakes.
+- Hidden target/alternatives/notes/examples are not composed before feedback, so
+  no corresponding visible/semantics/audio nodes exist. Polite feedback regions,
+  headings, labelled48dp checkbox rows, IME Done, busy/double-action guards,
+  SavedStateHandle drafts, scroll/IME insets and large-font wrapping.
+- Existing local Bulgarian TTS reused: explicit normal/slow source immediately;
+  approved target alternatives after submission/reveal only. Never speaks wrong
+  learner input. Route/question changes stop playback; missing voices disable
+  only audio. This user-requested native extension is absent from the pinned web
+  aspect browser. Shared audio buttons wrap rather than overflow narrow rows.
+- Native help explains aspect/dictionary forms/се/си/context/stages and offline/
+  reveal/voice limits, without revealing a live Bulgarian target/example.
+
+ApplicationId preserved. Candidate0.4.1/code5. Room9/schema files/full-backupv3,
+content JSONv1, scheduler and learning rules unchanged. Only BOM-managed test UI
+artifacts were added for actual Compose tests; runtime dependency versions were
+not upgraded. No WebView/backend/account/sync/automatic import/AI was added.
+ASPECT_UI_ANDROID.md maps source, behavior and repeatable device checks.
+
+## Access/build capabilities and local checks
+
+- Authenticated GitHub integration reads both repositories and writes only the
+  target feature branch; local target checkout exists and is preserved.
+- Cloud runtime reports running/connected with enforced unrestricted HTTP policy,
+  but actual Gradle wrapper socket creation is denied. This is independent from
+  GitHub authentication. No repeated blocked shell download attempts were made.
+- `GRADLE_USER_HOME=/workspace/.gradle ./gradlew --offline --no-daemon --console=plain testDebugUnitTest`
+  failed at wrapper download with `java.net.SocketException: Operation not permitted`;
+  the wrapper needs a distribution before Gradle can receive --offline.
+  **No Gradle task/JVM test/APK/lint ran locally.**
+- Java21 compiler module is available; adb, sdkmanager, emulator and kotlinc are
+  absent. Hosted Actions provides the compatible JDK17/Android35 build environment.
+- `python3 parity/verify_aspect_parity.py`: PASS14 normalizations/28 planner
+  objectives from actual frozen Java21 source.
+- `python3 parity/verify_web_parity.py`: PASS21 scheduler histories/20 statistics
+  assertions. `python3 -m unittest discover -s scripts -p 'test_*.py' -v`:5 passed.
+- XML/resource diagnostics:481strings, all references resolve/no duplicate names.
+  `git diff --check` passed. Schema/migration files remain unchanged.
+
+## Hosted verification history
+
+Run41497868592/head4eed757: new test syntax failed KSP before tests
+(`@Composable () -> Unit` spacing); no JVM tests/APK/lint executed. Fixed.
+Run41499421279/headf6d2f05: test compilation found incorrect chaining after
+Unit-returning performTextInput and a private application database reference in
+new test cleanup. Removed private access and split IME calls. This run was later
+cancelled/superseded. Run41499956359/head6d04b6b was superseded while the remaining
+IME test fix was published. These runs are not successful-check claims.
+
+Run41500228200/heade0c20e5 executed311 tests:307passed,4failed. Hidden-answer/
+example semantics, contextual prompts, both directions, IME/busy/no-voice,
+320dp/2x-font controls, fake-TTS learning isolation, Room/SavedState and old
+suites passed. Three failures used performScrollTo on not-yet-composed lazy
+children; tests were corrected to search the lazy list with scroll-to-node.
+Run41501435443/headeee6f88 still executed311 with4failures: long-content lookup
+improved, but asynchronous VM actions timed out because the test observed state
+without driving Robolectric's paused Android Main Looper; a dashboard item also
+needed lazy scroll-to-node. Test awaits now drain the paused looper and synchronize
+Compose while waiting for actual Room work, retaining the original10s deadline
+and all data assertions. No production query/evaluator behavior was weakened.
+Run41502469552/head360af4d was cancelled before JVM tests executed when the
+original dataset editorial-status warning was restored to preview and asserted
+in the UI test. Superseded runs are not passing-build evidence.
+
+## Final executed checks — SUCCESS
+
+Tested feature head **40a7995c01f54d9a800f6fd6b50bd996210df806**,
+[successful Actions run41502766949](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/41502766949).
+
+| Command/check actually executed | Result |
+| --- | --- |
+| `python3 parity/verify_web_parity.py` | PASS:21 scheduler histories/20 statistics assertions |
+| `python3 parity/verify_aspect_parity.py` | PASS:14 normalizations/28 planner objectives from pinned Java |
+| `python3 -m unittest discover -s scripts -p 'test_*.py' -v` | PASS:5 tests |
+| `./gradlew --no-daemon --stacktrace --console=plain testDebugUnitTest` | PASS:**311 tests,0 failures/errors/skipped**, including10 real Compose/Robolectric tests |
+| `./gradlew --no-daemon --stacktrace --console=plain assembleDebug` | PASS:APK0.4.1/code5 built |
+| `./gradlew --no-daemon --stacktrace --console=plain lintDebug` | PASS:0 errors/fatals;24 warnings |
+| `python3 scripts/verify_apk.py app/build/outputs/apk/debug/app-debug.apk --signing debug` | PASS:actual package/version/minAPI/permissions/debug signature |
+| `./gradlew --no-daemon --stacktrace --console=plain assembleRelease lintRelease` | PASS:unsigned release built,lint0 errors/fatals;24 warnings |
+| `python3 scripts/verify_apk.py app/build/outputs/apk/release/app-release-unsigned.apk --signing unsigned` | PASS:unsigned contract; not an installable signed release |
+| Room schema guard | PASS:committed compiler schemas1–9 unchanged |
+
+The311 tests comprise295 previous methods and16 new:9 AspectComposeTest,
+1 AspectNavigationComposeTest,3 AspectPronunciationTest,2 additional management
+ViewModel tests and1 practice draft test. All passed. Actual new UI assertions:
+source/requested Russian meaning/context, absent hidden target/examples in
+unmerged semantics, approved alternatives after reveal, original incorrect text
+never used for audio, normal/slow/replace/stop and missing-voice behavior with fake
+TTS, IME submission/busy controls,320dp/2x font controls/scrolling/checkbox state,
+bilingual search/archive/restore, original dataset editorial warning and no writes
+before import confirmation, multiline accepted-answer editing and Back discard,
+help at1.8x font, real NavHost/bottom-bar visibility and programmatic system Back.
+SavedStateHandle reconstruction and Room tests verify draft/data behavior; they
+are not actual hardware Activity recreation/process-death acceptance.
+
+Each lint has the14 prior target/dependency advisories plus10 UnusedResources
+warnings for replaced labels: ap_source_meaning, ap_target_meaning,
+ap_ask_perfective, ap_ask_imperfective, aspect_stage, aspect_provenance_kind,
+aspect_filter, aspect_stage_filter, aspect_relation_filter, aspect_provenance.
+These obsolete strings do not affect behavior; no suppressions or unrelated
+SDK/dependency upgrades were introduced to hide warnings. Minor string cleanup
+remains. No resource errors, accessibility lint errors or prohibited permissions
+were reported. Git comparison also verified all production data/domain/backup/
+scheduler/manifest/schema files unchanged from the previous checked-out baseline.
+
+## APK and remaining device checks
+
+- [Debug APK ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/41502766949/artifacts/13169968041),
+  `bulgariantrainer-debug`, expires2026-11-16.
+- [JUnit/lint/schema reports](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/41502766949/artifacts/13170731599),
+  `android-storage-test-reports`, expires2026-11-16.
+- Extracted app-debug.apk SHA-256:
+  `81fd4372d13eb7e32a9b891f53af064ad03ec36a7350d065cd3d71ffe0ec6b2a`.
+- Debug certificate SHA-256:
+  `7def5661e5f78230567c021f12f05cd8f1dd1ec7e65dcc2d1b4975fbe1f5f6db`.
+
+Sign into GitHub if needed → successful run → Artifacts → download/extract ZIP.
+Open app-debug.apk on Android8/API26+ and allow installation for the chosen file
+manager/browser when requested. Open Главная → Видовые пары, explicitly import or
+create content, then Практика; Как заниматься is available from the Info button.
+The actual debug APK identity/version/API/permissions/signature were verified.
+
+Save a **full** JSON backup before updates/signature changes. Update in place
+requires the same applicationId/signing key and a higher versionCode. Hosted
+debug keys can differ, so this code5 APK is not guaranteed to update an older
+cloud debug APK. Do not uninstall valuable data to bypass a signature mismatch.
+Use the existing persistent-key workflow in RELEASE_SIGNING.md for personal
+updates; no signing keys/passwords were created, read, committed or logged here.
+A private-key release workflow was not run; unsigned build success is not signing.
+
+**No physical device/emulator, instrumentation run, real TalkBack/IME session,
+airplane-mode run, physical Bulgarian voice check, actual rotation/process kill
+or signed-update/data-preservation install was performed. No pixel screenshot
+comparison was performed.** Compose native-graphics/semantics tests and fake TTS
+are narrower evidence. ASPECT_UI_ANDROID.md supplies the repeatable manual
+checklist for all these, including keyboard Back, maximum fonts/insets, SAF
+providers, missing/local voices, restored sessions and backups. Unsubmitted
+input/editor drafts use platform saved state, not guaranteed force-stop storage.
+
+The final documentation-only follow-up records these results; all app, resource,
+workflow, build, test, fixture, schema and version files remain byte-identical to
+the tested head. Existing PR remains unmerged; main and the web repository are
+unchanged. Older reports below are historical.
+
+---
+
 # Typed aspect-pair practice increment — 2026-11-01
 
 Target starting checkout: `codex/android-foundation-parity` at
