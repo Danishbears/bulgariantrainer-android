@@ -1,0 +1,27 @@
+{
+  "referenceCommit": "de0a3e883d51561123ca54b7d5dd2e53757baf0a",
+  "anchor": "2026-10-10T12:30:00Z",
+  "sourceTest": "calculatesRealRetentionAccuracySourcesActivityAndMistakeReview",
+  "metrics": {
+    "/vocabulary/total": 4,
+    "/vocabulary/active": 3,
+    "/vocabulary/archived": 1,
+    "/vocabulary/newItems": 1,
+    "/vocabulary/dueItems": 1,
+    "/vocabulary/masteredItems": 1,
+    "/reviewsScheduledToday": 2,
+    "/completedSessions": 2,
+    "/reviewAttempts": 5,
+    "/overall/total/correct": 3,
+    "/overall/total/partial": 1,
+    "/overall/total/accuracyPercent": 60.0,
+    "/overall/automatic/attempts": 3,
+    "/overall/selfAssessed/attempts": 2,
+    "/flashcards/total/accuracyPercent": 100.0,
+    "/typingRuToBg/total/accuracyPercent": 100.0,
+    "/sentences/total/accuracyPercent": 50.0,
+    "/consecutiveStudyDays": 2,
+    "/last7Days/5/reviewAttempts": 1,
+    "/last7Days/6/reviewAttempts": 4
+  }
+}

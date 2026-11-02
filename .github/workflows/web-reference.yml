@@ -1,0 +1,43 @@
+name: Pinned web reference baseline
+
+on:
+  push:
+    paths:
+      - .github/workflows/web-reference.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: web-reference
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          repository: Danishbears/bulgariantrainer
+          ref: de0a3e883d51561123ca54b7d5dd2e53757baf0a
+          path: web-reference
+          persist-credentials: false
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Verify pinned Java baseline
+        run: sh ./mvnw --batch-mode clean verify
+      - name: Verify pronunciation baseline
+        run: node src/test/js/pronunciation.test.mjs
+      - name: Verify reference tracked files remain unchanged
+        run: git diff --exit-code
+      - name: Upload Java test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pinned-web-reference-test-reports
+          path: web-reference/target/surefire-reports/
+          if-no-files-found: warn
+          retention-days: 14

@@ -1,0 +1,24 @@
+{
+  "repository": "Danishbears/bulgariantrainer",
+  "commit": "de0a3e883d51561123ca54b7d5dd2e53757baf0a",
+  "paths": {
+    "SpacedRepetitionScheduler.java": "src/main/java/com/example/bulgariantrainer/service/SpacedRepetitionScheduler.java",
+    "StudyProgress.java": "src/main/java/com/example/bulgariantrainer/entity/StudyProgress.java",
+    "SentenceProgress.java": "src/main/java/com/example/bulgariantrainer/entity/SentenceProgress.java",
+    "LearningCategory.java": "src/main/java/com/example/bulgariantrainer/entity/LearningCategory.java",
+    "StudyScope.java": "src/main/java/com/example/bulgariantrainer/entity/StudyScope.java",
+    "AttemptResult.java": "src/main/java/com/example/bulgariantrainer/entity/AttemptResult.java",
+    "StatisticsService.java": "src/main/java/com/example/bulgariantrainer/service/StatisticsService.java",
+    "StatisticsIntegrationTests.java": "src/test/java/com/example/bulgariantrainer/StatisticsIntegrationTests.java"
+  },
+  "sha256": {
+    "SpacedRepetitionScheduler.java": "0bbda976df17bf34f2668cef4324a5ac79f891bb2b5a91bcf2163df831983771",
+    "StudyProgress.java": "40ed524f334311efbdb20e9d95215e8233c3dfac2e2b8bb4e4d564b214a75879",
+    "SentenceProgress.java": "b5838b52a899179bc69aaefc3d0dd14911bf2b3b227e6701192263609bde692e",
+    "LearningCategory.java": "2e2f15715025990460451f9b19f730b1a3850446931889118f8d15af7e1cea5c",
+    "StudyScope.java": "b317245304ab1732780e31cdee6959b899e1e4e74784a4f3b12c2e9f8c0918df",
+    "AttemptResult.java": "b0858c51982cfa3e0c09be92a87a937afef8e890b2b9a9ebc5f7ca12f14e87f5",
+    "StatisticsService.java": "94cc187b8cf5adc8a0746b23bc491a25d9dd1f2647f846ccac6935af991c7c54",
+    "StatisticsIntegrationTests.java": "f701b84165c84d6dad0fa81f4a72646cadb83f5dc10c0c425811833dd3360610"
+  }
+}

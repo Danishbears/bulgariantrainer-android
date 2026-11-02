@@ -1,0 +1,958 @@
+{
+  "reference": "be6a91ff2ae06b8b0eae2461d8c7a8bf910ce57a",
+  "normalization": [
+    {
+      "input": " \tКУ́ПЯ \n",
+      "key": "купя"
+    },
+    {
+      "input": "ѝ",
+      "key": "ѝ"
+    },
+    {
+      "input": "ѝ",
+      "key": "ѝ"
+    },
+    {
+      "input": "й",
+      "key": "й"
+    },
+    {
+      "input": "й",
+      "key": "й"
+    },
+    {
+      "input": "и",
+      "key": "и"
+    },
+    {
+      "input": "ѐ",
+      "key": "ѐ"
+    },
+    {
+      "input": "ѐ",
+      "key": "ѐ"
+    },
+    {
+      "input": "опитам се",
+      "key": "опитам се"
+    },
+    {
+      "input": " СПОМНЯ СИ",
+      "key": "спомня си"
+    },
+    {
+      "input": "купя!",
+      "key": "купя!"
+    },
+    {
+      "input": "kупя",
+      "key": "kупя"
+    },
+    {
+      "input": "İ",
+      "key": "i̇"
+    },
+    {
+      "input": "́̀",
+      "key": ""
+    }
+  ],
+  "planner": [
+    {
+      "size": 1,
+      "pool": [
+        {
+          "id": 1,
+          "forward": 0,
+          "reverse": null
+        },
+        {
+          "id": 2,
+          "forward": 0,
+          "reverse": null
+        },
+        {
+          "id": 3,
+          "forward": 0,
+          "reverse": null
+        },
+        {
+          "id": 4,
+          "forward": 0,
+          "reverse": null
+        }
+      ],
+      "expected": {
+        "size": 1,
+        "gap": 1,
+        "cost": 0
+      }
+    },
+    {
+      "size": 2,
+      "pool": [
+        {
+          "id": 1,
+          "forward": 0,
+          "reverse": null
+        },
+        {
+          "id": 2,
+          "forward": 0,
+          "reverse": null
+        },
+        {
+          "id": 3,
+          "forward": 0,
+          "reverse": null
+        },
+        {
+          "id": 4,
+          "forward": 0,
+          "reverse": null
+        }
+      ],
+      "expected": {
+        "size": 2,
+        "gap": 2,
+        "cost": 0
+      }
+    },
+    {
+      "size": 3,
+      "pool": [
+        {
+          "id": 1,
+          "forward": 0,
+          "reverse": null
+        },
+        {
+          "id": 2,
+          "forward": 0,
+          "reverse": null
+        },
+        {
+          "id": 3,
+          "forward": 0,
+          "reverse": null
+        },
+        {
+          "id": 4,
+          "forward": 0,
+          "reverse": null
+        }
+      ],
+      "expected": {
+        "size": 3,
+        "gap": 3,
+        "cost": 0
+      }
+    },
+    {
+      "size": 4,
+      "pool": [
+        {
+          "id": 1,
+          "forward": 0,
+          "reverse": null
+        },
+        {
+          "id": 2,
+          "forward": 0,
+          "reverse": null
+        },
+        {
+          "id": 3,
+          "forward": 0,
+          "reverse": null
+        },
+        {
+          "id": 4,
+          "forward": 0,
+          "reverse": null
+        }
+      ],
+      "expected": {
+        "size": 4,
+        "gap": 4,
+        "cost": 0
+      }
+    },
+    {
+      "size": 6,
+      "pool": [
+        {
+          "id": 1,
+          "forward": 0,
+          "reverse": null
+        },
+        {
+          "id": 2,
+          "forward": 0,
+          "reverse": null
+        },
+        {
+          "id": 3,
+          "forward": 0,
+          "reverse": null
+        },
+        {
+          "id": 4,
+          "forward": 0,
+          "reverse": null
+        }
+      ],
+      "expected": {
+        "size": 4,
+        "gap": 4,
+        "cost": 0
+      }
+    },
+    {
+      "size": 1,
+      "pool": [
+        {
+          "id": 1,
+          "forward": null,
+          "reverse": 0
+        },
+        {
+          "id": 2,
+          "forward": null,
+          "reverse": 0
+        },
+        {
+          "id": 3,
+          "forward": null,
+          "reverse": 0
+        },
+        {
+          "id": 4,
+          "forward": null,
+          "reverse": 0
+        }
+      ],
+      "expected": {
+        "size": 1,
+        "gap": 1,
+        "cost": 0
+      }
+    },
+    {
+      "size": 2,
+      "pool": [
+        {
+          "id": 1,
+          "forward": null,
+          "reverse": 0
+        },
+        {
+          "id": 2,
+          "forward": null,
+          "reverse": 0
+        },
+        {
+          "id": 3,
+          "forward": null,
+          "reverse": 0
+        },
+        {
+          "id": 4,
+          "forward": null,
+          "reverse": 0
+        }
+      ],
+      "expected": {
+        "size": 2,
+        "gap": 2,
+        "cost": 0
+      }
+    },
+    {
+      "size": 3,
+      "pool": [
+        {
+          "id": 1,
+          "forward": null,
+          "reverse": 0
+        },
+        {
+          "id": 2,
+          "forward": null,
+          "reverse": 0
+        },
+        {
+          "id": 3,
+          "forward": null,
+          "reverse": 0
+        },
+        {
+          "id": 4,
+          "forward": null,
+          "reverse": 0
+        }
+      ],
+      "expected": {
+        "size": 3,
+        "gap": 3,
+        "cost": 0
+      }
+    },
+    {
+      "size": 4,
+      "pool": [
+        {
+          "id": 1,
+          "forward": null,
+          "reverse": 0
+        },
+        {
+          "id": 2,
+          "forward": null,
+          "reverse": 0
+        },
+        {
+          "id": 3,
+          "forward": null,
+          "reverse": 0
+        },
+        {
+          "id": 4,
+          "forward": null,
+          "reverse": 0
+        }
+      ],
+      "expected": {
+        "size": 4,
+        "gap": 4,
+        "cost": 0
+      }
+    },
+    {
+      "size": 6,
+      "pool": [
+        {
+          "id": 1,
+          "forward": null,
+          "reverse": 0
+        },
+        {
+          "id": 2,
+          "forward": null,
+          "reverse": 0
+        },
+        {
+          "id": 3,
+          "forward": null,
+          "reverse": 0
+        },
+        {
+          "id": 4,
+          "forward": null,
+          "reverse": 0
+        }
+      ],
+      "expected": {
+        "size": 4,
+        "gap": 4,
+        "cost": 0
+      }
+    },
+    {
+      "size": 1,
+      "pool": [
+        {
+          "id": 1,
+          "forward": 0,
+          "reverse": 1
+        },
+        {
+          "id": 2,
+          "forward": 1,
+          "reverse": 0
+        },
+        {
+          "id": 3,
+          "forward": 2,
+          "reverse": 2
+        },
+        {
+          "id": 4,
+          "forward": 3,
+          "reverse": 3
+        }
+      ],
+      "expected": {
+        "size": 1,
+        "gap": 1,
+        "cost": 0
+      }
+    },
+    {
+      "size": 2,
+      "pool": [
+        {
+          "id": 1,
+          "forward": 0,
+          "reverse": 1
+        },
+        {
+          "id": 2,
+          "forward": 1,
+          "reverse": 0
+        },
+        {
+          "id": 3,
+          "forward": 2,
+          "reverse": 2
+        },
+        {
+          "id": 4,
+          "forward": 3,
+          "reverse": 3
+        }
+      ],
+      "expected": {
+        "size": 2,
+        "gap": 0,
+        "cost": 0
+      }
+    },
+    {
+      "size": 3,
+      "pool": [
+        {
+          "id": 1,
+          "forward": 0,
+          "reverse": 1
+        },
+        {
+          "id": 2,
+          "forward": 1,
+          "reverse": 0
+        },
+        {
+          "id": 3,
+          "forward": 2,
+          "reverse": 2
+        },
+        {
+          "id": 4,
+          "forward": 3,
+          "reverse": 3
+        }
+      ],
+      "expected": {
+        "size": 3,
+        "gap": 1,
+        "cost": 2
+      }
+    },
+    {
+      "size": 4,
+      "pool": [
+        {
+          "id": 1,
+          "forward": 0,
+          "reverse": 1
+        },
+        {
+          "id": 2,
+          "forward": 1,
+          "reverse": 0
+        },
+        {
+          "id": 3,
+          "forward": 2,
+          "reverse": 2
+        },
+        {
+          "id": 4,
+          "forward": 3,
+          "reverse": 3
+        }
+      ],
+      "expected": {
+        "size": 4,
+        "gap": 0,
+        "cost": 5
+      }
+    },
+    {
+      "size": 6,
+      "pool": [
+        {
+          "id": 1,
+          "forward": 0,
+          "reverse": 1
+        },
+        {
+          "id": 2,
+          "forward": 1,
+          "reverse": 0
+        },
+        {
+          "id": 3,
+          "forward": 2,
+          "reverse": 2
+        },
+        {
+          "id": 4,
+          "forward": 3,
+          "reverse": 3
+        }
+      ],
+      "expected": {
+        "size": 4,
+        "gap": 0,
+        "cost": 5
+      }
+    },
+    {
+      "size": 1,
+      "pool": [
+        {
+          "id": 1,
+          "forward": 0,
+          "reverse": null
+        },
+        {
+          "id": 2,
+          "forward": null,
+          "reverse": 0
+        },
+        {
+          "id": 3,
+          "forward": 1,
+          "reverse": 2
+        },
+        {
+          "id": 4,
+          "forward": 2,
+          "reverse": 1
+        },
+        {
+          "id": 5,
+          "forward": 0,
+          "reverse": 3
+        }
+      ],
+      "expected": {
+        "size": 1,
+        "gap": 1,
+        "cost": 0
+      }
+    },
+    {
+      "size": 2,
+      "pool": [
+        {
+          "id": 1,
+          "forward": 0,
+          "reverse": null
+        },
+        {
+          "id": 2,
+          "forward": null,
+          "reverse": 0
+        },
+        {
+          "id": 3,
+          "forward": 1,
+          "reverse": 2
+        },
+        {
+          "id": 4,
+          "forward": 2,
+          "reverse": 1
+        },
+        {
+          "id": 5,
+          "forward": 0,
+          "reverse": 3
+        }
+      ],
+      "expected": {
+        "size": 2,
+        "gap": 0,
+        "cost": 0
+      }
+    },
+    {
+      "size": 3,
+      "pool": [
+        {
+          "id": 1,
+          "forward": 0,
+          "reverse": null
+        },
+        {
+          "id": 2,
+          "forward": null,
+          "reverse": 0
+        },
+        {
+          "id": 3,
+          "forward": 1,
+          "reverse": 2
+        },
+        {
+          "id": 4,
+          "forward": 2,
+          "reverse": 1
+        },
+        {
+          "id": 5,
+          "forward": 0,
+          "reverse": 3
+        }
+      ],
+      "expected": {
+        "size": 3,
+        "gap": 1,
+        "cost": 0
+      }
+    },
+    {
+      "size": 5,
+      "pool": [
+        {
+          "id": 1,
+          "forward": 0,
+          "reverse": null
+        },
+        {
+          "id": 2,
+          "forward": null,
+          "reverse": 0
+        },
+        {
+          "id": 3,
+          "forward": 1,
+          "reverse": 2
+        },
+        {
+          "id": 4,
+          "forward": 2,
+          "reverse": 1
+        },
+        {
+          "id": 5,
+          "forward": 0,
+          "reverse": 3
+        }
+      ],
+      "expected": {
+        "size": 5,
+        "gap": 1,
+        "cost": 2
+      }
+    },
+    {
+      "size": 7,
+      "pool": [
+        {
+          "id": 1,
+          "forward": 0,
+          "reverse": null
+        },
+        {
+          "id": 2,
+          "forward": null,
+          "reverse": 0
+        },
+        {
+          "id": 3,
+          "forward": 1,
+          "reverse": 2
+        },
+        {
+          "id": 4,
+          "forward": 2,
+          "reverse": 1
+        },
+        {
+          "id": 5,
+          "forward": 0,
+          "reverse": 3
+        }
+      ],
+      "expected": {
+        "size": 5,
+        "gap": 1,
+        "cost": 2
+      }
+    },
+    {
+      "size": 1,
+      "pool": [
+        {
+          "id": 1,
+          "forward": 0,
+          "reverse": 1
+        }
+      ],
+      "expected": {
+        "size": 1,
+        "gap": 1,
+        "cost": 0
+      }
+    },
+    {
+      "size": 2,
+      "pool": [
+        {
+          "id": 1,
+          "forward": 0,
+          "reverse": 1
+        }
+      ],
+      "expected": {
+        "size": 1,
+        "gap": 1,
+        "cost": 0
+      }
+    },
+    {
+      "size": 3,
+      "pool": [
+        {
+          "id": 1,
+          "forward": 0,
+          "reverse": 1
+        }
+      ],
+      "expected": {
+        "size": 1,
+        "gap": 1,
+        "cost": 0
+      }
+    },
+    {
+      "size": 1,
+      "pool": [
+        {
+          "id": 1,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 2,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 3,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 4,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 5,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 6,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 7,
+          "forward": 0,
+          "reverse": 0
+        }
+      ],
+      "expected": {
+        "size": 1,
+        "gap": 1,
+        "cost": 0
+      }
+    },
+    {
+      "size": 2,
+      "pool": [
+        {
+          "id": 1,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 2,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 3,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 4,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 5,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 6,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 7,
+          "forward": 0,
+          "reverse": 0
+        }
+      ],
+      "expected": {
+        "size": 2,
+        "gap": 0,
+        "cost": 0
+      }
+    },
+    {
+      "size": 3,
+      "pool": [
+        {
+          "id": 1,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 2,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 3,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 4,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 5,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 6,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 7,
+          "forward": 0,
+          "reverse": 0
+        }
+      ],
+      "expected": {
+        "size": 3,
+        "gap": 1,
+        "cost": 0
+      }
+    },
+    {
+      "size": 7,
+      "pool": [
+        {
+          "id": 1,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 2,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 3,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 4,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 5,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 6,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 7,
+          "forward": 0,
+          "reverse": 0
+        }
+      ],
+      "expected": {
+        "size": 7,
+        "gap": 1,
+        "cost": 0
+      }
+    },
+    {
+      "size": 9,
+      "pool": [
+        {
+          "id": 1,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 2,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 3,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 4,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 5,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 6,
+          "forward": 0,
+          "reverse": 0
+        },
+        {
+          "id": 7,
+          "forward": 0,
+          "reverse": 0
+        }
+      ],
+      "expected": {
+        "size": 7,
+        "gap": 1,
+        "cost": 0
+      }
+    }
+  ]
+}
