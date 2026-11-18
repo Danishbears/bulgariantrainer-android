@@ -10,6 +10,7 @@ import com.danishbears.bulgariantrainer.data.MIGRATION_2_3
 import com.danishbears.bulgariantrainer.data.MIGRATION_3_4
 import com.danishbears.bulgariantrainer.data.MIGRATION_4_5
 import com.danishbears.bulgariantrainer.data.MIGRATION_5_6
+import com.danishbears.bulgariantrainer.data.MIGRATION_9_10
 import com.danishbears.bulgariantrainer.data.MIGRATION_8_9
 import com.danishbears.bulgariantrainer.data.MIGRATION_7_8
 import com.danishbears.bulgariantrainer.data.MIGRATION_6_7
