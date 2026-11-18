@@ -33,7 +33,7 @@ class AspectBackupIntegrationTest {
     private val clock=Clock.fixed(Instant.parse("2026-11-02T12:00:00Z"),ZoneOffset.UTC)
     @Before fun setup(){context=ApplicationProvider.getApplicationContext();open()}
     private fun open(){
-        db=Room.databaseBuilder(context,TrainerDatabase::class.java,filename).setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING).addMigrations(MIGRATION_8_9).build()
+        db=Room.databaseBuilder(context,TrainerDatabase::class.java,filename).setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING).addMigrations(MIGRATION_8_9, MIGRATION_9_10).build()
         content=AspectRepository(db,clock);practice=AspectPracticeRepository(db,clock,Random(9));backup=BackupRepository(context,db,clock)
     }
     @After fun close(){db.close();context.deleteDatabase(filename)}
@@ -80,8 +80,8 @@ class AspectBackupIntegrationTest {
         val edited=content.update(pair.id,pair.version,JsonObject(pair.entry+("note" to JsonPrimitive("Изменено после старта"))));content.archive(edited.id,edited.version,true)
         val expectedContent=content.export("fixture",true);val beforeStats=AspectStatisticsRepository(db,clock).overview();val beforeLegacy=StatisticsRepository(db,clock).overview()
         val bytes=backup.snapshot();val root=BackupFormat.decode(bytes);val prepared=backup.prepare(bytes)
-        assertEquals(JsonPrimitive(3),root["formatVersion"]);assertEquals(JsonPrimitive(9),root["schemaVersion"]);assertEquals(29,root.getValue("tables").jsonObject.size);assertEquals(19,root.getValue("sequences").jsonObject.size)
-        assertEquals(100,prepared.summary.aspectPairs);assertEquals(3,prepared.summary.sessions);assertEquals(3,prepared.summary.attempts);assertEquals(3,prepared.summary.sourceFormatVersion)
+        assertEquals(JsonPrimitive(4),root["formatVersion"]);assertEquals(JsonPrimitive(10),root["schemaVersion"]);assertEquals(34,root.getValue("tables").jsonObject.size);assertEquals(23,root.getValue("sequences").jsonObject.size)
+        assertEquals(100,prepared.summary.aspectPairs);assertEquals(3,prepared.summary.sessions);assertEquals(3,prepared.summary.attempts);assertEquals(4,prepared.summary.sourceFormatVersion)
         answer(forward);TrainerPreferencesRepository(db).flashcardSize(99);VocabularyRepository(db,clock).create(WordInput("лишнее",listOf(TranslationInput("лишнее"))))
         backup.restore(prepared);assertArrayEquals(bytes,backup.snapshot());db.close();open()
         assertArrayEquals(bytes,backup.snapshot());assertArrayEquals(expectedContent,content.export("fixture",true))
@@ -104,8 +104,8 @@ class AspectBackupIntegrationTest {
     @Test fun futureFormatsAndRelabelledNewerDataCannotBeSilentlyDropped()=runBlocking<Unit>{
         seed();answer(start());val before=backup.snapshot();val root=BackupFormat.decode(before)
         val invalid=listOf(
-            sign(JsonObject(root+mapOf("formatVersion" to JsonPrimitive(4),"futureSetting" to JsonPrimitive("must retain")))),
-            sign(JsonObject(root+("schemaVersion" to JsonPrimitive(10)))),
+            sign(JsonObject(root+mapOf("formatVersion" to JsonPrimitive(5),"futureSetting" to JsonPrimitive("must retain")))),
+            sign(JsonObject(root+("schemaVersion" to JsonPrimitive(11)))),
             sign(JsonObject(root+mapOf("formatVersion" to JsonPrimitive(2),"schemaVersion" to JsonPrimitive(8)))),
             sign(JsonObject(root+("futureSetting" to JsonPrimitive("must retain")))),
             content.export("fixture",true)

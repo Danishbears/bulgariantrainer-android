@@ -30,7 +30,7 @@ class AspectPracticeRepositoryTest {
     private var at=Instant.parse("2026-11-01T12:00:00Z")
     private val clock=object:Clock(){override fun getZone()=ZoneOffset.UTC;override fun withZone(zone:ZoneId):Clock=this;override fun instant()=at}
     @Before fun setup(){context=ApplicationProvider.getApplicationContext();open()}
-    private fun open(){db=Room.databaseBuilder(context,TrainerDatabase::class.java,filename).addMigrations(MIGRATION_8_9).build();repo=AspectPracticeRepository(db,clock,Random(12));content=AspectRepository(db,clock)}
+    private fun open(){db=Room.databaseBuilder(context,TrainerDatabase::class.java,filename).addMigrations(MIGRATION_8_9, MIGRATION_9_10).build();repo=AspectPracticeRepository(db,clock,Random(12));content=AspectRepository(db,clock)}
     @After fun teardown(){db.close();context.deleteDatabase(filename)}
     private fun uuid()=UUID.randomUUID().toString()
     private fun source()=Json.parseToJsonElement(javaClass.classLoader!!.getResourceAsStream("bulgarian_aspect_pairs_100.json")!!.bufferedReader().use{it.readText()}).jsonObject
@@ -160,7 +160,7 @@ class AspectPracticeRepositoryTest {
             execSQL("PRAGMA user_version = 8")
         }
         db.close();open()
-        assertEquals(9,db.openHelper.writableDatabase.version);assertEquals(before,legacy())
+        assertEquals(10,db.openHelper.writableDatabase.version);assertEquals(before,legacy())
         assertEquals(beforeSeq,BackupFormat.decode(BackupRepository(context,db,clock).snapshot()).getValue("sequences").jsonObject.filterKeys{it !in BackupFormat.practiceSequences})
         assertEquals(1,start().total)
     }

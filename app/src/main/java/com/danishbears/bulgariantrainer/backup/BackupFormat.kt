@@ -10,14 +10,14 @@ enum class BackupError { INVALID_FORMAT, UNSUPPORTED_VERSION, WRONG_APPLICATION,
 class BackupException(val code: BackupError) : IllegalArgumentException(code.name)
 data class BackupSummary(val createdAt: Instant, val words: Int, val translations: Int, val sentences: Int,
     val alternatives: Int, val sessions: Int, val attempts: Int, val progress: Int, val schedules: Int, val activeSessions: Int, val preferences: Boolean, val aspectPairs: Int = 0, val aspectDatasets: Int = 0,
-    val sourceFormatVersion:Int=3)
+    val sourceFormatVersion:Int=4,val aoristVerbs:Int=0,val aoristDatasets:Int=0)
 class PreparedBackup internal constructor(internal val document: JsonObject, val summary: BackupSummary)
 internal data class DecodedBackup(val document:JsonObject,val sourceFormatVersion:Int)
 
-/** Explicit v3 logical snapshot; original v1/v2 contracts are authenticated before expansion. */
+/** Explicit v4 logical snapshot; original v1/v2/v3 contracts are authenticated before expansion. */
 internal object BackupFormat {
-    const val VERSION = 3
-    const val SCHEMA = 9
+    const val VERSION = 4
+    const val SCHEMA = 10
     const val MAX_BYTES = 32 * 1024 * 1024
     const val MAX_ROWS = 250_000
     const val APPLICATION = "com.danishbears.bulgariantrainer"
@@ -26,12 +26,16 @@ internal object BackupFormat {
         "sentence_sessions","sentence_questions","sentence_attempts","sentence_progress","word_review_schedules","sentence_review_schedules")
     val aspectTables = listOf("aspect_datasets","aspect_pairs","aspect_answers","aspect_receipts")
     val practiceTables = listOf("aspect_sessions","aspect_questions","aspect_attempts","aspect_progress","aspect_review_schedules")
-    val tables = legacyTables + aspectTables + practiceTables
+    val aoristTables = listOf("aorist_datasets","aorist_verbs","aorist_forms","aorist_answers","aorist_receipts")
+    val previousTables = legacyTables + aspectTables + practiceTables
+    val tables = previousTables + aoristTables
     val legacySequences = listOf("words","translations","sentences","sentence_alternatives","flashcard_sessions","flashcard_cards","flashcard_attempts",
         "typing_sessions","typing_questions","typing_attempts","sentence_sessions","sentence_questions","sentence_attempts")
     val aspectSequences = listOf("aspect_datasets","aspect_pairs","aspect_answers")
     val practiceSequences = listOf("aspect_sessions","aspect_questions","aspect_attempts")
-    val sequences = legacySequences + aspectSequences + practiceSequences
+    val aoristSequences = listOf("aorist_datasets","aorist_verbs","aorist_forms","aorist_answers")
+    val previousSequences = legacySequences + aspectSequences + practiceSequences
+    val sequences = previousSequences + aoristSequences
     private val keys = setOf("format","formatVersion","applicationId","schemaVersion","createdAt","tables","sequences","sha256")
     fun canonical(value: JsonElement): JsonElement = when(value) {
         is JsonObject -> JsonObject(value.toSortedMap().mapValues { canonical(it.value) })
@@ -58,19 +62,20 @@ internal object BackupFormat {
             if(root["applicationId"]!=JsonPrimitive(APPLICATION)) fail(BackupError.WRONG_APPLICATION)
             val legacy = root["formatVersion"]==JsonPrimitive(1) && root["schemaVersion"]==JsonPrimitive(7)
             val withoutAspectPractice = root["formatVersion"]==JsonPrimitive(2) && root["schemaVersion"]==JsonPrimitive(8)
-            if(!legacy && !withoutAspectPractice && (root["formatVersion"]!=JsonPrimitive(VERSION) || root["schemaVersion"]!=JsonPrimitive(SCHEMA))) fail(BackupError.UNSUPPORTED_VERSION)
+            val withoutAorist = root["formatVersion"]==JsonPrimitive(3) && root["schemaVersion"]==JsonPrimitive(9)
+            if(!legacy && !withoutAspectPractice && !withoutAorist && (root["formatVersion"]!=JsonPrimitive(VERSION) || root["schemaVersion"]!=JsonPrimitive(SCHEMA))) fail(BackupError.UNSUPPORTED_VERSION)
             if(root.keys!=keys)fail(BackupError.INVALID_FORMAT)
             validateUnicode(root)
             val date=(root["createdAt"] as? JsonPrimitive)?.takeIf{it.isString}?.content ?: fail(BackupError.INVALID_FORMAT)
             Instant.parse(date)
             val tables=root["tables"] as? JsonObject ?: fail(BackupError.INVALID_FORMAT)
-            if(tables.keys!=(if(legacy)legacyTables else if(withoutAspectPractice)legacyTables+aspectTables else this.tables).toSet() || tables.values.any { it !is JsonArray }) fail(BackupError.INVALID_FORMAT)
+            if(tables.keys!=(if(legacy)legacyTables else if(withoutAspectPractice)legacyTables+aspectTables else if(withoutAorist)previousTables else this.tables).toSet() || tables.values.any { it !is JsonArray }) fail(BackupError.INVALID_FORMAT)
             if(tables.values.sumOf { (it as JsonArray).size.toLong() }>MAX_ROWS) fail(BackupError.TOO_LARGE)
             val seq=root["sequences"] as? JsonObject ?: fail(BackupError.INVALID_FORMAT)
-            if(seq.keys!=(if(legacy)legacySequences else if(withoutAspectPractice)legacySequences+aspectSequences else sequences).toSet() || seq.values.any { it !is JsonPrimitive || it.isString || it.longOrNull==null || it.long<0 }) fail(BackupError.INVALID_FORMAT)
+            if(seq.keys!=(if(legacy)legacySequences else if(withoutAspectPractice)legacySequences+aspectSequences else if(withoutAorist)previousSequences else sequences).toSet() || seq.values.any { it !is JsonPrimitive || it.isString || it.longOrNull==null || it.long<0 }) fail(BackupError.INVALID_FORMAT)
             if(root["sha256"]!=JsonPrimitive(digest(root))) fail(BackupError.CHECKSUM_MISMATCH)
             val sourceVersion=root.getValue("formatVersion").jsonPrimitive.int
-            if(legacy||withoutAspectPractice) {
+            if(legacy||withoutAspectPractice||withoutAorist) {
                 // Authenticate original v1 contract/checksum before expanding the isolated staging payload.
                 val expanded=JsonObject(tables + this.tables.filter{it !in tables}.associateWith { JsonArray(emptyList()) })
                 val highWater=JsonObject(seq + sequences.filter{it !in seq}.associateWith { JsonPrimitive(0) })
@@ -87,7 +92,7 @@ internal object BackupFormat {
         return BackupSummary(Instant.parse(root.getValue("createdAt").jsonPrimitive.content),size("words"),size("translations"),size("sentences"),size("sentence_alternatives"),
             sessions.sumOf(::size),listOf("flashcard_attempts","typing_attempts","sentence_attempts","aspect_attempts").sumOf(::size),
             listOf("recognition_progress","typing_progress","sentence_progress","aspect_progress").sumOf(::size),size("word_review_schedules")+size("sentence_review_schedules")+size("aspect_review_schedules"),
-            sessions.sumOf { table -> data.getValue(table).jsonArray.count { it.jsonObject["status"]==JsonPrimitive("IN_PROGRESS") } },size("trainer_preferences")>0,size("aspect_pairs"),size("aspect_datasets"))
+            sessions.sumOf { table -> data.getValue(table).jsonArray.count { it.jsonObject["status"]==JsonPrimitive("IN_PROGRESS") } },size("trainer_preferences")>0,size("aspect_pairs"),size("aspect_datasets"),aoristVerbs=size("aorist_verbs"),aoristDatasets=size("aorist_datasets"))
     }
     fun validateUnicode(value: JsonElement) {
         when(value) {

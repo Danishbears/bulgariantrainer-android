@@ -28,7 +28,7 @@ class BackupFormatTest {
         reject(bytes()+"garbage".toByteArray(),BackupError.INVALID_FORMAT)
     }
     @Test fun duplicateObjectKeysAreRejectedEvenIfIdenticalAndChecksumWouldStillMatch() {
-        val duplicated=bytes().toString(Charsets.UTF_8).replace("\"formatVersion\":3","\"formatVersion\":3,\"formatVersion\":3")
+        val duplicated=bytes().toString(Charsets.UTF_8).replace("\"formatVersion\":4","\"formatVersion\":4,\"formatVersion\":4")
         reject(duplicated.toByteArray(),BackupError.INVALID_FORMAT)
     }
     @Test fun excessiveNestingIsRejectedBeforeTheJsonParserCanExhaustItsStack() {

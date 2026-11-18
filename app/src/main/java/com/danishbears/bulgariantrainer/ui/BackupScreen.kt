@@ -56,6 +56,7 @@ fun BackupScreen(model: BackupViewModel) {
                 BackupAspectCompatibility(summary.sourceFormatVersion)
                 Text(stringResource(R.string.backup_content_counts,summary.words,summary.translations,summary.sentences,summary.alternatives))
                 Text(stringResource(R.string.aspect_backup_count,summary.aspectPairs,summary.aspectDatasets))
+                Text(stringResource(R.string.aorist_backup_count,summary.aoristVerbs,summary.aoristDatasets))
                 Text(stringResource(R.string.backup_learning_counts,summary.sessions,summary.activeSessions,summary.attempts,summary.progress,summary.schedules))
                 Text(stringResource(if(summary.preferences)R.string.backup_has_settings else R.string.backup_default_settings))
                 Text(stringResource(R.string.backup_confirm_text))
@@ -66,6 +67,7 @@ fun BackupScreen(model: BackupViewModel) {
     }
 }
 @Composable internal fun BackupAspectCompatibility(sourceVersion:Int) {
+    if(sourceVersion<4)AspectNotice(stringResource(R.string.aorist_backup_legacy),error=true)
     if(sourceVersion<3)AspectNotice(stringResource(if(sourceVersion==1)R.string.backup_legacy_no_aspects else R.string.backup_legacy_no_aspect_practice),error=true)
 }
 @Composable private fun backupErrorLabel(error: BackupError) = stringResource(when(error) {

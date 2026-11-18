@@ -1,3 +1,11 @@
+> Current content-stage update: full backup **v4/schema10** includes dedicated
+> aorist datasets/verbs/forms/answers/receipts (34tables/23sequences). Original
+> v1/schema7, v2/schema8 and v3/schema9 are still validated before expansion.
+> All three lack aorist: explicitly confirmed full replacement clears current
+> aorist content, with warnings in preview and confirmation. Content JSON v1 is
+> separate. See AORIST_CONTENT.md; historical v3 details below describe the prior
+> inventory, whose rows and original checksums remain supported.
+
 > **Compatibility preview:** the validated original version now appears in both
 > preview and replacement confirmation. v1 removes current aspect content/history;
 > v2 restores its aspect content and removes current aspect-practice history. Both

@@ -1,3 +1,8 @@
+> Aorist content is now available through **Главная → Аорист**: inspect the starter
+> 40-verb set or choose JSON, review and explicitly confirm selected records.
+> [AORIST_CONTENT.md](AORIST_CONTENT.md) documents storage/import/export and full
+> backupv4 compatibility. Aorist practice is a later stage; existing modes remain.
+
 > **Завершение интеграции видовых пар:** отдельная статистика и полный бэкап v3
 > с явным предупреждением для старых v1/v2. Как импортировать и начать занятия,
 > что сохраняется и как проверять: [ASPECT_INTEGRATION.md](ASPECT_INTEGRATION.md).

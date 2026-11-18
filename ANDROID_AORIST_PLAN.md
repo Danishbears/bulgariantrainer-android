@@ -1,3 +1,12 @@
+> **2026-11-18 content-stage update:** the original attachment has now been supplied
+> and audited. See AORIST_CONTENT.md for exact fields, SHA-256 and40/240-slot
+> inventory. Dedicated content storage/import/export/management are implemented;
+> practice remains future work. Room9→10 currently adds five content tables
+> (34total/23sequences), and full backupv4 includes them while reading v1–v3.
+> The eleven-table design below describes the proposed complete future feature.
+> Original planning-only/missing-file/checks statements below are historical;
+> they do not describe the current implementation. No web aorist parity is claimed.
+
 # Android aorist feature plan
 
 Date: 2026-11-18.

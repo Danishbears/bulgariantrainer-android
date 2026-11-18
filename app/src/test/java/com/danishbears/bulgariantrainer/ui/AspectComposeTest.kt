@@ -237,5 +237,8 @@ class AspectComposeTest {
         compose.onNodeWithText(context.getString(R.string.backup_legacy_no_aspects)).assertDoesNotExist()
         compose.runOnIdle{version=3}
         compose.onNodeWithText(context.getString(R.string.backup_legacy_no_aspect_practice)).assertDoesNotExist()
+        compose.onNodeWithText(context.getString(R.string.aorist_backup_legacy)).assertIsDisplayed()
+        compose.runOnIdle{version=4}
+        compose.onNodeWithText(context.getString(R.string.aorist_backup_legacy)).assertDoesNotExist()
     }
 }
