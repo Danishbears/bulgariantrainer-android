@@ -1,3 +1,157 @@
+# 2026-11-18
+
+Aorist content integration: completed and verified on
+`f3f0cb9642633be06d6015065416f230ee47da11`, branch
+`codex/android-aorist-plan`. Documentation follow-up changes no tested runtime,
+resources, schema, build configuration or tests. No default-branch merge.
+
+## Delivered behavior
+
+Dedicated Kotlin/Compose/Room aorist content management and JSON v1 transfer.
+Original user attachment:40 independent verbs,240 explicitly stored person slots,
+source/root metadata preserved. SHA-256:
+`af92873c06a36c81973206cc24808d01e1e9cc2cdacce66225f92f095c521e33`.
+The identical starter asset is available only through explicit preview/confirmation.
+
+Room9→10 adds five tables, for34 total/23 sequences. All29 prior exported entity
+definitions match schema9 exactly. Migration tests preserve all earlier tables,
+IDs, sequence high-water marks, settings, sessions, attempts and progress.
+Stable (datasetId, external entry ID) identity and six persistent form IDs survive
+edits/archive/import updates. No destructive fallback, suffix-generated forms,
+startup import, backend, automatic sync or aorist practice was introduced.
+
+Whole-file strict validation precedes any content write. SAF selection/creation,
+before/after preview, default deselection of updates, explicit confirmation,
+optimistic staleness/expiry/contentEpoch checks, idempotent receipts and atomic
+related writes are implemented. Content-only export retains formatVersion1,
+datasetId/revision, source and all accepted answers; it has no sessions/progress.
+
+Full-backupv4/schema10 includes the new content and receipts. Original v1/schema7,
+v2/schema8 and v3/schema9 validate their exact original contracts/checksums before
+staging expansion. Restoring any of them explicitly replaces current aorist with
+empty content; preview and confirmation warn. Frozen validation, IDs/FKs, rollback
+and committed-WAL consistent snapshots remain. See AORIST_CONTENT.md.
+
+ApplicationId preserved: `com.danishbears.bulgariantrainer`.
+Version increased from0.5.0/code6 to **0.6.0/code7**. Tool/runtime dependencies,
+wrapper, manifest permissions, scheduler algorithms and signing workflows unchanged.
+
+## Executed hosted checks
+
+[Successful Actions run44395871402](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44395871402).
+
+| Actual command | Result |
+| --- | --- |
+| `python3 parity/verify_web_parity.py` | PASS:21 scheduler histories/20 statistics assertions against pinned actual Java fixtures. |
+| `python3 parity/verify_aspect_parity.py` | PASS:14 normalizations/28 planner objectives; existing aspect rules preserved. |
+| `python3 -m unittest discover -s scripts -p 'test_*.py' -v` | PASS:5 APK-contract checks. |
+| `./gradlew --no-daemon --stacktrace --console=plain testDebugUnitTest` | PASS:349 tests,0 failures/errors/skipped;325 existing methods retained plus24 new. |
+| `./gradlew --no-daemon --stacktrace --console=plain assembleDebug` | PASS; actual debug APK built. |
+| `./gradlew --no-daemon --stacktrace --console=plain lintDebug` | PASS:0 errors/fatals,14 warnings. |
+| `python3 scripts/verify_apk.py app/build/outputs/apk/debug/app-debug.apk --signing debug` | PASS: actual package/version/API/permissions/debug certificate checked. |
+| `./gradlew --no-daemon --stacktrace --console=plain assembleRelease lintRelease` | PASS: actual unsigned release built; lint0 errors/fatals,14 warnings. |
+| `python3 scripts/verify_apk.py app/build/outputs/apk/release/app-release-unsigned.apk --signing unsigned` | PASS: unsigned status checked; this file cannot be installed. |
+| Existing exported Room schema guard | PASS: committed generated schemas1–10 match. |
+
+The14 warnings per variant are one OldTargetApi and13 newer-dependency advisories.
+No dependencies/target SDK were changed merely to silence them.
+
+New executed suites: AoristContentTest6, AoristRepositoryTest8,
+AoristMigrationBackupTest5, AoristViewModelTest4, AoristNavigationComposeTest1.
+These cover actual40/240 import, repeat/round-trip/source/alternatives; full-file
+invalid/version/encoding/duplicate diagnostics; explicit updates and stable IDs;
+search/filter/paging/archive; stale/expired/replayed/concurrent confirmation;
+late-insert/update rollback; actual schema9→10 and retained old history/sequences;
+full-backupv4 round-trip/reopen, originalv3 checksums/replacement, broken FKs and
+restore rollback/WAL; real ContentResolver fake-provider IO; draft/lost-preview
+safety and320dp Compose navigation with existing bottom destinations.
+
+Earlier attempts are retained honestly:
+
+- [Run44393803199](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44393803199),
+  commit892c78f: app compiled/exported Room10, but unit-test compilation failed
+  because an older migration fixture lacked the new migration import. Added it
+  and committed the actual generated schema; no test pass was claimed.
+- [Run44394824404](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44394824404),
+  commit8a8d01b:349 tests executed,347 passed,2 old fixture failures. All24 new
+  aorist tests passed. One old test called current schema10 “unsupported”; it now
+  uses future11 and still verifies data survives. Another synthesized v2 by
+  excluding practice tables, accidentally retaining new aorist tables; it now
+  uses the exact positive original table/sequence inventory. The schema8 fixture
+  also removes later aorist tables before upgrading. Runtime validation was not
+  loosened to accept mislabelled backups. The final run passes all349.
+
+## Executed local checks and environment limits
+
+A full checkout was cloned on the same feature branch using the shell command's
+network permission; the earlier planning mirror was preserved. GitHub integration
+access worked independently. JDK/SDK/cache/proxy setup was outside Git; no
+local.properties, SDK path, credential, private database or build output committed.
+
+Java21 runtime/embedded compiler module is present; a javac launcher is absent.
+Compatible Android35 SDK/platform-tools/build-tools35.0.0 and pinned19.0
+command-line tools were installed. The first newer CLI package required a
+read-only user bin directory, so the existing-compatible19.0 tools were used.
+Wrapper8.11.1 checksum/download succeeded after Java proxy configuration.
+Actual `./gradlew --no-daemon --console=plain compileDebugKotlin` reached KSP but
+failed toolchain JAVA_COMPILER capability. Full-JDK download attempts returned403.
+A later local launcher experiment could not start because the exec transport
+disconnected. No successful local Android build is claimed; Actions supplied a
+complete JDK17/compatible SDK and performed the actual successful builds above.
+
+Both pinned Java fixture verifiers and all5 Python checks also passed locally.
+XML/resource checks found542 valid string references with no duplicate/missing
+strings. Original attachment/material/asset hashes match. Diff whitespace check
+passed; wrapper remains Linux executable0755. Runtime/build/manifest/workflows
+match the tested commit after the documentation-only follow-up.
+
+## Artifacts and signing
+
+- [Debug APK ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44395871402/artifacts/14470602646)
+  (`bulgariantrainer-debug`), expires2026-12-02. Extract `app-debug.apk`.
+- [JUnit/lint/schema reports](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44395871402/artifacts/14472216528).
+- Extracted debug APK SHA-256:
+  `f8a604d398ad2c404e820600d8a2ad9b766994571bd4d8fffcf0eefa2c36cfad`.
+- Debug certificate SHA-256:
+  `9cac6902222704c303ad447f32ab36a95de90742b74bd7be593517b8f3d9f0dc`.
+- Unsigned release SHA-256:
+  `3518b4a9fff04c85c378233c4ed0a19ab1a3f8e33889eeac01b2c56ad7300149`.
+
+The downloadable file is an installable **debug APK**, not a verified release
+signed with the owner's persistent key. Existing release signing is unchanged;
+no key was generated/replaced, no secrets inspected/exposed and no persistent-key
+release run claimed. Hosted debug keys may differ between runs.
+
+Before an update, save a full manual backup in the existing app. In-place updates
+need the same applicationId/signing certificate and a higher versionCode. If the
+debug certificate differs, preserve the existing installation/data and use the
+persistent-key workflow for an update; do not uninstall valuable data merely to
+bypass a signature mismatch. Android8/API26+ is required. For a matching/first
+installation, extract the ZIP, open the APK and permit installation from that
+chosen file app if Android prompts.
+
+## Physical acceptance still required
+
+No instrumentation or physical-device test was run. No emulator/androidTest
+runner is configured/exposed; adb could not initialize its read-only home during
+device enumeration, so no successful device listing is claimed.
+Robolectric/native SQLite/Compose are JVM verification, not a device claim.
+
+Still check on a real phone: system providers/file selection/cancellation and
+document creation; Bulgarian/Russian keyboard and IME; editing/rotation/large
+fonts/small screens/TalkBack; explicit starter preview and duplicate import;
+airplane-mode local files/management; backup/restore on-device; and a same-key
+in-place update from the installed older database with data preserved.
+Aorist typed/choice practice, new schedules/statistics and audio policy belong
+to the next stage; no such learning results are fabricated here.
+
+Open **Главная → Аорист → Просмотреть стартовый набор** (or choose local JSON),
+review/select, then explicitly confirm. Management and content export are
+available in that section. The Android plan now records the resolved attachment
+audit and separates current backupv4/schema10 from future practice's next version.
+
+---
+
 # Final aspect integration and verification — 2026-11-02
 
 Starting target: `codex/android-foundation-parity` at

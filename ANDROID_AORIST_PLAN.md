@@ -11,9 +11,10 @@
 
 Date: 2026-11-18.
 
-Status: **planning only; implementation is not authorized by this document.**
-This change adds this file only. Application code, Room schemas, dependencies,
-application identity, versions and signing configuration remain unchanged.
+Status: **content stage implemented under the follow-on request**. Actual storage,
+management, transfer and backup contracts are documented in AORIST_CONTENT.md.
+Typed/choice practice remains proposed future work. ApplicationId and runtime
+dependencies/signing workflow are preserved; current version is0.6.0/code7.
 
 ## 1. Evidence, reference revisions and blockers
 
@@ -60,58 +61,42 @@ Its Spring/Java and Maven instructions govern that web repository, which is not
 being changed; Android remains Kotlin/Compose/Room. No `AGENTS.md` appeared in the
 Android recursive tree; no ancestor `/AGENTS.md` or `/workspace/AGENTS.md` was found.
 
-No local checkout existed at the start of this task. One clone attempt failed:
-`Failed to connect to proxy port 8080`. It was not repeatedly retried.
-Pinned actual text files were retrieved through GitHub and placed in local
-inspection mirrors. Those mirrors are not claimed to be complete Git checkouts
-or a working Android build environment.
+During the original planning step, no local checkout existed and shell cloning
+failed at the proxy. That step used verified pinned text mirrors. During the
+content implementation, cloning with the command's network permission succeeded:
+a full checkout at /workspace/aorist-checkout tracks codex/android-aorist-plan.
+Current code/check revisions are recorded in BUILD_REPORT.md. The feature branch
+is based on the Android implementation above; no default-branch merge is part
+of either step.
 
-The documentation branch is `codex/android-aorist-plan`, based on the Android
-implementation commit above. Keep it separate; do not merge it into default or
-merge the existing application PR as part of planning.
+### Supplied dataset audit — resolved
 
-### Attached dataset: unavailable, schema not verified
+The user supplied the original attachment after the planning step. Its bytes were
+read directly; it is preserved unchanged in learning-materials/aorist and the
+explicit-preview asset. SHA-256:
+`af92873c06a36c81973206cc24808d01e1e9cc2cdacce66225f92f095c521e33`.
+It is38,397 UTF-8 bytes with40 distinct entries and240 explicitly stored slots.
 
-The request names an attached `bulgarian_aorist_40.json`, but this task exposes no
-attachment/file ID or accessible uploaded bytes. Searches of available workspace
-upload/material locations found no such file; it is absent from both available
-web trees and the Android tree. A repeat attachment was requested while the
-architecture investigation continued.
+Actual root keys: format, formatVersion, datasetId, datasetRevision, createdOn,
+language, translationLanguage, tense, entryForm, notes, entries.
+Actual entry keys: id, lemma, russian, aspect, tense, reflexiveParticle, forms,
+note, source, studyGroup. forms has six nonempty accepted-string arrays:
+1sg,2sg,3sg,1pl,2pl,3pl. Each supplied array has one string; alternatives are
+supported and tested with clearly labelled synthetic fixtures.
+source contains title,url,section,checkedOn. datasetId isbg-aorist-core-40;
+datasetRevision is integer1, independent of formatVersion1 and Room10.
 
-**No JSON from that dataset has been read or parsed.** Its root type, keys,
-format marker/version, actual record count, external IDs, person representation,
-forms, alternatives, meanings, examples and provenance are all unverified.
-The filename is not evidence that it contains 40 valid verbs, six forms per verb,
-or any particular JSON schema. No schema or linguistic discrepancy in this
-unavailable file is confirmed.
+Actual bgaor-021 isчета/читать, with1sgчетох; bgaor-022 isпрочета/прочитать,
+with1sgпрочетох. Reflexive bgaor-029 explicitly includesсе in every array;
+2sg and3sg both containоблече се and are separate grammatical targets.
+There are11 imperfective/29 perfective verbs and2се/38null particle values.
+Six studyGroup strings identify models, not CEFR levels. No structural defects,
+duplicate IDs or missing slots were found. Source references were preserved;
+no independent all-entry dictionary/linguist verification is claimed.
 
-The design below is an explicit Android proposal based on the user's requested
-conjugation exercises and the inspected Android architecture. Logical entity
-names are proposed internal fields, not alleged dataset keys. The first
-implementation stage is blocked until the actual file is available.
-
-Before freezing any content contract, append a dataset audit to this plan:
-
-1. Preserve the original bytes as reviewed material; record SHA-256, byte size,
-   encoding/BOM, supplied filename and source. Do not silently replace it with
-   generated conjugations or another online file.
-2. Parse strict UTF-8 JSON, reject duplicate object keys, malformed Unicode,
-   trailing non-whitespace, unexpected structures and excessive sizes/depth.
-3. Record actual root/entry/form/example fields, types, nullability and enums;
-   give literal JSON paths and representative actual records, including accepted
-   alternatives and reflexive verbs if present.
-4. Count verbs, external IDs, available person/number slots, accepted variants,
-   missing/duplicate/contradictory slots and normalized-answer collisions.
-   Audit dictionary/citation forms, aspect labels if present, Russian meanings,
-   particle placement and the aorist tense label.
-5. Inspect any provided choice options: verify a unique correct normalized choice,
-   stable identity, grammatical person and compatibility with accepted alternatives.
-6. Record discrepancies separately as confirmed schema errors, suspected linguistic
-   issues requiring review, or supported variants. Do not silently correct source
-   material, infer missing forms or claim string inequality proves bad Bulgarian.
-7. Freeze a field-to-Room mapping and versioned import/export contract that preserves
-   all supported learning and source metadata. Revise this proposal if the actual
-   schema needs additional relationships.
+See AORIST_CONTENT.md for the exact source mapping, supported metadata, validation,
+identity and selected-import revision semantics. The original missing-dataset
+implementation gate is resolved; unavailable web aorist parity remains explicit.
 
 ## 2. Scope and learning unit
 
@@ -180,7 +165,7 @@ DAOs in `data/`, ViewModels in `ui/`, and application-scoped construction throug
 the existing application object. Reuse existing coroutine/serialization/Room
 dependencies. Do not introduce a generic learning-engine redesign.
 
-Proposed entities, subject to the dataset audit:
+Proposed entities, with the actual content mapping frozen in AORIST_CONTENT.md:
 
 | Table | Identity and content/relationships |
 | --- | --- |
@@ -208,13 +193,13 @@ reuses it. If it has no IDs, resolve and document a durable import identity
 scheme before shipping; do not quietly manufacture new IDs on every import.
 Manually created verbs get persisted UUID external IDs once.
 
-Use a non-destructive **9→10** migration if schema9 is still current when
-implementation starts. Re-inspect HEAD first; rebase the plan if intervening
-changes have consumed that version. Add tables/indices/FKs, register entities
-and migration, export schema10, and keep the entire 1→…→9 chain.
-Under the proposed eleven-table design this means 40 tables and 26
-autoincrement sequences; freeze the actual inventory from generated Room
-schema, not from this planning count.
+The content stage now implements non-destructive **9→10** with five content
+tables. Future practice requires another migration (10→11 if still current).
+Re-inspect HEAD before that stage and preserve the existing chain. Add tables/indices/FKs, register entities
+and migration, export each new schema, and keep the entire prior migration chain.
+Current generated Room10 has34 tables/23 sequences. The proposed complete
+eleven-table aorist design would reach40 tables/26 sequences after practice;
+freeze its actual inventory from that future generated schema.
 
 Do not alter/delete existing rows, IDs, sequences, settings or history.
 No destructive fallback, database recreation, automatic seed/import, or content
@@ -255,11 +240,10 @@ Use separate `AoristDocuments`, parser/codec and content repository following
    Updates keep internal verb/form IDs, attempts, progress and schedules.
    Never replay historical answers against new accepted sets.
 
-Use the actual supplied format after audit. A possible marker
-`bulgariantrainer.aorist` / formatVersion1 is **provisional**, not a claim about the
-missing JSON. If it has another envelope or no version, document a strict
-source adapter and a separate canonical export contract; do not silently rewrite
-the original into an invented “web-compatible” format.
+The audited supplied contract is `bulgariantrainer.aorist` / integer formatVersion1,
+with datasetId and independent positive integer datasetRevision. Root metadata
+and exact forms/source fields are documented in AORIST_CONTENT.md; no format
+adapter or invented web-compatible envelope is needed.
 
 Validate actual required fields, IDs, supported tense/person/number enums,
 nonblank approved forms, nonempty correctly typed answer arrays, source
@@ -278,9 +262,8 @@ It contains no sessions, attempts, progress or schedules and is not a progress
 backup. Vocabulary CSV, sentence CSV, aspect-pair JSON and full backup must be
 rejected by the aorist importer.
 
-Only add the original dataset to `learning-materials/aorist/` after its bytes are
-available and reviewed. App bundling is optional; if included, expose “Просмотреть
-набор” followed by the same preview/confirmation. Never import at startup.
+The original dataset is now in `learning-materials/aorist/` and the identical
+app asset. “Просмотреть стартовый набор” opens the same preview/confirmation. Never import at startup.
 
 ## 6. Answer rules: explicit Android proposal, not verified web parity
 
@@ -499,38 +482,45 @@ Normal/slow playback replaces current audio and stops on question/route changes.
 Missing/offline-unavailable Bulgarian voices show existing setup guidance and
 never block training. No autoplay or background network fallback.
 
-## 11. Full backup compatibility
+## 11. Full backup compatibility and future practice extension
 
 Content JSON export remains separate from the full backup.
 
-The proposed Room10 release writes **full-backup v4/schema10**. Add every aorist
+Current Room10 writes **full-backup v4/schema10** with all five content tables;
+see AORIST_CONTENT.md for implemented replacement guarantees. Future practice
+needs the next schema and backup version (v5/schema11 if no intervening changes).
+Do not add new tables silently to the frozen v4 contract. In that future version,
+add every aorist
 table and auto-ID sequence, including accepted answers, metadata/examples/source
 context, receipts, preferences, session settings and snapshots, choices and
 drafts, attempts, progress and schedules. Include any relationships introduced
 after dataset audit. Update summary/UI to name aorist counts and source version.
 
-Keep original contracts intact for v1/schema7, v2/schema8 and v3/schema9.
+Keep original contracts intact for v1/schema7, v2/schema8, v3/schema9 and
+current v4/schema10.
 Authenticate each original exact table/sequence/column inventory and checksum
 **before** expanding into a new staging representation. Never relabel a v4
 document as v3 or ignore extra tables/fields. Reject unsupported combinations,
 future versions, unknown policy versions and malformed relationships clearly.
 
-Older backups contain no aorist data. Their restore remains **complete
-replacement**, not merge:
+Backups v1–v3 contain no aorist data; v4 contains content but no aorist practice.
+Restore remains **complete replacement**, not merge:
 
 | Original backup | Restored aorist state | Other existing behavior |
 | --- | --- | --- |
 | v1/schema7 | All aorist content/history/settings empty/default | Original vocabulary/sentence/older modes retained from backup; no aspect content or practice. |
 | v2/schema8 | All aorist content/history/settings empty/default | Its aspect content restored, without aspect-practice history, as today. |
 | v3/schema9 | All aorist content/history/settings empty/default | All existing aspect content/practice and legacy data restored. |
-| v4/schema10 | Exact saved aorist graphs, schedules and settings | Exact full supported snapshot. |
+| v4/schema10 | Exact saved aorist content/receipts; future practice empty/default | All current legacy/aspect learning data retained from backup. |
+| Future v5/schema11 | Exact saved aorist content/practice/settings | Exact full supported snapshot; version must be rechecked before implementation. |
 
 Preview **and confirmation dialog** must explicitly warn that restoring v1–v3
 replaces/removes current aorist data and unfinished aorist sessions. Show both
 incoming counts and replacement consequences. Offer creating a full backup
 before replacement; do not silently retain current aorist rows against an
-older snapshot. Old app versions reject v4; document that backup downgrade is
-unsupported rather than dropping aorist fields.
+older snapshot. Old app versions reject unsupported newer backups; document that backup
+downgrade is unsupported rather than dropping aorist fields. A future v4 restore
+into the practice-capable app must also warn before clearing aorist practice.
 
 Preserve existing guarantees:
 
@@ -557,11 +547,12 @@ Preserve existing guarantees:
 
 ### Stage A — evidence gate
 
-Obtain the actual attached JSON and complete section1's schema/content audit.
+The original JSON audit is now complete (section1/AORIST_CONTENT.md).
 If web aorist source becomes available, pin the exact commit, inspect migrations,
 planners/evaluators/controllers/UI/tests/dataset and map each intentional rule.
 Document confirmed/suspected bugs and intentional Android differences.
-Do not implement a parser or advertise parity while this gate is unresolved.
+The native content parser is implemented against the supplied file. Do not
+advertise aorist web parity without a verified implementation/ref.
 
 ### Stage B — content and additive persistence
 
@@ -607,10 +598,11 @@ byte-for-byte/logically identical under aorist actions.
 
 ### Stage D — backup/statistics and UI integration
 
-Test v4 round-trip with active typed and choice sessions, drafts, feedback,
+Test the next full-format round-trip (v5/schema11 if still appropriate) with
+active typed and choice sessions, drafts, feedback,
 snapshots, source metadata/examples, archived forms, preferences and all progress.
 Close/reopen after restore; retry old actions without duplicate counts.
-Test original v1/v2/v3 checksum validation and explicitly confirmed replacement,
+Test original v1/v2/v3/v4 checksum validation and explicitly confirmed replacement,
 future/relabelled/extra fields, broken FKs/options/hashes/counters and late restore
 failure. Existing data must be unchanged after invalid preparation or failure.
 Verify a consistent snapshot while another committed WAL transaction writes
@@ -653,13 +645,13 @@ airplane mode with local documents, missing and installed offline Bulgarian TTS,
 and in-place migration/update without loss. Fake adapters and Robolectric
 cannot verify offline voice availability or pronunciation quality.
 
-This plan does not deliver a new APK, change versionCode or generate keys.
-A later installable update must exceed current code6 (and re-check repository
-version first), preserve applicationId and use the existing persistent-key
-release workflow. Preserve a full backup before update; do not recommend
-uninstalling a valuable existing installation to bypass a signature mismatch.
+Current content release0.6.0/code7 preserves the applicationId and existing signing
+workflow. Future practice updates must exceed the then-current versionCode
+(recheck it first), use the same persistent release key, and preserve a full
+backup before update. Do not recommend uninstalling a valuable installation to
+bypass a signature mismatch. This plan authorizes no replacement signing keys.
 
-## 13. Checks actually performed for this planning change
+## 13. Historical checks performed for the original planning change
 
 - Confirmed GitHub integration access and exact Android/web refs.
 - Inspected full, non-truncated repository trees and actual pinned Kotlin,
@@ -676,5 +668,6 @@ uninstalling a valuable existing installation to bypass a signature mismatch.
   No Android code/build/schema/version/signing/web changes, app build, unit/
   instrumentation run or physical-device check is claimed for this task.
 
-Before implementation, resolve the dataset gate, refresh refs/AGENTS/current
-Room and backup versions, and amend decisions where actual evidence differs.
+Before the next practice stage, refresh refs/AGENTS/current Room and backup
+versions and amend decisions where actual evidence differs. Content-stage checks
+and real build results are recorded in AORIST_CONTENT.md/BUILD_REPORT.md.

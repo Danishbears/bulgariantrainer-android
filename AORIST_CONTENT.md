@@ -185,7 +185,18 @@ starter action, default update deselection, draft recreation and lost-preview
 safety. Synthetic alternative forms in tests are labelled as synthetic, not
 asserted dictionary facts.
 
-Actual commands/results will be recorded in BUILD_REPORT.md after execution.
+[Successful Actions run44395871402](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44395871402)
+verified commitf3f0cb9642633be06d6015065416f230ee47da11: all349 JVM tests passed,
+including all24 new aorist tests; both lints passed with0 errors/14 existing
+advisories each; debug and unsigned release assembly, APK contracts and exported
+Room schemas1–10 passed. BUILD_REPORT.md records exact commands, corrected older
+fixture failures, artifacts/hashes and local toolchain limitations.
+
+[Debug APK ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44395871402/artifacts/14470602646)
+contains app-debug.apk,0.6.0/code7/API26+, expires2026-12-02. This is a debug
+signature, not a verified persistent-key release. Save a full backup before
+updates; keep existing data/installation if signatures differ. No replacement
+release key was generated. Existing signing workflow remains unchanged.
 Robolectric/native SQLite are JVM tests, not instrumentation or real-device
 verification. Physical checks still include file providers/cancellation, Cyrillic
 keyboard, small screens/large fonts/TalkBack, rotation/editor recreation,
