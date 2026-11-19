@@ -145,9 +145,13 @@ fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferReposi
                 })
                 WordMistakesScreen(model, onBack = { controller.popBackStack() })
             }
+            composable("aorist-practice") {
+                val practiceModel:AoristPracticeViewModel=viewModel(factory=viewModelFactory {initializer {AoristPracticeViewModel(application.aoristPractice,createSavedStateHandle())}})
+                AoristPracticeScreen(practiceModel,onCollection={if(!controller.popBackStack("aorist",false,saveState=true))controller.navigate("aorist"){popUpTo("home");launchSingleTop=true}})
+            }
             composable("aorist") {
                 val aoristModel:AoristViewModel=viewModel(factory=viewModelFactory {initializer {AoristViewModel(application.aorist,com.danishbears.bulgariantrainer.aorist.AoristDocuments(application),createSavedStateHandle())}})
-                AoristScreen(aoristModel,onBack={controller.popBackStack()})
+                AoristScreen(aoristModel,onBack={controller.popBackStack()},onPractice={controller.navigate("aorist-practice"){launchSingleTop=true;restoreState=true}})
             }
             composable("aspects") {
                 val aspectModel: AspectViewModel = viewModel(factory = viewModelFactory {

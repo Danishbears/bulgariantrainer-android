@@ -24,7 +24,7 @@ class AoristRepositoryTest {
     private var at=Instant.parse("2026-11-18T12:00:00Z")
     private val clock=object:Clock(){override fun getZone()=ZoneOffset.UTC;override fun withZone(zone:ZoneId)=this;override fun instant()=at}
     @Before fun setup(){context=ApplicationProvider.getApplicationContext();open()}
-    private fun open(){db=Room.databaseBuilder(context,TrainerDatabase::class.java,filename).addMigrations(MIGRATION_9_10).build();repo=AoristRepository(db,clock)}
+    private fun open(){db=Room.databaseBuilder(context,TrainerDatabase::class.java,filename).addMigrations(MIGRATION_9_10, MIGRATION_10_11).build();repo=AoristRepository(db,clock)}
     @After fun close(){db.close();context.deleteDatabase(filename)}
     private fun source()=javaClass.classLoader!!.getResourceAsStream("bulgarian_aorist_40.json")!!.use{it.readBytes()}
     private fun root()=AoristContent.strict(source().toString(Charsets.UTF_8)).jsonObject

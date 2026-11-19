@@ -10,6 +10,7 @@ import com.danishbears.bulgariantrainer.data.MIGRATION_2_3
 import com.danishbears.bulgariantrainer.data.MIGRATION_3_4
 import com.danishbears.bulgariantrainer.data.MIGRATION_4_5
 import com.danishbears.bulgariantrainer.data.MIGRATION_5_6
+import com.danishbears.bulgariantrainer.data.MIGRATION_10_11
 import com.danishbears.bulgariantrainer.data.MIGRATION_9_10
 import com.danishbears.bulgariantrainer.data.MIGRATION_8_9
 import com.danishbears.bulgariantrainer.data.MIGRATION_7_8
@@ -50,7 +51,7 @@ class ContentMigrationTest {
             sqlite.execSQL("INSERT INTO translations VALUES(13,7,'Дом','дом',1)")
             sqlite.version = 1
         }
-        val db = Room.databaseBuilder(context, TrainerDatabase::class.java, name).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10).build()
+        val db = Room.databaseBuilder(context, TrainerDatabase::class.java, name).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11).build()
         try {
             val word = VocabularyRepository(db).get(7) // Room also validates migrated columns, indices and FKs on open.
             assertEquals("Къща", word.bulgarianText)
@@ -62,7 +63,7 @@ class ContentMigrationTest {
             assertEquals(13L, word.translations.single().id)
             assertTrue(word.translations.single().isPrimary)
             assertEquals(0L, ContentTransferRepository(db).observeSentenceCount().first())
-            assertEquals(10, db.openHelper.readableDatabase.version)
+            assertEquals(11, db.openHelper.readableDatabase.version)
         } finally { db.close(); context.deleteDatabase(name) }
     }
 }

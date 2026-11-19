@@ -31,7 +31,7 @@ class AoristMigrationBackupTest {
     private val name="aorist-migration-${UUID.randomUUID()}.db"
     private val clock=Clock.fixed(Instant.parse("2026-11-18T12:00:00Z"),ZoneOffset.UTC)
     @Before fun setup(){context=ApplicationProvider.getApplicationContext();open()}
-    private fun open(){db=Room.databaseBuilder(context,TrainerDatabase::class.java,name).setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING).addMigrations(MIGRATION_9_10).build();backup=BackupRepository(context,db,clock)}
+    private fun open(){db=Room.databaseBuilder(context,TrainerDatabase::class.java,name).setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING).addMigrations(MIGRATION_9_10, MIGRATION_10_11).build();backup=BackupRepository(context,db,clock)}
     @After fun close(){db.close();context.deleteDatabase(name)}
     private fun source(file:String)=javaClass.classLoader!!.getResourceAsStream(file)!!.use{it.readBytes()}
     private fun request()=UUID.randomUUID().toString()
@@ -67,7 +67,7 @@ class AoristMigrationBackupTest {
                 sql.execSQL("DELETE FROM sqlite_sequence WHERE name=?",arrayOf(table));sql.execSQL("INSERT INTO sqlite_sequence(name,seq) VALUES(?,?)",arrayOf(table,old+1000))}
             sql.version=9
         }
-        open();assertEquals(10,db.openHelper.writableDatabase.version)
+        open();assertEquals(11,db.openHelper.writableDatabase.version)
         val after=root();assertEquals(before.getValue("tables").jsonObject.filterKeys{it in BackupFormat.previousTables},after.getValue("tables").jsonObject.filterKeys{it in BackupFormat.previousTables})
         for(table in BackupFormat.previousSequences)assertEquals(before.getValue("sequences").jsonObject.getValue(table).jsonPrimitive.long+1000,after.getValue("sequences").jsonObject.getValue(table).jsonPrimitive.long)
         assertTrue(db.aoristDao().datasets().isEmpty());assertNotNull(TypingRepository(db,clock).restore());assertNotNull(AspectPracticeRepository(db,clock).restore())
@@ -76,8 +76,8 @@ class AoristMigrationBackupTest {
     @Test fun fullV4RoundTripReopensAoristContentWithoutChangingAnyOtherModes()=runBlocking<Unit> {
         seedOtherModes();val old=root().getValue("tables").jsonObject.filterKeys{it in BackupFormat.previousTables};aorist()
         val repo=AoristRepository(db,clock);val first=repo.list().rows.first();repo.archive(first.id,first.version,true)
-        val bytes=backup.snapshot();val prepared=backup.prepare(bytes);assertEquals(4,prepared.summary.sourceFormatVersion);assertEquals(40,prepared.summary.aoristVerbs);assertEquals(1,prepared.summary.aoristDatasets)
-        val document=prepared.document;assertEquals(34,document.getValue("tables").jsonObject.size);assertEquals(23,document.getValue("sequences").jsonObject.size)
+        val bytes=backup.snapshot();val prepared=backup.prepare(bytes);assertEquals(5,prepared.summary.sourceFormatVersion);assertEquals(40,prepared.summary.aoristVerbs);assertEquals(1,prepared.summary.aoristDatasets)
+        val document=prepared.document;assertEquals(40,document.getValue("tables").jsonObject.size);assertEquals(26,document.getValue("sequences").jsonObject.size)
         val content=repo.export("bg-aorist-core-40",true);val forms=db.aoristDao().forms(first.id)
         repo.create("manual",JsonObject(first.entry-"id"));backup.restore(prepared);db.close();open()
         assertArrayEquals(bytes,backup.snapshot());assertArrayEquals(content,AoristRepository(db,clock).export("bg-aorist-core-40",true))

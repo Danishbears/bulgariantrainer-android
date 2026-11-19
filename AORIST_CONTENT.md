@@ -1,3 +1,9 @@
+> **2026-11-19 practice-stage update:** Native typed/choice practice is implemented;
+> see AORIST_PRACTICE.md. Current Room11/full-backupv5 adds durable sessions,
+> snapshots/options/drafts/attempts, independent form/type progress/schedules and
+> preferences (40tables/26sequences). Existing content JSONv1 is unchanged.
+> The content-stage counts/version/checks below describe the prior milestone.
+
 # Aorist content storage and transfer
 
 Date: 2026-11-18.

@@ -22,7 +22,7 @@ import com.danishbears.bulgariantrainer.aorist.*
 import kotlinx.serialization.json.*
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable fun AoristScreen(model:AoristViewModel,onBack:()->Unit) {
+@Composable fun AoristScreen(model:AoristViewModel,onBack:()->Unit,onPractice:()->Unit={}) {
     val state by model.state.collectAsStateWithLifecycle()
     val filter by model.filter.collectAsStateWithLifecycle()
     val draft by model.draft.collectAsStateWithLifecycle()
@@ -96,7 +96,8 @@ import kotlinx.serialization.json.*
                     }
                 }
                 else->{
-                    item{Text(stringResource(R.string.aorist_content_stage))
+                    item{Button(enabled=!state.busy,onClick=onPractice,modifier=Modifier.fillMaxWidth()){Text(stringResource(R.string.aop_title))}
+                        Text(stringResource(R.string.aorist_content_stage))
                         Button(enabled=!state.busy,onClick={model.beginEdit()},modifier=Modifier.fillMaxWidth()){Text(stringResource(R.string.aorist_create))}}
                     state.summary?.let{s->item{AspectNotice(stringResource(R.string.aorist_summary,s.created,s.updated,s.unchanged,s.deselected))}}
                     item{

@@ -1,3 +1,9 @@
+> **2026-11-19:** Current full-backup **v5/schema11** includes complete aorist
+> practice (40tables/26sequences). Original v1–v4 are validated before expansion:
+> v1–v3 have no aorist content/history; v4 restores aorist content while clearing
+> current aorist practice/preferences, with explicit preview/dialog warnings.
+> See AORIST_PRACTICE.md; earlier version descriptions below are historical.
+
 > Current content-stage update: full backup **v4/schema10** includes dedicated
 > aorist datasets/verbs/forms/answers/receipts (34tables/23sequences). Original
 > v1/schema7, v2/schema8 and v3/schema9 are still validated before expansion.

@@ -1,3 +1,11 @@
+> **2026-11-19 practice-stage update:** Typed/choice practice, native screens,
+> Room11 durable sessions/drafts/results, independent form/type schedules and
+> full-backupv5 are implemented. Fresh default istyped/аз as explicitly requested,
+> superseding the earlier all-persons proposal. Current inventory40tables/
+> 26sequences. See AORIST_PRACTICE.md for actual rules/source/tests; source JSONv1,
+> applicationId and existing learning algorithms remain. No web aorist parity
+> is invented. Earlier planning/content milestone statements are historical.
+
 > **2026-11-18 content-stage update:** the original attachment has now been supplied
 > and audited. See AORIST_CONTENT.md for exact fields, SHA-256 and40/240-slot
 > inventory. Dedicated content storage/import/export/management are implemented;
@@ -13,8 +21,8 @@ Date: 2026-11-18.
 
 Status: **content stage implemented under the follow-on request**. Actual storage,
 management, transfer and backup contracts are documented in AORIST_CONTENT.md.
-Typed/choice practice remains proposed future work. ApplicationId and runtime
-dependencies/signing workflow are preserved; current version is0.6.0/code7.
+Typed/choice practice is now implemented; see AORIST_PRACTICE.md. ApplicationId and runtime
+dependencies/signing workflow are preserved; current version is0.7.0/code8.
 
 ## 1. Evidence, reference revisions and blockers
 
@@ -316,7 +324,7 @@ types or aspect directions. Add mixed exercise sessions only with a separate
 explicit requirement and persisted per-question type.
 
 Proposed settings: type, size (default20, valid1–100), selected persons
-(default all available), new/due/mixed queue, dataset, and actual supported
+(defaultаз/1sg; other persons require selection), new/due/mixed queue, dataset, and actual supported
 topic/stage filters. Do not invent aorist study stages. Persist last-used settings
 in `aorist_preferences`, and freeze session settings independently.
 

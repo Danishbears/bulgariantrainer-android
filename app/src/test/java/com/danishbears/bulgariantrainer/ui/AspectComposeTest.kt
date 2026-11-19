@@ -240,5 +240,8 @@ class AspectComposeTest {
         compose.onNodeWithText(context.getString(R.string.aorist_backup_legacy)).assertIsDisplayed()
         compose.runOnIdle{version=4}
         compose.onNodeWithText(context.getString(R.string.aorist_backup_legacy)).assertDoesNotExist()
+        compose.onNodeWithText(context.getString(R.string.aop_backup_v4)).assertIsDisplayed()
+        compose.runOnIdle{version=5}
+        compose.onNodeWithText(context.getString(R.string.aop_backup_v4)).assertDoesNotExist()
     }
 }

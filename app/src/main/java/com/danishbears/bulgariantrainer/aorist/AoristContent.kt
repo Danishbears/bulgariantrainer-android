@@ -45,6 +45,10 @@ object AoristContent {
         val p=(v as? JsonPrimitive)?.takeIf{it.isString}?:return false
         return p.content.length<=max&&(blank||key(p.content).isNotEmpty())&&p.content.none{it.isISOControl()&&it !in "\t\n\r"}
     }
+    internal fun requireUnicode(value:String) {
+        try { BackupFormat.validateUnicode(JsonPrimitive(value)) }
+        catch(_:Exception){ throw AoristException("Некорректные символы Unicode.") }
+    }
     fun parse(bytes:ByteArray):AoristDocument {
         if(bytes.size>MAX_BYTES)throw AoristException("Максимальный размер JSON — 1 МиБ.")
         val text=try{Charsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT).onUnmappableCharacter(CodingErrorAction.REPORT)

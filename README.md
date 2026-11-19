@@ -1,3 +1,9 @@
+> **2026-11-19:** Offline aorist practice is now available through **Главная →
+> Аорист → Практика аориста**: typed recall (defaultаз), choice, selected persons,
+> durable sessions and independent schedules. [AORIST_PRACTICE.md](AORIST_PRACTICE.md)
+> documents exact matching/reveal/choice rules and full-backupv5 compatibility.
+> The earlier content-stage notes below remain as implementation history.
+
 > Aorist content is now available through **Главная → Аорист**: inspect the starter
 > 40-verb set or choose JSON, review and explicitly confirm selected records.
 > [AORIST_CONTENT.md](AORIST_CONTENT.md) documents storage/import/export and full

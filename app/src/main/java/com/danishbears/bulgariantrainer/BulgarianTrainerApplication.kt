@@ -15,6 +15,7 @@ class BulgarianTrainerApplication : Application() {
     private val studyClock: Clock = Clock.systemUTC()
     private val database by lazy { TrainerDatabase.open(this) }
 
+    val aoristPractice by lazy { com.danishbears.bulgariantrainer.aorist.AoristPracticeRepository(database,studyClock) }
     val aorist by lazy { com.danishbears.bulgariantrainer.aorist.AoristRepository(database,studyClock) }
     val aspectPractice by lazy { com.danishbears.bulgariantrainer.aspect.AspectPracticeRepository(database,studyClock) }
     val aspectStatistics by lazy { com.danishbears.bulgariantrainer.aspect.AspectStatisticsRepository(database,studyClock) }
