@@ -1,3 +1,176 @@
+# 2026-11-19
+
+Offline aorist typed/choice practice is implemented on `codex/android-aorist-plan`.
+Baseline: `cb9a1a3ee569d9b8a40c701badd9b54119c58ae9`; verified code/test head:
+`c753d47d881a1f8e6dd41483154a98fdd4055a88`. Documentation-only follow-up changes no
+tested runtime/resources/schema/build/tests. Default branch and web repository
+remain unmodified; no merge.
+
+## Behavior delivered
+
+Native Compose practice supports TYPED and CHOICE. Fresh default is typed/аз,
+size20/mixed; selected or all six persons, aspect/studyGroup/dataset filters,
+new/due/mixed, unique verb/person targets and explicit shorter/fewer-option
+consent. Archived entries are excluded from new sessions/distractor sources.
+
+Prompts identify the exact Bulgarian verb, Russian meaning, aorist and requested
+person. Grading uses only that snapshot's accepted array for the person. Required
+чета/ние→четохме (notпрочетохме), прочета/ние→прочетохме, взема/аз→взех,
+вземам/аз→вземах, видя/ние→видяхме, изляза/той→излезе,
+`облека се / аз → облякох се` are exercised with actual starter entries (spaces in
+reflexive forms are preserved). Matching is NFC-first, remaining acute/grave
+removal, Unicode whitespace collapse/trim, Locale.ROOT lowercase/final NFC.
+и/й/ѝ remain distinct; и+grave becomesѝ. се/си and meaningful spelling stay
+significant; no substring/transliteration/Latin-lookalike/fuzzy grading.
+Mismatch is “Не совпало с ответами этой карточки”.
+
+Stored-form distractors are normalized/deduplicated against the entire accepted
+set. Exactly one displayed option is accepted. Option IDs/text/order and learner
+selection persist; radio selection does not submit. Insufficient distinct options
+offer fewer with consent or an explicit typed switch, never generated padding
+or person identification from an ambiguous isolated form.
+
+Room11 adds six practice/settings tables, for40total/26sequences. All34 schema10
+entity contracts remain unchanged. Migration10→11 preserves content, old histories,
+settings, IDs and sequence high-water marks. Durable snapshots/order/type/person,
+drafts, options, raw submissions/results/reveal, position/status/revision survive
+DB reopening and a new ViewModel with empty SavedStateHandle. Back flushes draft
+writes; late drafts/callbacks cannot overwrite feedback or another question.
+Uncommitted last keystrokes can still be lost to an abrupt kill; committed
+submissions/results/order are transactional.
+
+Submission/reveal atomically writes one attempt/progress/schedule and revision;
+Next is separate/idempotent and leaves feedback current until acknowledged,
+including the last item. Early finish skips unanswered forms without progress.
+Reveal is terminal REVEALED, not correct credit: reset that form/type streak,
+failure retry24hours later. Viewing/source audio creates no attempt.
+
+Progress/schedules use (formId,exercise), with formId uniquely identifying verb/
+person. Choice never advances typed mastery or other persons/verbs/modes.
+Unchanged ReviewScheduler intervals1/3/7/14/28/…cap365, failure1day, mastery
+streak>=5/interval>=28 use injectable Clock and24-hour UTC durations. Backwards
+time preserves original instants and last logical attempt identity.
+
+Full backupv5/schema11 includes all practice, content, preferences, snapshots,
+drafts and schedules. Originalv1–v4 contracts/checksums validate before expansion:
+v1–v3 lack aorist content/history; v4 preserves content but has no aorist practice.
+Explicit replacement warnings, isolated complete validation, IDs/FKs/sequences,
+rollback and committed-WAL SQL snapshots remain. Content JSONv1 is unchanged.
+
+AppId `com.danishbears.bulgariantrainer` preserved; **0.7.0/code8** exceeds prior
+0.6.0/code7. Runtime dependencies, tool versions, manifest/permissions, existing
+scheduler/statistics implementations and signing workflows are unchanged.
+No web aorist implementation was found on the rechecked available refs (master
+2792dc3e4cb5d4762783140729e2c37ccac95567 / aspect feature
+be6a91ff2ae06b8b0eae2461d8c7a8bf910ce57a); shared verified rules were reused without
+inventing aorist parity. See AORIST_PRACTICE.md for source mapping and actual rules.
+
+## Executed checks
+
+| Actual command | Local result | Hosted result |
+| --- | --- | --- |
+| `./gradlew --no-daemon --console=plain compileDebugKotlin` | PASS, core then integrated UI | Compiled as part of hosted tests. |
+| `./gradlew --no-daemon --console=plain testDebugUnitTest` | PASS:376/0failed/errors/skipped,1m23s | PASS:376 tests,0 failures/errors/skipped; hosted JDK17. |
+| `./gradlew --no-daemon --console=plain assembleDebug lintDebug assembleRelease lintRelease` | PASS,7m24s; both APKs/both lints | PASS: separate assembleDebug,lintDebug,assembleRelease/lintRelease steps. |
+| `python3 scripts/verify_apk.py app/build/outputs/apk/debug/app-debug.apk --signing debug` | PASS: actual package/version/API/permissions/certificate | PASS:0.7.0/code8/min26; debug certificate verified. |
+| `python3 scripts/verify_apk.py app/build/outputs/apk/release/app-release-unsigned.apk --signing unsigned` | PASS: actual unsigned release; cannot install | PASS: unsigned status verified; not installable. |
+| `python3 parity/verify_aspect_parity.py` | PASS:14 normalizations/28 planner objectives | PASS. |
+| `python3 parity/verify_web_parity.py` | PASS:21 scheduler histories/20 statistics assertions | PASS. |
+| `python3 -m unittest discover -s scripts -p 'test_*.py' -v` | PASS:5 APK-contract tests | PASS. |
+| Generated Room11 vs committed10 entities | PASS:40 tables, all34 prior contracts identical | PASS: committed schemas1–11 verified. |
+
+Local Gradle used the installed OpenJDK21.0.13 compiler module with a javac
+launcher in a workspace copy of that runtime. SDK35/build-tools35.0.0, proxy,
+Gradle cache and JDK setup remain outside Git; the project still targets JVM17.
+This resolved the prior task's incomplete-JDK local blocker without modifying
+project tool/dependency versions. Hosted setup uses its complete JDK17.
+
+Local lint has0errors/fatals and13 GradleDependency advisories per variant.
+Hosted lint has0errors/fatals and14warnings per variant: one OldTargetApi plus13 dependency advisories. Existing Kotlin reified-intersection warnings and native-library
+strip notice are not hidden; they do not fail compilation. No dependency update
+was made merely to silence advisories. Wrapper remains Linux executable0755.
+
+All349 previous test methods remain;27 new methods: AoristPracticeRepositoryTest13,
+AoristPlannerTest2, AoristPracticeBackupTest5, AoristPracticeViewModelTest5,
+AoristPracticeComposeTest2. Tests cover required real forms, alternatives,
+normalization/particles/letters, exact options and homographs, fewer/shorter
+consent, queue/archive/filters, reveal/duplicate/race/stale actions, failed-schedule
+rollback, persisted drafts/selection/options/feedback, file DB reopen, edits during
+sessions, independent schedules/mastery/clock, actual schema10 migration and
+old histories/sequences, fullv5/v4 checksums/replacement/malformed/policy/rollback/
+WAL, default/recovered settings, exit-flush failure,320dp/large-font semantics and
+fake-TTS approved visibility. Shared fixture verification is not a full Maven
+test run of the read-only web app.
+
+Earlier actual failures and fixes:
+
+- Targeted repository/planner run:15passed. Targeted backup/ViewModel run:
+  9/10passed; one new test compared progress row list order, which SELECT without
+  ORDER BY does not promise. Restored entities were identical. The assertion now
+  compares composite-key sets; exact session/option/snapshot order checks remain.
+  Full local376 subsequently passed.
+- [Hosted run44594658197](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44594658197),
+  head9faa553:376executed,375passed, one older AspectNavigationComposeTest failed
+  because destination semantics were checked immediately after a click without
+  waiting for ready navigation controls/transition. All27 new tests passed.
+  The same assertions now wait for enabled controls and the expected destination
+  (no sleeps/test exclusion). That navigation test passed locally in a targeted
+  run after the correction; [final hosted run44596272752](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44596272752) passed all376..
+
+Resource validation found578 valid string references without duplicate/missing
+names. Source attachment/material/asset still match SHA256
+af92873c06a36c81973206cc24808d01e1e9cc2cdacce66225f92f095c521e33.
+Whitespace and unchanged-build/manifest/scheduler/statistics checks passed.
+No local.properties, SDK paths, databases, credentials, keys or APK/build outputs
+were committed.
+
+## Verified build and artifacts
+
+[Successful Actions run44596272752](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44596272752), tested head c753d47d881a1f8e6dd41483154a98fdd4055a88.
+- [Debug APK ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44596272752/artifacts/14566252156) (`bulgariantrainer-debug`), expires2026-12-03. Extract app-debug.apk.
+- [JUnit/lint/schema reports](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44596272752/artifacts/14566616757).
+- Downloadable extracted debug APK SHA256: `e59d8dc009a8fbfbbddd184e154acdfa2c552380ed7b09eb987193814233698b`.
+- Hosted debug certificate SHA256: `b3c0bacf59b2e5ceca58fb4043eb7ff9a0c99fb5a7e4df61c8ce620106688d97`.
+- Hosted unsigned-release SHA256: `48c4174a75c8c2660bcccd357abb081598879af9104292d05b35fc1f528a8f88`.
+
+Local debug APK SHA256:
+`0ab07635293f4c8d2ed5a0a1940bf1c253df806801f859abaa7729f98a55ca58`;
+local debug certificate SHA256:
+`db123b64cfbade3156b2f7afec6f454cf5a418c358463b41f849d6432e4bebc3`.
+Local unsigned-release SHA256:
+`6ff4d376e844b126393bd0486c4a3172ff204aa7b798d09529e11786ed5140e7`.
+Local builds were made from the implementation tree before publication; hosted
+hashes above identify the downloadable artifact. Separate debug keys make
+different APK/certificate digests expected.
+
+The installable artifact is debug, not a verified persistent-key release.
+No release key was generated/replaced and no signing secrets inspected/exposed;
+the existing signing workflow is preserved. Unsigned release was only a build/
+lint/contract check and cannot be installed.
+
+Before updating, save a full manual backup from the installed app. Same appId,
+same certificate and higher versionCode are required for an in-place update.
+On signature mismatch preserve the installation/data and use the owner's existing
+persistent-key workflow; do not uninstall valuable data to bypass the mismatch.
+For a matching/first install, download/extract the artifact ZIP, open app-debug.apk
+(Android8/API26+) and allow that chosen file app to install if Android prompts.
+
+## Device acceptance still required
+
+No emulator/device/instrumentation run is claimed. Native SQLite, Robolectric,
+Compose and fake TTS tests are JVM checks. Still physically verify: system file
+providers; real Bulgarian keyboard/IME; rotation and forced process termination/
+restart during draft/feedback; small screens/large fonts/TalkBack; complete local
+practice/import/backup/restore in airplane mode; real installed offline Bulgarian
+voice availability/quality; and a same-key update with existing data preserved.
+
+Open **Главная → Аорист**, explicitly import/confirm the starter if needed, then
+**Практика аориста**. Pick type/persons/filters/queue/size, consent to a shorter/
+fewer-option session where offered, submit/reveal, then **Дальше**. Existing
+unfinished sessions resume from Room; results include mistake/reveal review.
+
+---
+
 # 2026-11-18
 
 Aorist content integration: completed and verified on

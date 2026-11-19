@@ -229,8 +229,17 @@ ViewModel and native Compose tests cover persisted settings/selection, rapid and
 stale callbacks, exit-flush failure, hidden typed targets/audio and explicit choice
 submission/Next at320dp. Existing regression suites remain.
 
-Executed commands, counts, build/artifact links and any failed checks are recorded
-in BUILD_REPORT.md after completion. JVM/Robolectric/native SQLite verification
+Verified code/test commitc753d47d881a1f8e6dd41483154a98fdd4055a88 passed
+[Actions run44596272752](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44596272752):
+**376 tests,0 failures/errors/skipped**, both lints (0 errors/14 advisories each),
+debug and unsigned release builds, actual APK contracts and Room schemas1–11.
+Local verification also passed all376, both builds/lints (13 dependency advisories
+per variant) and APK verification. BUILD_REPORT.md records exact commands, the
+corrected progress-order fixture and older navigation synchronization failure.
+
+[Debug APK ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44596272752/artifacts/14566252156)
+is0.7.0/code8/API26+, expires2026-12-03. Extract app-debug.apk. It is debug-signed,
+not a verified persistent-key release. No private release key was generated. JVM/Robolectric/native SQLite verification
 does not imply instrumentation or physical-device testing.
 
 Still test on a phone: Bulgarian keyboard/IME, rotation/process force-stop/restart,
