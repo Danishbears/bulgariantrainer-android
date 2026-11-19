@@ -1,5 +1,7 @@
 package com.danishbears.bulgariantrainer.ui
 
+import android.os.Looper
+import org.robolectric.Shadows.shadowOf
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
@@ -21,6 +23,14 @@ import org.robolectric.annotation.*
 @SQLiteMode(SQLiteMode.Mode.NATIVE)
 class AspectNavigationComposeTest {
     @get:Rule val compose=createAndroidComposeRule<ComponentActivity>()
+    private fun awaitText(text:String,enabled:Boolean=false) {
+        val matcher=if(enabled)hasText(text) and isEnabled()else hasText(text)
+        compose.waitUntil(20_000) {
+            shadowOf(Looper.getMainLooper()).idle()
+            compose.waitForIdle()
+            compose.onAllNodes(matcher).fetchSemanticsNodes().isNotEmpty()
+        }
+    }
     @Test fun dashboardSectionHelpAndSystemBackKeepExistingBottomNavigationOutOfTheSection() {
         val activity=compose.activity
         val app=activity.application as BulgarianTrainerApplication
@@ -38,7 +48,9 @@ class AspectNavigationComposeTest {
             compose.onNodeWithText(app.getString(R.string.home)).assertDoesNotExist()
             compose.onNodeWithText(app.getString(R.string.dictionary)).assertDoesNotExist()
             compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText(app.getString(R.string.aspect_statistics_title)))
+            awaitText(app.getString(R.string.aspect_statistics_title),enabled=true)
             compose.onNodeWithText(app.getString(R.string.aspect_statistics_title)).performScrollTo().performClick()
+            awaitText(app.getString(R.string.aspect_statistics_scope))
             compose.onNodeWithText(app.getString(R.string.aspect_statistics_scope)).assertExists()
             compose.onNodeWithText(app.getString(R.string.home)).assertDoesNotExist()
             compose.runOnIdle{activity.onBackPressedDispatcher.onBackPressed()}
