@@ -32,19 +32,34 @@ class AoristStatisticsComposeTest {
     @Before fun setup(){speech=BulgarianPronunciation(scope,{fake});speech.initialize();fake.initialized!!(true)}
     @After fun close(){speech.close();scope.cancel()}
     private fun text(id:Int)=app.getString(id)
-    private fun awaitText(value:String){compose.waitUntil(20_000){
-        shadowOf(Looper.getMainLooper()).idle();compose.waitForIdle()
-        if(compose.onAllNodesWithText(value).fetchSemanticsNodes().isEmpty())try{compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText(value))}catch(_:AssertionError){}
-        compose.onAllNodesWithText(value).fetchSemanticsNodes().isNotEmpty()
-    }}
-    private fun click(id:Int){awaitText(text(id));compose.onNodeWithText(text(id)).performScrollTo().performClick()}
+    private fun awaitText(value:String,enabled:Boolean=false){
+        val matcher=if(enabled)hasText(value) and isEnabled()else hasText(value)
+        compose.waitUntil(20_000){
+            shadowOf(Looper.getMainLooper()).idle();compose.waitForIdle()
+            if(compose.onAllNodes(matcher).fetchSemanticsNodes().isEmpty())try{
+                compose.onNode(hasScrollToIndexAction()).performScrollToNode(matcher)
+            }catch(_:AssertionError){ /* The asynchronous destination is not ready yet. */ }
+            compose.onAllNodes(matcher).fetchSemanticsNodes().isNotEmpty()
+        }
+    }
+    private fun click(id:Int){
+        val value=text(id);awaitText(value,enabled=true)
+        compose.onNodeWithText(value).performScrollTo()
+        awaitText(value,enabled=true)
+        compose.onNode(hasText(value) and isEnabled()).performClick()
+    }
     private fun back(){compose.runOnIdle{compose.activity.onBackPressedDispatcher.onBackPressed()}}
     private fun show(){compose.setContent{
         val density=LocalDensity.current
         MaterialTheme{CompositionLocalProvider(LocalPronunciation provides speech,LocalDensity provides Density(density.density,1.5f)){
             TrainerApp(app.vocabulary,app.transfer,app.flashcards,app.typing,app.sentences,app.sentencePractice,app.statistics)
         }}
-    };click(R.string.aorist_title);click(R.string.aos_title);awaitText(text(R.string.aos_all))}
+    }
+        // The cold dashboard replaces its loading row with counts/empty guidance.
+        // Wait for that layout before tapping a lazy-row coordinate, then await the collection.
+        awaitText(text(R.string.total_words));click(R.string.aorist_title)
+        awaitText(text(R.string.aorist_search));click(R.string.aos_title);awaitText(text(R.string.aos_all))
+    }
     @Test fun emptyStatisticsRemainSeparateAndBackRestoresExistingNavigationAtLargeFont(){
         show();awaitText(text(R.string.aos_empty));compose.onNodeWithText(text(R.string.home)).assertDoesNotExist()
         click(R.string.aos_by_exercise);awaitText(text(R.string.aop_choice))
