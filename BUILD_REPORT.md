@@ -1,3 +1,173 @@
+# 2026-11-21 — Native aorist UI
+
+Feature branch: `codex/android-aorist-plan`. Existing implementation inspected and
+preserved at `7541ca87ee422f266281bfe46f2932d891613880`; new code/test commit:
+`261ae8b6286ccec546fdc8d8b628cb99e6903312`. PR #2 remains draft/open against
+`codex/android-foundation-parity`; no merge or web-repository writes.
+
+## Completed behavior and preserved contracts
+
+The existing aorist content/Room/transfer/engine/backup implementation was retained.
+This step completes the Russian Compose section: separate tense/person labels,
+wrapping six-person table with merged accessible row labels, native help, Russian
+aspect selectors, inline editor errors, readable dataset/revision import preview,
+expected/alternative feedback labels and existing Back-arrow navigation. No sixth
+bottom destination was added. Import/export, archive/restore, practice settings,
+typed/choice, draft resume, results and mistake review use the existing services.
+
+All question audio is absent until feedback, including source-lemma audio because
+a source can coincide with the answer. Notes/tables/hidden targets are not composed
+before feedback. Explicit normal/slow approved-answer TTS is reused afterward;
+missing voices do not disable answering. The isolated reflexive form and person
+remain separate; help uses the literal examples «облякох се» and «Аз се облякох».
+No generated pronoun+form sentences or sentence-gap mode was added.
+
+Candidate **0.7.1 / versionCode 9**, above repository code8; applicationId remains
+`com.danishbears.bulgariantrainer`, minSdk26. Dependency/toolchain versions, existing
+scheduler and all mode progress remain unchanged. Room11/full-backupv5/contentJSONv1
+are unchanged; all11 exported schema contracts match the previous committed files.
+No schema migration is needed for these UI-only changes. No destructive fallback,
+startup import, demo records, backend/account/sync or broad storage permissions.
+
+GitHub integration read access to both repos and target branch writes worked.
+The existing full local Android checkout was used; no reclone/recreation. Web refs
+were rechecked and unchanged: master2792dc3e4cb5d4762783140729e2c37ccac95567 and
+codex/aspect-pairs be6a91ff2ae06b8b0eae2461d8c7a8bf910ce57a. Actual web files from
+the prior source audit remain the reference; neither available source tree had a
+located aorist implementation. No new aorist web parity is claimed. Both copies of
+the original attached40-verb/240-slot JSON retain SHA-256
+`af92873c06a36c81973206cc24808d01e1e9cc2cdacce66225f92f095c521e33`.
+
+## Commands actually executed locally
+
+The cloud has Android platform/build-tools35 and Gradle8.11.1. A local JDK21 module
+launcher is used with the unchanged Java/Kotlin17 targets. Tools/caches live outside
+Git under /workspace/android-tools and /workspace/.gradle. Shell network permission
+was enabled for Gradle and git fetch; GitHub authorization and shell policy are
+separate. No repeated blocked clone attempts or committed local.properties/SDK/
+credentials/build outputs.
+
+Gradle commands used this environment prefix (workspace paths are not committed
+as build configuration):
+
+```sh
+ANDROID_HOME=/workspace/android-tools/sdk \
+ANDROID_USER_HOME=/workspace/android-tools/user \
+GRADLE_USER_HOME=/workspace/.gradle \
+JAVA_HOME=/workspace/android-tools/jdk21 \
+JAVA_TOOL_OPTIONS='-Dhttps.proxyHost=proxy -Dhttps.proxyPort=8080 -Dhttp.proxyHost=proxy -Dhttp.proxyPort=8080 -Duser.home=/workspace/android-tools/user' \
+./gradlew --no-daemon --console=plain testDebugUnitTest assembleDebug lintDebug assembleRelease lintRelease
+```
+
+- `./gradlew --no-daemon --console=plain compileDebugKotlin`: passed.
+- `./gradlew --no-daemon --console=plain testDebugUnitTest --tests '*AoristPracticeComposeTest' --tests '*AoristFlowComposeTest' --tests '*AoristNavigationComposeTest'`:
+  final targeted run passed8 tests. Initial new-test compilation used an incorrect
+  `search` parameter instead of `query`; corrected. Initial flow assertions waited
+  for offscreen lazy content before scrolling or for an asynchronously loaded Start
+  button; replaced with bounded readiness/scroll synchronization. The picker test
+  initially assumed AndroidX OpenDocument adds CATEGORY_OPENABLE; it does not, so
+  the assertion now verifies the actual ACTION_OPEN_DOCUMENT/MIME filter contract.
+  No test was removed, skipped or excluded to obtain the final result.
+- `./gradlew --no-daemon --console=plain testDebugUnitTest assembleDebug lintDebug assembleRelease lintRelease`:
+  passed, then repeated after removing the obsolete raw-aspect-filter resource
+  flagged by lint. **Final run passed381 tests,0 failures/errors/skipped**, both
+  APK builds and both lint tasks (4m6s). Final lint: **0 fatal/errors**,13 existing
+  dependency advisories per variant. Tool/dependency versions were intentionally
+  preserved. The earlier run also passed; its extra unused-resource warning was
+  fixed rather than suppressed.
+- `ANDROID_HOME=/workspace/android-tools/sdk JAVA_HOME=/workspace/android-tools/jdk21 python3 scripts/verify_apk.py app/build/outputs/apk/debug/app-debug.apk --signing debug`:
+  passed actual identity/version/minSdk/permissions/signature checks,0.7.1/code9.
+- Same command for `app/build/outputs/apk/release/app-release-unsigned.apk --signing unsigned`:
+  passed identity/permissions/non-debuggable/unsigned checks. This release output
+  is validation only and cannot be installed.
+- `python3 parity/verify_web_parity.py`: passed21 identical scheduler histories
+  and20 source-backed statistics assertions.
+- `python3 parity/verify_aspect_parity.py`: passed14 normalizations/28 planner objectives.
+- `python3 -m unittest discover -s scripts -p 'test_*.py' -v`: passed5 APK-contract tests.
+- Resource XML/string-reference audit:605 Kotlin references resolve; XML parses.
+  JSON comparison of all11 Room exports against committed HEAD passed; gradlew
+  remains executable mode100755. `git diff --check` passed.
+- `git fetch origin codex/android-aorist-plan`: succeeded with shell network
+  permission; local index/tree and published GitHub tree were checked equal.
+- `ANDROID_USER_HOME=/workspace/android-tools/user TMPDIR=/workspace/android-tools/user /workspace/android-tools/sdk/platform-tools/adb devices -l`:
+  exited134 because adb cannot create read-only `/home/agent/.android`. No emulator
+  package or /dev/kvm is present. **No device/instrumentation tests were executed.**
+
+Local final debug APK SHA-256:
+`f70579b2152b8eb6df5967218f20cad47149c3920eb4d474f5e6c698da0b3b82`.
+Local debug certificate SHA-256:
+`db123b64cfbade3156b2f7afec6f454cf5a418c358463b41f849d6432e4bebc3`.
+Local unsigned release SHA-256:
+`59ed331667dffe482d1cdf876530835f253c50a7d0368e8d6a4a13386408ba16`.
+These are local outputs; hosted debug keys/build hashes may differ.
+
+## UI checks and remaining device work
+
+Native320dp Robolectric/SQLite Compose tests cover the real starter preview and
+confirmation, no import before confirmation, typed draft Back/resume, typed/choice
+feedback and explicit Next/results, mistake review and help return. A second flow
+uses1.5x font to search, view all six table rows, edit notes/accepted alternatives,
+archive, filter archived content and restore. The system-picker flow uses real
+OpenDocument/CreateDocument contracts with mocked activity results and actual
+ContentResolver test streams: malformed JSON cannot confirm, valid JSON imports40,
+export reparses40 with no sessions/progress. This is not verification of a phone's
+real document provider.
+
+Four question UI tests cover separate time/person labels at1.4x font, hidden targets/
+notes/tables/audio in unmerged semantics, a source/target homograph with no audio
+before feedback, Check versus reveal, explicit choice submission, typed IME Done,
+approved alternatives and usable Next with a missing fake voice. Existing native
+SQLite/ViewModel tests cover database reopening, committed drafts/order/choices/
+feedback, repeated/stale actions, reveal credit, independent schedules, imports,
+rollback, migrations and backups. Mock TTS does not verify offline voice data or
+pronunciation quality.
+
+Still requires a physical phone/emulator: actual Bulgarian keyboard and IME/insets,
+rotation/process force-stop/restart, TalkBack/focus/announcements, largest system
+font/display settings, real SAF providers, complete airplane-mode import/practice/
+resume/results/backup flow, installed/missing offline voices and audio quality,
+and same-key in-place update/data preservation. See AORIST_UI_ANDROID.md for the
+repeatable checklist. Save a full manual backup before updating; keep the current
+installation/data on a signature mismatch and use the original persistent key.
+No release signing key was generated, replaced, read or committed. The existing
+release workflow is preserved and was not run; no signed release is claimed.
+
+## GitHub Actions verification
+
+[Android baseline run44896058759](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44896058759)
+completed **successfully** for code/test commit
+`261ae8b6286ccec546fdc8d8b628cb99e6903312`. The job and decoded logs were inspected:
+381 tests,0 failures/errors/skipped; both APK builds, both lints, actual debug and
+unsigned-release APK contract checks, Python/parity checks and Room schemas1–11
+passed. Hosted lint has0 fatal/errors and14 advisories per variant: OldTargetApi
+plus13 dependency updates. Versions remain pinned as requested. No device or
+instrumentation step ran.
+
+- [Download debug APK ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44896058759/artifacts/14704860022):
+  bulgariantrainer-debug,0.7.1/code9/API26+, expires2026-12-05. Extract app-debug.apk
+  and open it from Android Files (allow installation for that file manager), or use
+  `adb install -r app-debug.apk` with an authorized device and matching certificate.
+- [Download test/lint/schema reports ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44896058759/artifacts/14704790782),
+  expires2026-12-05. Artifact metadata confirms this exact branch/code commit.
+- Hosted APK SHA-256:
+  `d4762e708fae611396071f0b279e44f5cc719d3936d61aa123708bb87d5ec5e3`.
+- Hosted debug certificate SHA-256:
+  `9db285d51f48cd396f2aa7259b7ca252254692c2a835136a86b4a37aaf0819e4`.
+- Hosted unsigned-release SHA-256:
+  `6861dec248e6e4011f260763cbbc0d98ab582f0f34fb9fe0d29e1fc152626ddf`;
+  validation only, not an installable signed release.
+
+The hosted debug certificate differs from the local debug certificate, illustrating
+why an in-place debug update is not guaranteed. Preserve the existing installation
+and full backup on a mismatch; use the original persistent key for updates.
+See ANDROID_BUILDS.md, RELEASE_SIGNING.md and AORIST_UI_ANDROID.md for instructions.
+
+The documentation-only follow-up does not change runtime/resources/tests/schema/
+build files relative to the tested261ae8b commit. Its skip-CI marker is not a claim
+that a separate workflow ran on that documentation commit.
+
+---
+
 # 2026-11-19
 
 Offline aorist typed/choice practice is implemented on `codex/android-aorist-plan`.

@@ -91,6 +91,23 @@ There are no sentence-gap exercises in this release.
 
 ## Verification scope
 
+[Verified Actions run44896058759](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44896058759)
+passed on code/test commit261ae8b6286ccec546fdc8d8b628cb99e6903312:
+381 JVM tests (0 failures/errors/skipped), debug/unsigned-release builds, both lints
+(0 errors;14 advisories each), APK identity/signature checks and Room schemas1–11.
+Local checks also passed all381, both builds/lints (13 dependency advisories each),
+APK checks and existing parity fixtures.
+
+[Download debug APK ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44896058759/artifacts/14704860022)
+—0.7.1/code9/API26+, available until2026-12-05. Extract **app-debug.apk** and open
+it from Android Files, allowing installation for that file manager. This is a
+verified debug-signed build; the persistent-key release workflow was not run.
+Cloud debug certificates can differ between runs. Save a full backup before an
+update and preserve the current app/data if signatures do not match.
+[Test/lint/schema reports](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44896058759/artifacts/14704790782)
+are available alongside it. Exact commands, checksums and remaining checks are
+in BUILD_REPORT.md.
+
 Native Compose tests use Robolectric, the real local Room repository, the original
 starter asset and a fake TTS adapter. They exercise 320 dp layouts, enlarged text,
 separate time/person labels, hidden content/audio in unmerged semantics, IME submit,

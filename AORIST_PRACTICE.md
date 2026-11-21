@@ -228,6 +228,14 @@ the initial UI-stage details below where noted; Room11/full-backupv5 are unchang
 
 ## Verification and device checks
 
+Current native UI candidate0.7.1/code9 is verified by
+[run44896058759](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44896058759):
+381 tests,0 failures/errors/skipped, both builds/lints and APK/schema checks.
+[Download its debug APK ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44896058759/artifacts/14704860022)
+(expires2026-12-05); see AORIST_UI_ANDROID.md and BUILD_REPORT.md for instructions,
+actual verification scope and signing status. The older evidence below remains
+as implementation history.
+
 Tests use the actual starter for the required conjugations. Native SQLite tests
 exercise both types/all persons, alternatives/normalization, queue/shortage,
 deduped distractors, reveal/retry/races, transaction rollback, file-database reopening,
