@@ -29,7 +29,7 @@ class AspectPracticeViewModelTest {
     private val filename="aspect-vm-${UUID.randomUUID()}.db"
     private var number=0
     @Before fun setup(){Dispatchers.setMain(UnconfinedTestDispatcher());context=ApplicationProvider.getApplicationContext();open()}
-    private fun open(){db=Room.databaseBuilder(context,TrainerDatabase::class.java,filename).addMigrations(MIGRATION_8_9).build();repo=AspectPracticeRepository(db)}
+    private fun open(){db=Room.databaseBuilder(context,TrainerDatabase::class.java,filename).addMigrations(MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11).build();repo=AspectPracticeRepository(db)}
     @After fun teardown(){store.clear();db.close();context.deleteDatabase(filename);Dispatchers.resetMain()}
     private fun model(handle:SavedStateHandle=SavedStateHandle())=AspectPracticeViewModel(repo,handle).also{store.put("aspect${number++}",it)}
     private suspend fun ready(vm:AspectPracticeViewModel,predicate:(AspectPracticeUi)->Boolean={true})=withTimeout(10_000){vm.state.first{!it.loading&&!it.busy&&predicate(it)}}

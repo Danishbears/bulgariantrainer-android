@@ -73,7 +73,7 @@ fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferReposi
     Scaffold(
         snackbarHost = { SnackbarHost(snackbar) },
         bottomBar = {
-            if (!route.startsWith("word/") && !route.startsWith("sentence/") && !route.startsWith("aspect")) NavigationBar {
+            if (!route.startsWith("word/") && !route.startsWith("sentence/") && !route.startsWith("aspect") && !route.startsWith("aorist")) NavigationBar {
                 listOf("home" to R.string.home, "vocabulary" to R.string.dictionary, "flashcards" to R.string.flashcards, "typing" to R.string.typing, "transfer" to R.string.transfer).forEach { (target, label) ->
                     NavigationBarItem(enabled = !backupState.busy && !backupState.restored, selected = route == target,
                         onClick = { controller.navigate(target) {
@@ -97,7 +97,8 @@ fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferReposi
                     onSentences = { controller.navigate("sentences") { launchSingleTop = true } },
                     onStatistics = { controller.navigate("statistics") { launchSingleTop = true } },
                     onBackup = { controller.navigate("backup") { launchSingleTop = true } },
-                    onAspects = { controller.navigate("aspects") { launchSingleTop = true } })
+                    onAspects = { controller.navigate("aspects") { launchSingleTop = true } },
+                    onAorist = { controller.navigate("aorist") { launchSingleTop = true } })
             }
             composable("vocabulary") {
                 VocabularyScreen(model, onAdd = { controller.navigate("word/new") },
@@ -144,6 +145,23 @@ fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferReposi
                 })
                 WordMistakesScreen(model, onBack = { controller.popBackStack() })
             }
+            composable("aorist-practice") {
+                val practiceModel:AoristPracticeViewModel=viewModel(factory=viewModelFactory {initializer {AoristPracticeViewModel(application.aoristPractice,createSavedStateHandle())}})
+                AoristPracticeScreen(practiceModel,onCollection={if(!controller.popBackStack("aorist",false,saveState=true))controller.navigate("aorist"){popUpTo("home");launchSingleTop=true}},
+                    onHelp={controller.navigate("aorist-help"){launchSingleTop=true}},
+                    onStatistics={controller.navigate("aorist-statistics"){launchSingleTop=true}})
+            }
+            composable("aorist") {
+                val aoristModel:AoristViewModel=viewModel(factory=viewModelFactory {initializer {AoristViewModel(application.aorist,com.danishbears.bulgariantrainer.aorist.AoristDocuments(application),createSavedStateHandle())}})
+                AoristScreen(aoristModel,onBack={controller.popBackStack()},onPractice={controller.navigate("aorist-practice"){launchSingleTop=true;restoreState=true}},
+                    onHelp={controller.navigate("aorist-help"){launchSingleTop=true}},
+                    onStatistics={controller.navigate("aorist-statistics"){launchSingleTop=true}})
+            }
+            composable("aorist-statistics") {
+                val model:AoristStatisticsViewModel=viewModel(factory=viewModelFactory {initializer {AoristStatisticsViewModel(application.aoristStatistics,createSavedStateHandle())}})
+                AoristStatisticsScreen(model,onBack={controller.popBackStack()})
+            }
+            composable("aorist-help") { AoristHelpScreen(onBack={controller.popBackStack()}) }
             composable("aspects") {
                 val aspectModel: AspectViewModel = viewModel(factory = viewModelFactory {
                     initializer { AspectViewModel(application.aspects, com.danishbears.bulgariantrainer.aspect.AspectDocuments(application), createSavedStateHandle()) }

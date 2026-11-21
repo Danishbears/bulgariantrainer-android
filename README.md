@@ -1,3 +1,26 @@
+> **Аорист — завершение интеграции, 2026-11-21:** отдельная статистика по лицам
+> и типам упражнения, подробный предпросмотр полного бэкапа v5 и явные последствия
+> замены старой копией. Кандидат **0.8.0/code10**, Room11; applicationId и настройка подписания
+> сохранены. [AORIST_INTEGRATION.md](AORIST_INTEGRATION.md) — импорт, запуск,
+> точные показатели, совместимость бэкапов и проверки на телефоне.
+
+> **2026-11-21:** Нативный раздел **Аорист**: таблица шести лиц, редактирование,
+> архив, JSON-предпросмотр, набор/выбор ответа, продолжение, результаты и справка.
+> Время и лицо указаны отдельно; звук и пояснения скрыты до обратной связи.
+> [AORIST_UI_ANDROID.md](AORIST_UI_ANDROID.md) — инструкция и границы проверки.
+> Кандидат **0.7.1/code9**, Room11, полный бэкап v5; подписывание не изменено.
+
+> **2026-11-19:** Offline aorist practice is now available through **Главная →
+> Аорист → Практика аориста**: typed recall (defaultаз), choice, selected persons,
+> durable sessions and independent schedules. [AORIST_PRACTICE.md](AORIST_PRACTICE.md)
+> documents exact matching/reveal/choice rules and full-backupv5 compatibility.
+> The earlier content-stage notes below remain as implementation history.
+
+> Aorist content is now available through **Главная → Аорист**: inspect the starter
+> 40-verb set or choose JSON, review and explicitly confirm selected records.
+> [AORIST_CONTENT.md](AORIST_CONTENT.md) documents storage/import/export and full
+> backupv4 compatibility. Aorist practice is a later stage; existing modes remain.
+
 > **Завершение интеграции видовых пар:** отдельная статистика и полный бэкап v3
 > с явным предупреждением для старых v1/v2. Как импортировать и начать занятия,
 > что сохраняется и как проверять: [ASPECT_INTEGRATION.md](ASPECT_INTEGRATION.md).

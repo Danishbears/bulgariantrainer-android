@@ -295,7 +295,7 @@ class VocabularyRepositoryTest {
 
     @Test fun unsupportedSchemaVersionFailsWithoutDestructivelyDeletingData() = runBlocking<Unit> {
         val saved = repository.create(word())
-        database.openHelper.writableDatabase.execSQL("PRAGMA user_version = 10")
+        database.openHelper.writableDatabase.execSQL("PRAGMA user_version = 12")
         database.close()
         database = open()
         repository = VocabularyRepository(database, clock)

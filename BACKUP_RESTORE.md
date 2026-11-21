@@ -1,3 +1,25 @@
+> **2026-11-21 completion:** full format remains **v5/schema11**. It already
+> includes all aorist content/practice/settings; derived statistics require no
+> new table or wire version. Preview now lists person slots, accepted answers,
+> progress and schedules. v1–v3 explicitly replace aorist with empty content and
+> history; v4 retains content but clears practice/settings/statistics. Warnings
+> appear in preview and confirmation. See AORIST_INTEGRATION.md for the complete
+> inventory, compatibility policy and actual migration/WAL/restore verification.
+
+> **2026-11-19:** Current full-backup **v5/schema11** includes complete aorist
+> practice (40tables/26sequences). Original v1–v4 are validated before expansion:
+> v1–v3 have no aorist content/history; v4 restores aorist content while clearing
+> current aorist practice/preferences, with explicit preview/dialog warnings.
+> See AORIST_PRACTICE.md; earlier version descriptions below are historical.
+
+> Current content-stage update: full backup **v4/schema10** includes dedicated
+> aorist datasets/verbs/forms/answers/receipts (34tables/23sequences). Original
+> v1/schema7, v2/schema8 and v3/schema9 are still validated before expansion.
+> All three lack aorist: explicitly confirmed full replacement clears current
+> aorist content, with warnings in preview and confirmation. Content JSON v1 is
+> separate. See AORIST_CONTENT.md; historical v3 details below describe the prior
+> inventory, whose rows and original checksums remain supported.
+
 > **Compatibility preview:** the validated original version now appears in both
 > preview and replacement confirmation. v1 removes current aspect content/history;
 > v2 restores its aspect content and removes current aspect-practice history. Both
@@ -59,8 +81,10 @@ drafts retain precedence during ordinary Activity recovery. Only valid size choi
 are persisted. Old per-session configuration is untouched, and no preference row
 or demo content is silently inserted on migration.
 
-Unsubmitted drafts, navigation/search state and picker permissions are transient,
-not learning records. Device TTS engine/voice data, system theme/time-zone, binaries,
+Aorist unsubmitted drafts and selected choices are persisted in the v5 question
+rows, alongside committed feedback and position; they are part of full backup.
+Navigation/search/statistics-tab state and picker permissions are transient,
+not learning records. Older modes follow their own documented draft policies. Device TTS engine/voice data, system theme/time-zone, binaries,
 credentials and Android's external settings are not app-owned backup data. TTS
 availability must be checked again on the destination device. CSV files remain
 content-only and do not contain this learning history.

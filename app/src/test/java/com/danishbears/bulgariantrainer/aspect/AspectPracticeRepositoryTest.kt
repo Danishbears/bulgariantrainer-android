@@ -30,7 +30,7 @@ class AspectPracticeRepositoryTest {
     private var at=Instant.parse("2026-11-01T12:00:00Z")
     private val clock=object:Clock(){override fun getZone()=ZoneOffset.UTC;override fun withZone(zone:ZoneId):Clock=this;override fun instant()=at}
     @Before fun setup(){context=ApplicationProvider.getApplicationContext();open()}
-    private fun open(){db=Room.databaseBuilder(context,TrainerDatabase::class.java,filename).addMigrations(MIGRATION_8_9).build();repo=AspectPracticeRepository(db,clock,Random(12));content=AspectRepository(db,clock)}
+    private fun open(){db=Room.databaseBuilder(context,TrainerDatabase::class.java,filename).addMigrations(MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11).build();repo=AspectPracticeRepository(db,clock,Random(12));content=AspectRepository(db,clock)}
     @After fun teardown(){db.close();context.deleteDatabase(filename)}
     private fun uuid()=UUID.randomUUID().toString()
     private fun source()=Json.parseToJsonElement(javaClass.classLoader!!.getResourceAsStream("bulgarian_aspect_pairs_100.json")!!.bufferedReader().use{it.readText()}).jsonObject
@@ -43,7 +43,7 @@ class AspectPracticeRepositoryTest {
     private suspend fun start(settings:AspectSettings=settings(),shorter:Boolean=false)=repo.start(uuid(),settings,shorter)
     private fun count(table:String)=db.openHelper.readableDatabase.query("SELECT COUNT(*) FROM $table").use{it.moveToFirst();it.getInt(0)}
     private suspend fun rejected(block:suspend()->Unit){try{block();fail("expected rejection")}catch(_:AspectException){}}
-    private suspend fun legacy()=BackupFormat.decode(BackupRepository(context,db,clock).snapshot()).getValue("tables").jsonObject.filterKeys{it !in BackupFormat.practiceTables}
+    private suspend fun legacy()=BackupFormat.decode(BackupRepository(context,db,clock).snapshot()).getValue("tables").jsonObject.filterKeys{it in (BackupFormat.legacyTables+BackupFormat.aspectTables)}
     @Test fun requiredDirectionsAlternativesParticlesSpellingAndMeaningCases()=runBlocking<Unit> {
         data class Case(val id:String,val d:AspectDirection,val raw:String,val correct:Boolean)
         val f=AspectDirection.IMPERFECTIVE_TO_PERFECTIVE;val r=AspectDirection.PERFECTIVE_TO_IMPERFECTIVE
@@ -146,22 +146,22 @@ class AspectPracticeRepositoryTest {
         repo.next(s.id,s.question!!.id);backup.restore(preview);assertEquals(feedback,repo.restore());assertArrayEquals(bytes,backup.snapshot())
         val root=BackupFormat.decode(bytes)
         val old=JsonObject(root+mapOf("formatVersion" to JsonPrimitive(2),"schemaVersion" to JsonPrimitive(8),
-            "tables" to JsonObject(root.getValue("tables").jsonObject.filterKeys{it !in BackupFormat.practiceTables}),
-            "sequences" to JsonObject(root.getValue("sequences").jsonObject.filterKeys{it !in BackupFormat.practiceSequences})))
+            "tables" to JsonObject(root.getValue("tables").jsonObject.filterKeys{it in (BackupFormat.legacyTables+BackupFormat.aspectTables)}),
+            "sequences" to JsonObject(root.getValue("sequences").jsonObject.filterKeys{it in (BackupFormat.legacySequences+BackupFormat.aspectSequences)})))
         val signed=JsonObject(old+("sha256" to JsonPrimitive(BackupFormat.digest(old)))).toString().toByteArray()
         val oldPreview=backup.prepare(signed);backup.restore(oldPreview)
         assertNull(repo.restore());assertEquals(2L,content.list().total);assertEquals(0,count("aspect_progress"))
     }
     @Test fun schema8UpgradeKeepsAspectContentIdsReceiptsAndAllLegacyRows()=runBlocking<Unit> {
         seed(listOf("bgasp-057"));VocabularyRepository(db,clock).create(WordInput("дума",listOf(TranslationInput("слово"))))
-        val before=legacy();val beforeSeq=BackupFormat.decode(BackupRepository(context,db,clock).snapshot()).getValue("sequences").jsonObject.filterKeys{it !in BackupFormat.practiceSequences}
+        val before=legacy();val beforeSeq=BackupFormat.decode(BackupRepository(context,db,clock).snapshot()).getValue("sequences").jsonObject.filterKeys{it in (BackupFormat.legacySequences+BackupFormat.aspectSequences)}
         db.openHelper.writableDatabase.apply {
-            for(table in BackupFormat.practiceTables.asReversed())execSQL("DROP TABLE `$table`")
+            for(table in (BackupFormat.practiceTables+BackupFormat.aoristTables+BackupFormat.aoristPracticeTables).asReversed())execSQL("DROP TABLE `$table`")
             execSQL("PRAGMA user_version = 8")
         }
         db.close();open()
-        assertEquals(9,db.openHelper.writableDatabase.version);assertEquals(before,legacy())
-        assertEquals(beforeSeq,BackupFormat.decode(BackupRepository(context,db,clock).snapshot()).getValue("sequences").jsonObject.filterKeys{it !in BackupFormat.practiceSequences})
+        assertEquals(11,db.openHelper.writableDatabase.version);assertEquals(before,legacy())
+        assertEquals(beforeSeq,BackupFormat.decode(BackupRepository(context,db,clock).snapshot()).getValue("sequences").jsonObject.filterKeys{it in (BackupFormat.legacySequences+BackupFormat.aspectSequences)})
         assertEquals(1,start().total)
     }
     @Test fun internallyInconsistentBackupIsRejectedBeforeChangingLivePractice()=runBlocking<Unit> {
