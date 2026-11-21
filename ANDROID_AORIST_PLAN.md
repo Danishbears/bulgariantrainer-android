@@ -1,3 +1,9 @@
+> **2026-11-21 UI follow-up:** Native management, six-person table/editor,
+> import/export, typed/choice practice, resume/results and help are integrated;
+> see [AORIST_UI_ANDROID.md](AORIST_UI_ANDROID.md). Separate time/person labels
+> and withholding all question audio until feedback supersede initial source-audio
+> policy. No sentence-gap mode. Room11, backupv5 and existing histories preserved.
+
 > **2026-11-19 practice-stage update:** Typed/choice practice, native screens,
 > Room11 durable sessions/drafts/results, independent form/type schedules and
 > full-backupv5 are implemented. Fresh default istyped/аз as explicitly requested,
@@ -22,7 +28,7 @@ Date: 2026-11-18.
 Status: **content stage implemented under the follow-on request**. Actual storage,
 management, transfer and backup contracts are documented in AORIST_CONTENT.md.
 Typed/choice practice is now implemented; see AORIST_PRACTICE.md. ApplicationId and runtime
-dependencies/signing workflow are preserved; current version is0.7.0/code8.
+dependencies/signing workflow are preserved; current version is0.7.1/code9.
 
 ## 1. Evidence, reference revisions and blockers
 
@@ -482,9 +488,10 @@ between aspect partners. Do not teach the false rule that only perfective verbs
 have aorist. Avoid guessed linguistic explanations when dataset content is absent.
 
 Reuse the Activity-owned Bulgarian TTS coordinator and add aorist policy targets:
-explicit playback for visible dictionary source immediately; target reference/
-approved alternatives only after submit/reveal. In choice practice, keep audio
-for the answer reference until feedback; no hidden correct-option audio cue.
+all question playback only after submit/reveal, for approved references and
+alternatives. The 2026-11-21 UI requirement supersedes immediate source playback:
+a dictionary form can coincide with the target. In choice practice, do not add
+pre-feedback option audio or a hidden correct-option audio cue.
 Never speak a wrong raw submission as the approved example.
 Normal/slow playback replaces current audio and stops on question/route changes.
 Missing/offline-unavailable Bulgarian voices show existing setup guidance and

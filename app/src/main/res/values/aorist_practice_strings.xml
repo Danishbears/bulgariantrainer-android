@@ -16,8 +16,8 @@
     <string name="aop_shorter">Без повторений доступно %1$d заданий. Предлагаем короткое занятие.</string>
     <string name="aop_start_fewer">Начать с доступными вариантами и размером</string>
     <string name="aop_offer_typed">Перейти к набору ответа</string>
-    <string name="aop_instruction_typed">Напиши форму аориста (минало свършено време): %1$s.</string>
-    <string name="aop_instruction_choice">Выбери форму аориста (минало свършено време): %1$s.</string>
+    <string name="aop_instruction_typed">Напиши форму аориста для указанного лица.</string>
+    <string name="aop_instruction_choice">Выбери форму аориста для указанного лица.</string>
     <string name="aop_option_count">Вариантов: %1$d. Выбери один и нажми «Проверить».</string>
     <string name="aop_reveal_hint">Показ ответа не даёт правильного зачёта: серия сбросится, повторение будет через 24 часа для этого лица и упражнения.</string>
     <string name="aop_revealed">Ответ показан. Самостоятельное воспроизведение не засчитано.</string>
@@ -35,4 +35,9 @@
     <string name="aop_draft_error">Сохранение черновика не подтверждено. Перед выходом повторите сохранение или отправьте ответ.</string>
     <string name="aop_backup_v4">Эта копия содержит материал аориста, но не его практику. Полная замена очистит нынешние сессии, попытки, расписания и настройки аориста.</string>
     <string name="aop_backup_sessions">Практика аориста: %1$d сессий, %2$d попыток.</string>
+    <string name="aop_tense">Время: минало свършено време</string>
+    <string name="aop_person">Лицо: %1$s</string>
+    <string name="aop_expected">Ожидаемая форма</string>
+    <string name="aop_alternative">Принятый альтернативный ответ</string>
+    <string name="aop_note">Примечание: %1$s</string>
 </resources>

@@ -1,6 +1,6 @@
 # Android builds and APK installation
 
-The **Android baseline** workflow uses Temurin JDK 17, the committed Gradle
+The **Android baseline** workflow installs Temurin JDK 21 and 17, the committed Gradle
 8.11.1 wrapper, Android Platform 35 and Build Tools 35.0.0. These match AGP
 8.9.2 and the project's Java/Kotlin 17 targets. The wrapper JAR and scripts are
 committed; `gradlew` has Git mode `100755` for Linux execution. No system Gradle
@@ -74,10 +74,11 @@ Use an Android 8.0/API 26 or newer device.
 Debug APKs use automatically generated debug signing keys. **Debug signing keys
 may differ between cloud runners, so successive debug builds are not guaranteed
 to update each other**, or a locally built APK. A signature mismatch may appear
-as `INSTALL_FAILED_UPDATE_INCOMPATIBLE` or “App not installed.” To install the new
-build, uninstall the old app first; this deletes its app-private vocabulary and
-other local data. Preserve any needed data before uninstalling. The application
-ID is `com.danishbears.bulgariantrainer`.
+as `INSTALL_FAILED_UPDATE_INCOMPATIBLE` or “App not installed.” On a signature mismatch, preserve the existing installation and its data;
+use the original persistent signing key for an in-place update. Save and verify
+a full manual backup before changing installations. Do not uninstall the user's
+app to force an update. The application ID is
+`com.danishbears.bulgariantrainer`.
 
 The separate **Personal signed release** workflow supports a persistent personal
 key, pinned public certificate and signed APK artifacts after owner configuration.

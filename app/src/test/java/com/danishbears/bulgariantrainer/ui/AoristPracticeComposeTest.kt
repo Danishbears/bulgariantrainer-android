@@ -50,11 +50,13 @@ class AoristPracticeComposeTest {
         val q=mutableStateOf(question(AoristExercise.TYPED,"1pl"));var next=0
         show(1.4f){PronunciationBoundary(q.value.id);AoristQuestionCard(7,q.value,"",null,true,{}, {}, {}, {}, {next++})}
         compose.onNodeWithText("чета — читать").assertExists()
-        compose.onNodeWithText(context.getString(R.string.aop_instruction_typed,context.getString(R.string.aorist_1pl))).assertExists()
+        compose.onNodeWithText(context.getString(R.string.aop_tense)).assertExists()
+        compose.onNodeWithText("Лицо: ние").assertExists()
+        compose.onNodeWithText(context.getString(R.string.aop_instruction_typed)).assertExists()
         val before=compose.onRoot(useUnmergedTree=true).printToString();assertFalse(before.contains("четохме"));assertFalse(before.contains(AoristContent.text(entry(),"note")))
         compose.onNodeWithContentDescription(listen("четохме")).assertDoesNotExist();assertTrue(fake.spoken.isEmpty())
-        compose.onNodeWithContentDescription(listen("чета")).performScrollTo().performClick()
-        compose.runOnIdle{assertEquals("чета",fake.spoken.single().text);q.value=q.value.copy(feedback=AoristFeedback(AoristOutcome.INCORRECT,"прочетохме",null,listOf("четохме"),entry()))}
+        compose.onNodeWithContentDescription(listen("чета")).assertDoesNotExist()
+        compose.runOnIdle{q.value=q.value.copy(feedback=AoristFeedback(AoristOutcome.INCORRECT,"прочетохме",null,listOf("четохме"),entry()))}
         compose.onNodeWithText(context.getString(R.string.ap_mismatch)).assertExists()
         compose.onNodeWithContentDescription(listen("прочетохме")).assertDoesNotExist()
         compose.onNodeWithContentDescription(listen("четохме")).performScrollTo().performClick()
@@ -65,12 +67,44 @@ class AoristPracticeComposeTest {
         val q=question(AoristExercise.CHOICE,"2sg",listOf(AoristOption("o1","чете"),AoristOption("o2","четох"),AoristOption("o3","четохме"),AoristOption("o4","четохте")))
         var selected by mutableStateOf<String?>(null);var submitted:String?=null
         show{AoristQuestionCard(7,q,"",selected,true,{}, {selected=it}, {submitted=selected}, {}, {})}
-        compose.onNodeWithText(context.getString(R.string.aop_instruction_choice,context.getString(R.string.aorist_2sg))).assertExists()
+        compose.onNodeWithText(context.getString(R.string.aop_instruction_choice)).assertExists()
+        compose.onNodeWithText("Лицо: ти").assertExists()
+        compose.onNodeWithContentDescription(listen("чета")).assertDoesNotExist()
+        val before=compose.onRoot(useUnmergedTree=true).printToString()
+        assertFalse(before.contains(AoristContent.text(entry(),"note")))
+        compose.onNodeWithText(context.getString(R.string.aorist_table)).assertDoesNotExist()
         compose.onNodeWithText(context.getString(R.string.typing_submit)).assertIsNotEnabled()
         compose.onNodeWithText("четох").performScrollTo().performClick()
         compose.runOnIdle{assertEquals("o2",selected);assertNull(submitted)}
         compose.onNodeWithContentDescription(listen("чете")).assertDoesNotExist()
         compose.onNodeWithText(context.getString(R.string.typing_submit)).performScrollTo().performClick()
         compose.runOnIdle{assertEquals("o2",submitted)}
+    }
+    @Test fun sourceHomographCannotLeakThroughAudioAndRevealKeepsCheckSeparate() {
+        val q=mutableStateOf(question(AoristExercise.TYPED,"1sg").copy(prompt=AoristPrompt("започна","начать","2sg")))
+        var checked=0;var revealed=0
+        show{AoristQuestionCard(7,q.value,"започна",null,true,{}, {}, {checked++}, {
+            revealed++;q.value=q.value.copy(feedback=AoristFeedback(AoristOutcome.REVEALED,null,null,listOf("започна"),entry()))
+        }, {})}
+        compose.onNodeWithContentDescription(listen("започна")).assertDoesNotExist()
+        compose.onNodeWithText(context.getString(R.string.flash_reveal)).performScrollTo().performClick()
+        compose.runOnIdle{assertEquals(0,checked);assertEquals(1,revealed);assertTrue(fake.spoken.isEmpty())}
+        compose.onNodeWithText(context.getString(R.string.aop_revealed)).assertExists()
+        compose.onNodeWithText(context.getString(R.string.typing_submit)).assertDoesNotExist()
+        compose.onNodeWithContentDescription(listen("започна")).performScrollTo().assertIsEnabled()
+    }
+    @Test fun missingVoiceDoesNotBlockTypedImeSubmissionAndFeedbackAlternativesAreExplicit() {
+        fake.available=emptyList();speech.initialize();fake.initialized!!(true)
+        val q=mutableStateOf(question(AoristExercise.TYPED,"1pl"));var input by mutableStateOf("");var submits=0
+        show{AoristQuestionCard(7,q.value,input,null,true,{input=it}, {}, {
+            submits++;q.value=q.value.copy(feedback=AoristFeedback(AoristOutcome.CORRECT,input,null,listOf("четохме","синтетичен вариант"),entry()))
+        }, {}, {})}
+        compose.onNodeWithText(context.getString(R.string.ap_answer)).performScrollTo().performTextInput("четохме")
+        compose.onNodeWithText(context.getString(R.string.ap_answer)).performImeAction()
+        compose.runOnIdle{assertEquals(1,submits);assertTrue(fake.spoken.isEmpty())}
+        compose.onNodeWithText(context.getString(R.string.aop_expected)).assertExists()
+        compose.onNodeWithText(context.getString(R.string.aop_alternative)).assertExists()
+        compose.onNodeWithContentDescription(listen("четохме")).performScrollTo().assertIsNotEnabled()
+        compose.onNodeWithText(context.getString(R.string.ap_next)).performScrollTo().assertIsEnabled()
     }
 }

@@ -14,6 +14,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -22,7 +23,7 @@ import com.danishbears.bulgariantrainer.aorist.*
 import kotlinx.serialization.json.*
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable fun AoristScreen(model:AoristViewModel,onBack:()->Unit,onPractice:()->Unit={}) {
+@Composable fun AoristScreen(model:AoristViewModel,onBack:()->Unit,onPractice:()->Unit={},onHelp:()->Unit={}) {
     val state by model.state.collectAsStateWithLifecycle()
     val filter by model.filter.collectAsStateWithLifecycle()
     val draft by model.draft.collectAsStateWithLifecycle()
@@ -47,7 +48,7 @@ import kotlinx.serialization.json.*
         confirmButton={TextButton(enabled=!state.busy,onClick={confirm=false;model.confirm()}){Text(stringResource(R.string.aorist_save_selected))}},
         dismissButton={TextButton(onClick={confirm=false}){Text(stringResource(R.string.cancel_edit))}})
     Scaffold(modifier=Modifier.imePadding(),contentWindowInsets=WindowInsets(0,0,0,0),topBar={
-        TopAppBar(title={Text(stringResource(R.string.aorist_title))},navigationIcon={TextButton(enabled=!state.busy,onClick=back){Text(stringResource(R.string.aspect_back))}})
+        AspectTopBar(stringResource(R.string.aorist_title),back,enabled=!state.busy)
     }){padding->Column(Modifier.fillMaxSize().padding(padding)) {
         if(state.busy)LinearProgressIndicator(Modifier.fillMaxWidth())
         LazyColumn(state=scroll,contentPadding=PaddingValues(20.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
@@ -62,9 +63,13 @@ import kotlinx.serialization.json.*
                         listOf("datasetId","id","source_title","source_url","source_section","source_checkedOn")
                     items(editFields.size,key={editFields[it]}){i->val field=editFields[i]
                         val multiline=field in AoristContent.persons||field=="note"
-                        OutlinedTextField(fields[field]?.jsonPrimitive?.content.orEmpty(),{model.draftField(field,it)},
+                        val value=fields[field]?.jsonPrimitive?.content.orEmpty()
+                        val error=state.fieldErrors.entries.firstOrNull{(path,_)->path==field||path.startsWith("$field.")||path.startsWith("forms.$field")||path==field.replace("source_","source.")}?.value
+                        if(field=="aspect")AoristAspectSelector(value.ifBlank{null},!state.busy,includeAll=false){model.draftField(field,it.orEmpty())}
+                        else OutlinedTextField(value,{model.draftField(field,it)},
                             enabled=!state.busy,readOnly=model.editingExisting&&field in setOf("id","datasetId"),
                             label={Text(aoristFieldLabel(field))},modifier=Modifier.fillMaxWidth(),singleLine=!multiline,minLines=if(multiline)2 else 1,
+                            isError=error!=null,supportingText=error?.let{message->{Text(message)}},
                             keyboardOptions=KeyboardOptions(autoCorrectEnabled=false,imeAction=if(multiline)ImeAction.Default else ImeAction.Next))
                     }
                     item{Button(enabled=!state.busy,onClick={focus.clearFocus();model.save()},modifier=Modifier.fillMaxWidth()){Text(stringResource(R.string.aorist_save))}
@@ -78,7 +83,8 @@ import kotlinx.serialization.json.*
                 }
                 state.preview!=null->{
                     val p=state.preview!!
-                    item{Text(p.filename);Text(p.metadata.toString(),style=MaterialTheme.typography.bodySmall)
+                    item{Text(p.filename);Text(stringResource(R.string.aorist_preview_dataset,
+                            (p.metadata["datasetId"] as? JsonPrimitive)?.takeIf{it.isString}?.content.orEmpty(),p.metadata["datasetRevision"]?.toString().orEmpty()))
                         Text(stringResource(R.string.aorist_preview_hint))
                         Text(stringResource(R.string.aorist_preview_counts,p.changes.count{it.kind==AoristChangeKind.ADD},p.changes.count{it.kind==AoristChangeKind.UNCHANGED},p.changes.count{it.kind==AoristChangeKind.UPDATE}))
                         if(p.metadataChanged)AspectNotice(stringResource(R.string.aorist_metadata_changed))
@@ -97,6 +103,7 @@ import kotlinx.serialization.json.*
                 }
                 else->{
                     item{Button(enabled=!state.busy,onClick=onPractice,modifier=Modifier.fillMaxWidth()){Text(stringResource(R.string.aop_title))}
+                        TextButton(enabled=!state.busy,onClick=onHelp){Text(stringResource(R.string.aorist_help_title))}
                         Text(stringResource(R.string.aorist_content_stage))
                         Button(enabled=!state.busy,onClick={model.beginEdit()},modifier=Modifier.fillMaxWidth()){Text(stringResource(R.string.aorist_create))}}
                     state.summary?.let{s->item{AspectNotice(stringResource(R.string.aorist_summary,s.created,s.updated,s.unchanged,s.deselected))}}
@@ -105,7 +112,8 @@ import kotlinx.serialization.json.*
                             keyboardOptions=KeyboardOptions(imeAction=ImeAction.Search),keyboardActions=KeyboardActions(onSearch={focus.clearFocus();model.reload()}))
                         TextButton(onClick={filters=!filters}){Text(stringResource(R.string.aorist_filters))}
                         if(filters)Column(verticalArrangement=Arrangement.spacedBy(8.dp)) {
-                            for((i,label)in listOf(0 to R.string.aorist_dataset_filter,2 to R.string.aorist_aspect_filter,3 to R.string.aorist_group_filter,4 to R.string.aorist_particle_filter))
+                            AoristAspectSelector(filter[2].ifBlank{null},!state.busy){model.filterField(2,it.orEmpty())}
+                            for((i,label)in listOf(0 to R.string.aorist_dataset_filter,3 to R.string.aorist_group_filter,4 to R.string.aorist_particle_filter))
                                 OutlinedTextField(filter[i],{model.filterField(i,it)},enabled=!state.busy,label={Text(stringResource(label))},singleLine=true,modifier=Modifier.fillMaxWidth())
                             AspectCheckbox(stringResource(R.string.aorist_archived_only),filter[5]=="true",!state.busy){model.filterField(5,it.toString())}
                         }
@@ -144,12 +152,36 @@ import kotlinx.serialization.json.*
     "1sg"->R.string.aorist_1sg;"2sg"->R.string.aorist_2sg;"3sg"->R.string.aorist_3sg
     "1pl"->R.string.aorist_1pl;"2pl"->R.string.aorist_2pl;else->R.string.aorist_3pl
 })
-@Composable private fun AoristEntry(e:JsonObject) {
+@Composable internal fun AoristEntry(e:JsonObject) {
     Column(verticalArrangement=Arrangement.spacedBy(8.dp)) {
-        Text(AoristContent.text(e,"lemma")+" — "+AoristContent.text(e,"russian"),style=MaterialTheme.typography.titleLarge)
-        for(person in AoristContent.persons)Text(aoristFieldLabel(person)+": "+AoristContent.answers(e,person).joinToString("; "))
-        for(field in listOf("aspect","studyGroup","note"))Text(aoristFieldLabel(field)+": "+AoristContent.text(e,field))
+        Text(AoristContent.text(e,"lemma")+" — "+AoristContent.text(e,"russian"),style=MaterialTheme.typography.titleLarge,modifier=Modifier.semantics{heading()})
+        Text(stringResource(R.string.aop_tense))
+        Text(stringResource(R.string.aorist_table),style=MaterialTheme.typography.titleMedium,modifier=Modifier.semantics{heading()})
+        // Weighted wrapping columns: no fixed row height, horizontal clipping or synthetic sentences.
+        for(person in AoristContent.persons){
+            HorizontalDivider()
+            Row(Modifier.fillMaxWidth().semantics(mergeDescendants=true){},horizontalArrangement=Arrangement.spacedBy(12.dp)) {
+                Text(aoristFieldLabel(person),Modifier.weight(1f))
+                Text(AoristContent.answers(e,person).joinToString("; "),Modifier.weight(1f))
+            }
+        }
+        HorizontalDivider()
+        Text(stringResource(R.string.aorist_aspect_display,aoristAspectLabel(AoristContent.text(e,"aspect"))))
+        for(field in listOf("studyGroup","note"))Text(aoristFieldLabel(field)+": "+AoristContent.text(e,field))
         val source=e.getValue("source").jsonObject
         for(f in listOf("title","url","section","checkedOn"))Text(aoristFieldLabel("source_$f")+": "+AoristContent.text(source,f),style=MaterialTheme.typography.bodySmall)
+    }
+}
+
+@Composable internal fun aoristPersonLabel(person:String)=stringResource(when(person){
+    "1sg"->R.string.aorist_person_1sg;"2sg"->R.string.aorist_person_2sg;"3sg"->R.string.aorist_person_3sg
+    "1pl"->R.string.aorist_person_1pl;"2pl"->R.string.aorist_person_2pl;else->R.string.aorist_person_3pl
+})
+@Composable private fun aoristAspectLabel(aspect:String)=stringResource(if(aspect=="perfective")R.string.aop_perfective else R.string.aop_imperfective)
+@Composable internal fun AoristAspectSelector(value:String?,enabled:Boolean,includeAll:Boolean=true,onValue:(String?)->Unit) {
+    Column {
+        Text(stringResource(R.string.aorist_aspect_title))
+        for(aspect in if(includeAll)listOf(null,"imperfective","perfective")else listOf("imperfective","perfective"))
+            FilterChip(value==aspect,{onValue(aspect)},enabled=enabled,label={Text(if(aspect==null)stringResource(R.string.aop_both_aspects)else aoristAspectLabel(aspect))})
     }
 }

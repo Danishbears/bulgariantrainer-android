@@ -1,11 +1,11 @@
 # Offline aorist practice
 
-Date: 2026-11-19.
+Date: 2026-11-19; native UI update: 2026-11-21.
 
 Native Kotlin/Compose/Room typed recall and multiple choice are implemented on
 `codex/android-aorist-plan`, extending the content implementation at
 `cb9a1a3ee569d9b8a40c701badd9b54119c58ae9`. ApplicationId remains
-`com.danishbears.bulgariantrainer`; candidate0.7.0/code8 preserves dependency,
+`com.danishbears.bulgariantrainer`; candidate0.7.1/code9 preserves dependency,
 toolchain and signing-workflow versions. No backend/account/synchronization.
 
 ## Reference and scope
@@ -178,7 +178,7 @@ the related aspect verb or any old learning mode. Existing word/sentence/aspect
 statistics and scheduler tables are untouched. Session results are labelled by
 their own exercise type; no new outcomes are appended to legacy statistics.
 
-Viewing/source audio is not an attempt. **Show answer** records REVEALED once,
+Viewing/approved audio is not an attempt. **Show answer** records REVEALED once,
 not CORRECT; independent credit cannot be earned by subsequently typing/selecting
 that exposed answer. Reveals increment review-event/reveal counts, reset that
 form/type streak and schedule a failure retry after24 hours. The answered/accuracy
@@ -191,9 +191,10 @@ device midnight. Timezone/DST affect display, not interval length. Clock correct
 do not rewrite old instants; the last logical event is identified by attempt
 identity, not the greatest wall-clock timestamp.
 
-Source Bulgarian TTS is explicit immediately; approved target audio is available
-only after feedback/reveal. Choice options have no pre-answer correct-option
-audio cue. Wrong raw submissions are not registered as approved audio examples.
+All question audio is withheld until feedback/reveal, including source-lemma
+playback: a dictionary form can itself coincide with an approved aorist answer.
+Approved reference audio is explicit only after feedback. Choice options have
+no pre-answer audio cue. Wrong raw submissions are not registered as approved audio examples.
 Existing installed-offline Bulgarian voice handling, normal/slow replacement,
 question/route stopping and missing-data usability remain. Fake adapters prove
 application policy only, not pronunciation quality/offline voice availability.
@@ -218,6 +219,13 @@ Unsupported future versions/policies and mislabelled newer tables are rejected;
 outcomes are preserved without replaying progress. See BUILD_REPORT.md for actual
 round-trip/migration/rollback/WAL and version verification results.
 
+## Native UI update
+
+[AORIST_UI_ANDROID.md](AORIST_UI_ANDROID.md) documents the six-person table,
+separate tense/person labels, editor validation, native help, stricter audio
+visibility and the complete import/practice/resume/results flow. It supersedes
+the initial UI-stage details below where noted; Room11/full-backupv5 are unchanged.
+
 ## Verification and device checks
 
 Tests use the actual starter for the required conjugations. Native SQLite tests
@@ -229,7 +237,8 @@ ViewModel and native Compose tests cover persisted settings/selection, rapid and
 stale callbacks, exit-flush failure, hidden typed targets/audio and explicit choice
 submission/Next at320dp. Existing regression suites remain.
 
-Verified code/test commitc753d47d881a1f8e6dd41483154a98fdd4055a88 passed
+Previous practice milestone (not verification of the later UI update):
+code/test commitc753d47d881a1f8e6dd41483154a98fdd4055a88 passed
 [Actions run44596272752](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44596272752):
 **376 tests,0 failures/errors/skipped**, both lints (0 errors/14 advisories each),
 debug and unsigned release builds, actual APK contracts and Room schemas1–11.

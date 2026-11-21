@@ -1,3 +1,9 @@
+> **2026-11-21:** Нативный раздел **Аорист**: таблица шести лиц, редактирование,
+> архив, JSON-предпросмотр, набор/выбор ответа, продолжение, результаты и справка.
+> Время и лицо указаны отдельно; звук и пояснения скрыты до обратной связи.
+> [AORIST_UI_ANDROID.md](AORIST_UI_ANDROID.md) — инструкция и границы проверки.
+> Кандидат **0.7.1/code9**, Room11, полный бэкап v5; подписывание не изменено.
+
 > **2026-11-19:** Offline aorist practice is now available through **Главная →
 > Аорист → Практика аориста**: typed recall (defaultаз), choice, selected persons,
 > durable sessions and independent schedules. [AORIST_PRACTICE.md](AORIST_PRACTICE.md)

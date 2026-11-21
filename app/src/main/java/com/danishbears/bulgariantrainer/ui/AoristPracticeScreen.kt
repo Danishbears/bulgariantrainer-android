@@ -23,7 +23,7 @@ import com.danishbears.bulgariantrainer.aorist.*
 import com.danishbears.bulgariantrainer.pronunciation.PronunciationTarget
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable fun AoristPracticeScreen(model:AoristPracticeViewModel,onCollection:()->Unit) {
+@Composable fun AoristPracticeScreen(model:AoristPracticeViewModel,onCollection:()->Unit,onHelp:()->Unit={}) {
     val state by model.state.collectAsStateWithLifecycle();val available by model.availability.collectAsStateWithLifecycle()
     val config by model.config.collectAsStateWithLifecycle();val size by model.size.collectAsStateWithLifecycle()
     val group by model.group.collectAsStateWithLifecycle();val dataset by model.dataset.collectAsStateWithLifecycle()
@@ -41,10 +41,11 @@ import com.danishbears.bulgariantrainer.pronunciation.PronunciationTarget
         text={Text(stringResource(R.string.aop_end_hint))},confirmButton={TextButton(enabled=enabled,onClick={end=false;model.complete(session.id)}){Text(stringResource(R.string.flash_end))}},
         dismissButton={TextButton(onClick={end=false}){Text(stringResource(R.string.flash_continue))}})
     Scaffold(modifier=Modifier.imePadding(),contentWindowInsets=WindowInsets(0,0,0,0),topBar={
-        TopAppBar(title={Text(stringResource(R.string.aop_title))},navigationIcon={TextButton(enabled=enabled,onClick=back){Text(stringResource(R.string.aspect_back))}})
+        AspectTopBar(stringResource(R.string.aop_title),back,enabled=enabled)
     }){padding->Column(Modifier.fillMaxSize().padding(padding)) {
         if(state.busy)LinearProgressIndicator(Modifier.fillMaxWidth())
         LazyColumn(state=scroll,contentPadding=PaddingValues(20.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
+            item{TextButton(enabled=enabled,onClick={model.leave(onHelp)}){Text(stringResource(R.string.aorist_help_title))}}
             state.error?.let{item{FailureMessage(it,model::retry)}}
             if(state.draftError)item{AspectNotice(stringResource(R.string.aop_draft_error),true)}
             if(state.pending!=null&&!state.busy)item{Text(stringResource(R.string.typing_pending));TextButton(onClick={model.reload(true)}){Text(stringResource(R.string.flash_refresh))}}
@@ -117,13 +118,16 @@ import com.danishbears.bulgariantrainer.pronunciation.PronunciationTarget
 @Composable internal fun aoristExerciseLabel(exercise:AoristExercise)=stringResource(if(exercise==AoristExercise.TYPED)R.string.aop_typed else R.string.aop_choice)
 @Composable private fun AoristPromptView(prompt:AoristPrompt,exercise:AoristExercise) {
     Text("${prompt.lemma} — ${prompt.russian}",style=MaterialTheme.typography.headlineSmall,modifier=Modifier.semantics{heading()})
-    Text(stringResource(if(exercise==AoristExercise.TYPED)R.string.aop_instruction_typed else R.string.aop_instruction_choice,aoristFieldLabel(prompt.person)))
+    Text(stringResource(R.string.aop_tense))
+    Text(stringResource(R.string.aop_person,aoristPersonLabel(prompt.person)))
+    Text(stringResource(if(exercise==AoristExercise.TYPED)R.string.aop_instruction_typed else R.string.aop_instruction_choice))
 }
 @Composable internal fun AoristQuestionCard(sessionId:Long,q:AoristQuestion,input:String,selection:String?,enabled:Boolean,
     onInput:(String)->Unit,onSelection:(String)->Unit,onSubmit:()->Unit,onReveal:()->Unit,onNext:()->Unit) {
     Card(Modifier.fillMaxWidth()){Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
         AoristPromptView(q.prompt,q.exercise)
-        PronunciationPlayback(PronunciationTarget("aorist-$sessionId-${q.id}-source",q.prompt.lemma))
+        // A dictionary form can itself be an approved aorist answer. Keep all question
+        // audio absent until feedback, including accessibility labels containing text.
         if(q.feedback==null) {
             if(q.exercise==AoristExercise.TYPED)OutlinedTextField(input,onInput,enabled=enabled,modifier=Modifier.fillMaxWidth(),singleLine=true,
                 label={Text(stringResource(R.string.ap_answer))},keyboardOptions=KeyboardOptions(capitalization=KeyboardCapitalization.None,autoCorrectEnabled=false,imeAction=ImeAction.Done),
@@ -148,7 +152,11 @@ import com.danishbears.bulgariantrainer.pronunciation.PronunciationTarget
     Text(stringResource(when(f.outcome){AoristOutcome.CORRECT->R.string.typing_correct;AoristOutcome.INCORRECT->R.string.ap_mismatch;AoristOutcome.REVEALED->R.string.aop_revealed}),
         style=MaterialTheme.typography.titleMedium,modifier=Modifier.semantics{liveRegion=LiveRegionMode.Polite;heading()})
     f.submitted?.let{Text(stringResource(R.string.typing_submitted,it))}
-    Text(stringResource(R.string.typing_accepted))
-    f.accepted.forEachIndexed{i,text->Text(text);PronunciationPlayback(PronunciationTarget("$owner-approved-$i",text))}
-    Text(AoristContent.text(f.content,"note"))
+    f.accepted.forEachIndexed{i,text->
+        Text(stringResource(if(i==0)R.string.aop_expected else R.string.aop_alternative),style=MaterialTheme.typography.labelLarge)
+        Text(text)
+        PronunciationPlayback(PronunciationTarget("$owner-approved-$i",text))
+    }
+    val note=AoristContent.text(f.content,"note")
+    if(note.isNotBlank())Text(stringResource(R.string.aop_note,note))
 }
