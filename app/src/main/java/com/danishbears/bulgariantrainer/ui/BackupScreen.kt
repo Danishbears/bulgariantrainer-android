@@ -58,6 +58,7 @@ fun BackupScreen(model: BackupViewModel) {
                 Text(stringResource(R.string.aspect_backup_count,summary.aspectPairs,summary.aspectDatasets))
                 Text(stringResource(R.string.aorist_backup_count,summary.aoristVerbs,summary.aoristDatasets))
                 Text(stringResource(R.string.aop_backup_sessions,summary.aoristSessions,summary.aoristAttempts))
+                Text(stringResource(R.string.aorist_backup_details,summary.aoristForms,summary.aoristAnswers,summary.aoristProgress,summary.aoristSchedules))
                 Text(stringResource(R.string.backup_learning_counts,summary.sessions,summary.activeSessions,summary.attempts,summary.progress,summary.schedules))
                 Text(stringResource(if(summary.preferences)R.string.backup_has_settings else R.string.backup_default_settings))
                 Text(stringResource(R.string.backup_confirm_text))

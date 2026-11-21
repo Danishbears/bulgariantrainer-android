@@ -1,3 +1,11 @@
+> **2026-11-21 completion:** full format remains **v5/schema11**. It already
+> includes all aorist content/practice/settings; derived statistics require no
+> new table or wire version. Preview now lists person slots, accepted answers,
+> progress and schedules. v1–v3 explicitly replace aorist with empty content and
+> history; v4 retains content but clears practice/settings/statistics. Warnings
+> appear in preview and confirmation. See AORIST_INTEGRATION.md for the complete
+> inventory, compatibility policy and actual migration/WAL/restore verification.
+
 > **2026-11-19:** Current full-backup **v5/schema11** includes complete aorist
 > practice (40tables/26sequences). Original v1–v4 are validated before expansion:
 > v1–v3 have no aorist content/history; v4 restores aorist content while clearing
@@ -73,8 +81,10 @@ drafts retain precedence during ordinary Activity recovery. Only valid size choi
 are persisted. Old per-session configuration is untouched, and no preference row
 or demo content is silently inserted on migration.
 
-Unsubmitted drafts, navigation/search state and picker permissions are transient,
-not learning records. Device TTS engine/voice data, system theme/time-zone, binaries,
+Aorist unsubmitted drafts and selected choices are persisted in the v5 question
+rows, alongside committed feedback and position; they are part of full backup.
+Navigation/search/statistics-tab state and picker permissions are transient,
+not learning records. Older modes follow their own documented draft policies. Device TTS engine/voice data, system theme/time-zone, binaries,
 credentials and Android's external settings are not app-owned backup data. TTS
 availability must be checked again on the destination device. CSV files remain
 content-only and do not contain this learning history.

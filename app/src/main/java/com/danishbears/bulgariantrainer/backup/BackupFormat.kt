@@ -10,7 +10,7 @@ enum class BackupError { INVALID_FORMAT, UNSUPPORTED_VERSION, WRONG_APPLICATION,
 class BackupException(val code: BackupError) : IllegalArgumentException(code.name)
 data class BackupSummary(val createdAt: Instant, val words: Int, val translations: Int, val sentences: Int,
     val alternatives: Int, val sessions: Int, val attempts: Int, val progress: Int, val schedules: Int, val activeSessions: Int, val preferences: Boolean, val aspectPairs: Int = 0, val aspectDatasets: Int = 0,
-    val sourceFormatVersion:Int=5,val aoristVerbs:Int=0,val aoristDatasets:Int=0,val aoristSessions:Int=0,val aoristAttempts:Int=0)
+    val sourceFormatVersion:Int=5,val aoristVerbs:Int=0,val aoristDatasets:Int=0,val aoristSessions:Int=0,val aoristAttempts:Int=0,val aoristForms:Int=0,val aoristAnswers:Int=0,val aoristProgress:Int=0,val aoristSchedules:Int=0)
 class PreparedBackup internal constructor(internal val document: JsonObject, val summary: BackupSummary)
 internal data class DecodedBackup(val document:JsonObject,val sourceFormatVersion:Int)
 
@@ -97,7 +97,7 @@ internal object BackupFormat {
         return BackupSummary(Instant.parse(root.getValue("createdAt").jsonPrimitive.content),size("words"),size("translations"),size("sentences"),size("sentence_alternatives"),
             sessions.sumOf(::size),listOf("flashcard_attempts","typing_attempts","sentence_attempts","aspect_attempts","aorist_attempts").sumOf(::size),
             listOf("recognition_progress","typing_progress","sentence_progress","aspect_progress","aorist_progress").sumOf(::size),size("word_review_schedules")+size("sentence_review_schedules")+size("aspect_review_schedules")+size("aorist_review_schedules"),
-            sessions.sumOf { table -> data.getValue(table).jsonArray.count { it.jsonObject["status"]==JsonPrimitive("IN_PROGRESS") } },size("trainer_preferences")>0||size("aorist_preferences")>0,size("aspect_pairs"),size("aspect_datasets"),aoristVerbs=size("aorist_verbs"),aoristDatasets=size("aorist_datasets"),aoristSessions=size("aorist_sessions"),aoristAttempts=size("aorist_attempts"))
+            sessions.sumOf { table -> data.getValue(table).jsonArray.count { it.jsonObject["status"]==JsonPrimitive("IN_PROGRESS") } },size("trainer_preferences")>0||size("aorist_preferences")>0,size("aspect_pairs"),size("aspect_datasets"),aoristVerbs=size("aorist_verbs"),aoristDatasets=size("aorist_datasets"),aoristSessions=size("aorist_sessions"),aoristAttempts=size("aorist_attempts"),aoristForms=size("aorist_forms"),aoristAnswers=size("aorist_answers"),aoristProgress=size("aorist_progress"),aoristSchedules=size("aorist_review_schedules"))
     }
     fun validateUnicode(value: JsonElement) {
         when(value) {

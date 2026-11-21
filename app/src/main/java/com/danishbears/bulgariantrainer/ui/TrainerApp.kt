@@ -148,12 +148,18 @@ fun TrainerApp(repository: VocabularyRepository, transfer: ContentTransferReposi
             composable("aorist-practice") {
                 val practiceModel:AoristPracticeViewModel=viewModel(factory=viewModelFactory {initializer {AoristPracticeViewModel(application.aoristPractice,createSavedStateHandle())}})
                 AoristPracticeScreen(practiceModel,onCollection={if(!controller.popBackStack("aorist",false,saveState=true))controller.navigate("aorist"){popUpTo("home");launchSingleTop=true}},
-                    onHelp={controller.navigate("aorist-help"){launchSingleTop=true}})
+                    onHelp={controller.navigate("aorist-help"){launchSingleTop=true}},
+                    onStatistics={controller.navigate("aorist-statistics"){launchSingleTop=true}})
             }
             composable("aorist") {
                 val aoristModel:AoristViewModel=viewModel(factory=viewModelFactory {initializer {AoristViewModel(application.aorist,com.danishbears.bulgariantrainer.aorist.AoristDocuments(application),createSavedStateHandle())}})
                 AoristScreen(aoristModel,onBack={controller.popBackStack()},onPractice={controller.navigate("aorist-practice"){launchSingleTop=true;restoreState=true}},
-                    onHelp={controller.navigate("aorist-help"){launchSingleTop=true}})
+                    onHelp={controller.navigate("aorist-help"){launchSingleTop=true}},
+                    onStatistics={controller.navigate("aorist-statistics"){launchSingleTop=true}})
+            }
+            composable("aorist-statistics") {
+                val model:AoristStatisticsViewModel=viewModel(factory=viewModelFactory {initializer {AoristStatisticsViewModel(application.aoristStatistics,createSavedStateHandle())}})
+                AoristStatisticsScreen(model,onBack={controller.popBackStack()})
             }
             composable("aorist-help") { AoristHelpScreen(onBack={controller.popBackStack()}) }
             composable("aspects") {

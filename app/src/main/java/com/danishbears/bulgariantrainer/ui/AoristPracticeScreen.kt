@@ -23,7 +23,7 @@ import com.danishbears.bulgariantrainer.aorist.*
 import com.danishbears.bulgariantrainer.pronunciation.PronunciationTarget
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable fun AoristPracticeScreen(model:AoristPracticeViewModel,onCollection:()->Unit,onHelp:()->Unit={}) {
+@Composable fun AoristPracticeScreen(model:AoristPracticeViewModel,onCollection:()->Unit,onHelp:()->Unit={},onStatistics:()->Unit={}) {
     val state by model.state.collectAsStateWithLifecycle();val available by model.availability.collectAsStateWithLifecycle()
     val config by model.config.collectAsStateWithLifecycle();val size by model.size.collectAsStateWithLifecycle()
     val group by model.group.collectAsStateWithLifecycle();val dataset by model.dataset.collectAsStateWithLifecycle()
@@ -45,7 +45,8 @@ import com.danishbears.bulgariantrainer.pronunciation.PronunciationTarget
     }){padding->Column(Modifier.fillMaxSize().padding(padding)) {
         if(state.busy)LinearProgressIndicator(Modifier.fillMaxWidth())
         LazyColumn(state=scroll,contentPadding=PaddingValues(20.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
-            item{TextButton(enabled=enabled,onClick={model.leave(onHelp)}){Text(stringResource(R.string.aorist_help_title))}}
+            item{TextButton(enabled=enabled,onClick={model.leave(onHelp)}){Text(stringResource(R.string.aorist_help_title))}
+                TextButton(enabled=enabled,onClick={model.leave(onStatistics)}){Text(stringResource(R.string.aos_title))}}
             state.error?.let{item{FailureMessage(it,model::retry)}}
             if(state.draftError)item{AspectNotice(stringResource(R.string.aop_draft_error),true)}
             if(state.pending!=null&&!state.busy)item{Text(stringResource(R.string.typing_pending));TextButton(onClick={model.reload(true)}){Text(stringResource(R.string.flash_refresh))}}

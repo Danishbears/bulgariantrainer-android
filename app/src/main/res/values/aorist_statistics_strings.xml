@@ -1,0 +1,19 @@
+<resources>
+    <string name="aos_title">Статистика аориста</string>
+    <string name="aos_scope">Только аорист. Набор ответа и выбор ответа имеют независимый прогресс.</string>
+    <string name="aos_loading">Загрузка статистики аориста…</string>
+    <string name="aos_all">Все наборы аориста</string>
+    <string name="aos_dataset">Набор: %1$s</string>
+    <string name="aos_answered">Отвечено</string>
+    <string name="aos_correct">Правильно</string>
+    <string name="aos_incorrect">Не совпало</string>
+    <string name="aos_due">К повторению</string>
+    <string name="aos_revealed">Показано ответов: %1$d</string>
+    <string name="aos_rules">«Отвечено» — правильные и несовпавшие ответы, включая незавершённые занятия и архивные глаголы. Показы ответа считаются отдельно. «К повторению» — число активных сочетаний глагола, лица и типа упражнения с наступившим сроком; один глагол может учитываться несколько раз. Архив исключён из повторов. Просмотр, продолжение и пропуски не добавляют попытки.</string>
+    <string name="aos_empty">Ответов ещё нет. Импортируйте набор и начните практику аориста.</string>
+    <string name="aos_by_person">По лицам</string>
+    <string name="aos_by_exercise">По упражнениям</string>
+    <string name="aos_by_both">Лицо и упражнение</string>
+    <string name="aos_counts">Отвечено: %1$d; правильно: %2$d; не совпало: %3$d; к повторению: %4$d.</string>
+    <string name="aorist_backup_details">Аорист: %1$d личных форм, %2$d принятых ответов, %3$d записей прогресса, %4$d расписаний.</string>
+</resources>

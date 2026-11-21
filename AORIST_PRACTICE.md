@@ -1,3 +1,7 @@
+> **Completion:** see AORIST_INTEGRATION.md for separate persisted statistics,
+> full-backupv5 compatibility/legacy replacement warnings and current0.8.0/code10
+> verification. Earlier UI/practice build evidence below is historical.
+
 # Offline aorist practice
 
 Date: 2026-11-19; native UI update: 2026-11-21.
@@ -5,7 +9,7 @@ Date: 2026-11-19; native UI update: 2026-11-21.
 Native Kotlin/Compose/Room typed recall and multiple choice are implemented on
 `codex/android-aorist-plan`, extending the content implementation at
 `cb9a1a3ee569d9b8a40c701badd9b54119c58ae9`. ApplicationId remains
-`com.danishbears.bulgariantrainer`; candidate0.7.1/code9 preserves dependency,
+`com.danishbears.bulgariantrainer`; candidate0.8.0/code10 preserves dependency,
 toolchain and signing-workflow versions. No backend/account/synchronization.
 
 ## Reference and scope
@@ -228,7 +232,7 @@ the initial UI-stage details below where noted; Room11/full-backupv5 are unchang
 
 ## Verification and device checks
 
-Current native UI candidate0.7.1/code9 is verified by
+Current native UI candidate0.8.0/code10 is verified by
 [run44896058759](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44896058759):
 381 tests,0 failures/errors/skipped, both builds/lints and APK/schema checks.
 [Download its debug APK ZIP](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44896058759/artifacts/14704860022)

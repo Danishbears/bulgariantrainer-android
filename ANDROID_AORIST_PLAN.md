@@ -1,3 +1,10 @@
+> **2026-11-21 integration completion:** aorist-only persisted statistics now
+> provide answered/correct/incorrect/revealed/due counts by six persons, two
+> exercise types and all12 combinations. Full-backupv5/schema11 already includes
+> all content/practice/settings; detailed preview and legacy warnings are verified.
+> See AORIST_INTEGRATION.md and BUILD_REPORT.md. Candidate0.8.0/code10; no database
+> or wire-format change is needed for a read-only aggregate view.
+
 > **2026-11-21 UI follow-up:** Native management, six-person table/editor,
 > import/export, typed/choice practice, resume/results and help are integrated;
 > see [AORIST_UI_ANDROID.md](AORIST_UI_ANDROID.md). Separate time/person labels

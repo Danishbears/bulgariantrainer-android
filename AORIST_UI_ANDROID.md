@@ -1,3 +1,7 @@
+> **Current candidate0.8.0/code10:** aorist-only statistics and complete backup
+> verification are documented in AORIST_INTEGRATION.md. Native UI behavior below
+> is retained; prior0.7.1 build links are historical, not the new candidate.
+
 # Native Android aorist UI
 
 Date: 2026-11-21. Candidate **0.7.1 / versionCode 9**, on
