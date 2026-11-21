@@ -156,9 +156,22 @@ backup. See BACKUP_RESTORE.md and RELEASE_SIGNING.md.
 
 ## Verification and delivery
 
-Actual commands/results, tested commit, APK hashes/signatures and hosted artifact
-links are recorded in BUILD_REPORT.md after the checks complete. A prior successful
-build is not proof that this candidate passed. Automated verification covers:
+[Verified Actions run44908377133](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44908377133)
+passed on code/test commit060639178b9b6086f0a28075b91673bca5b6bd26:
+**392 JVM/Robolectric tests,0 failures/errors/skipped**, both builds/lints,
+APK contracts, parity/Python checks and Room schemas1–11. Lint has0 errors and14
+hosted advisories per variant (OldTargetApi +13 dependency updates); local full
+checks also passed392, both builds/lints and APK verification, with13 dependency
+advisories per lint variant. BUILD_REPORT.md records exact commands/checksums,
+including the initial failed cloud UI-readiness assertion and its correction.
+
+[Download debug APK ZIP —0.8.0/code10/API26+](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44908377133/artifacts/14709108204)
+(available until2026-12-05), then extract **app-debug.apk**.
+[Test/lint/schema reports](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44908377133/artifacts/14709212977)
+are available alongside it. The hosted debug certificate differs from the previous
+cloud0.7.1 build; see update limitations below.
+
+Automated verification covers:
 
 - Original40 entries/240 explicit slots, repeated import, content round-trip and
   stable IDs, malformed/unsupported input and import transaction rollback.

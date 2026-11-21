@@ -1,6 +1,8 @@
 > **Completion:** see AORIST_INTEGRATION.md for separate persisted statistics,
 > full-backupv5 compatibility/legacy replacement warnings and current0.8.0/code10
-> verification. Earlier UI/practice build evidence below is historical.
+> verification. [Run44908377133](https://github.com/Danishbears/bulgariantrainer-android/actions/runs/44908377133)
+> passed392 tests and all baseline build/lint/APK/schema checks. Earlier
+> UI/practice build evidence below is historical.
 
 # Offline aorist practice
 
